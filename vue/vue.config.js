@@ -1,5 +1,3 @@
-// shamelessly (partially) copied without thinking from https://github.com/firebase/firebase-tools/issues/1676
-
 module.exports = {
   productionSourceMap: false,
 
@@ -8,23 +6,19 @@ module.exports = {
   // },
 
   pwa: {
-    name: "JuteBag",
+    name: "Zettelfix",
     themeColor: "#F5A623",
   },
 
   devServer: {
-    port: 8088 /* must be this port for my firebase setup */,
+    port: 8088,
     proxy: {
-      "^/__/": {
-        target: "http://localhost:5000", // default hosting emulator port
+      "^/api/": {
+        target: "http://localhost:80/zettelfix.de/",
       },
-      "^/bagpy/": {
-        target: "http://localhost:8000", // jutebag-py
-      },
-      // ...runProxy,
     },
   },
 
-  publicPath: '',
-  outputDir: '../public/'
+  publicPath: "",
+  outputDir: "../public/",
 };

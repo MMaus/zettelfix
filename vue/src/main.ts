@@ -4,30 +4,21 @@ import "./registerServiceWorker";
 import router from "./router";
 import generateStore from "@/store";
 
-import "bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "jquery/src/jquery.js";
-import "bootstrap/dist/js/bootstrap.min.js";
+// import "bootstrap";
+// import "bootstrap/dist/css/bootstrap.min.css";
+// import "jquery/src/jquery.js";
+// import "bootstrap/dist/js/bootstrap.min.js";
 import { importState } from "./store/shopping/importer";
 import { Category } from "./store/shopping/types";
 import { ItemRepository } from "./use/itemStore";
+
+import WaveUI from "wave-ui";
+import "wave-ui/dist/wave-ui.css";
 
 //  TODO: checkout axios (npm install axios --save)
 // import axios from 'axios'
 // Vue.prototype.$axios = axios
 //
-
-// const firebaseConfig = {
-//   apiKey: "AIzaSyCjjVJikqJ1KwGPuOm8NOdZPt5ICrtCyg8",
-//   authDomain: "jutebag.firebaseapp.com",
-//   databaseURL: "https://jutebag.firebaseio.com",
-//   projectId: "jutebag",
-//   storageBucket: "jutebag.appspot.com",
-//   messagingSenderId: "595630917273",
-//   appId: "1:595630917273:web:b1d564c3efbc0461655a08",
-//   measurementId: "G-JLRRL13388",
-// };
-
 
 const store = generateStore();
 store.commit("shopping/computeNextItemId");
@@ -37,9 +28,9 @@ console.log("====> enabling shopping list impoirt?", enableImport);
 if (enableImport) {
   console.log("IMPORTING shoppingList from localStorage");
   const categories = importState();
-  const existingCategories = store.getters["shopping/categories"] as Array<
-    Category
-  >;
+  const existingCategories = store.getters[
+    "shopping/categories"
+  ] as Array<Category>;
   let anyItemImported = false;
   categories.forEach((cat) => {
     if (existingCategories.map((c) => c.catName).includes(cat.catName)) {
@@ -62,7 +53,7 @@ if (enableImport) {
   store.commit("app/disableShoppingListImport");
   console.log("=== IMPORT DISABLED ===");
   if (!anyItemImported) {
-    const itemStore = new ItemRepository("jutebag.shoppinglist");
+    const itemStore = new ItemRepository("zettelfix.shoppinglist");
     console.log("deleting store");
     // itemStore.deleteStore();
   }
@@ -71,9 +62,9 @@ if (enableImport) {
 // Vue.config.devtools = process.env.NODE_ENV === "development";
 // Vue.config.devtools = true;
 
-const app = createApp(App)
-  .use(router)
-  .use(store);
+const app = createApp(App).use(router).use(store);
+
+new WaveUI(app, {});
 
 // @ts-ignore
 // app.config.devtools = true;

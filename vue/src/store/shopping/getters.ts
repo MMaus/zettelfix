@@ -10,7 +10,7 @@ export default {
   categories(state: ShoppingListState): Array<Category> {
     return state.categories;
   },
-  remoteDataExcerpt(state: ShoppingListState) {
+  remoteDataExcerpt(state: ShoppingListState): unknown {
     // This is debug info for a weird chaching behaviour I observed in Vue 2
     // If this works as expected, this debugging information is no longer required
     console.log("RETRIEVING FRESH EXCERPT");

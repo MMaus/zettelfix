@@ -76,14 +76,14 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import AddTodoModal from "@/components/AddTodoModal.vue";
-import { TodoDAO, LocalTodoItem, LocalTodoTask } from "@/use/todoUtil";
+import { TodoDAO, LocalTodoTask } from "@/use/todoUtil";
 import { TodoItem } from "@/use/localApi";
 import TodoITemComponent from "@/components/TodoItemComponent.vue";
 
 const todoDao = new TodoDAO("todo_v1");
 
 export default defineComponent({
-  data: function() {
+  data: function () {
     return {
       showModal: false,
       userEmail: "",
@@ -92,7 +92,7 @@ export default defineComponent({
   },
 
   computed: {
-    sortedList: function(): TodoItem[] {
+    sortedList: function (): TodoItem[] {
       if (!todoDao.todoItemsReactive) {
         console.log("===todoitems unclear");
         return [];
@@ -109,12 +109,12 @@ export default defineComponent({
   },
 
   methods: {
-    openModal: function() {
+    openModal: function () {
       console.log("opening modal dialog");
       this.showModal = true;
     },
 
-    storeRemote: function() {
+    storeRemote: function () {
       if (this.userEmail) {
         todoDao.upload(this.userEmail);
         console.log("storing remotely");
@@ -123,7 +123,7 @@ export default defineComponent({
       }
     },
 
-    loadRemote: function() {
+    loadRemote: function () {
       if (this.userEmail) {
         console.log("fetching items from remote for " + this.userEmail);
         todoDao.download(this.userEmail);
@@ -132,12 +132,12 @@ export default defineComponent({
       }
     },
 
-    onRemoveTask: function(todoId: string, todoTaskLabel: string) {
+    onRemoveTask: function (todoId: string) {
       console.log("removed task from " + todoId + ". now storing stuff");
       todoDao.storeLocally();
     },
 
-    onDataChage: function(todoId: string, todoText: string) {
+    onDataChage: function (todoId: string, todoText: string) {
       console.log("Data changed in " + todoId + " - " + todoText);
       const todoTask = new LocalTodoTask(todoText);
       const todoItem = todoDao.getItem(todoId);
@@ -148,17 +148,17 @@ export default defineComponent({
       }
     },
 
-    onClearItem: function(todoId: string) {
+    onClearItem: function (todoId: string) {
       console.log("requested to clear " + todoId);
       todoDao.removeByLabel(todoId);
     },
 
-    onRearrangedTasks: function(todoId: string) {
+    onRearrangedTasks: function () {
       console.log("tasks rearranged, storing locally");
       todoDao.storeLocally();
     },
 
-    onDateChanged: function(todoId: string, newDate: Date) {
+    onDateChanged: function (todoId: string, newDate: Date) {
       const todoItem = todoDao.getItem(todoId);
       if (todoItem) {
         todoItem.nextActionTime = newDate;
@@ -166,7 +166,7 @@ export default defineComponent({
       }
     },
 
-    onNewItem: function(newItem: string) {
+    onNewItem: function (newItem: string) {
       console.log("on new Item called.");
       console.log("newItem is: " + newItem);
       if (newItem) {
@@ -176,7 +176,6 @@ export default defineComponent({
     },
   },
 
-  mounted: function() {},
   components: {
     "add-todo-modal": AddTodoModal,
     "todo-item": TodoITemComponent,

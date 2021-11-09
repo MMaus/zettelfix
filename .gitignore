@@ -1,2 +1,4 @@
 node_modules
 public
+*.code-workspace
+deploy_public.sh

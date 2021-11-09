@@ -3,6 +3,23 @@ import { JuteBagState } from "../types";
 import { User } from "../user/types";
 import { RemoteShoppingListState, ShoppingListState } from "./types";
 
+// FIXME: provide as generic util function
+function prepareStore(
+  context: ActionContext<ShoppingListState, JuteBagState>,
+  storeKey: string
+): { valid: boolean; url: string } {
+  const result = { valid: false, url: "" };
+  const isLoggedIn = context.rootGetters["app/userLoggedIn"] as boolean;
+  if (!isLoggedIn) {
+    console.error("User is not logged in, unable to sync");
+    context.commit("setSyncState", { syncState: "SYNC_ERROR" });
+    return result;
+  }
+  const user = context.rootGetters["app/user"] as string;
+  const url = "api/clob-storage/" + encodeURI(user) + "/" + storeKey;
+  return { valid: true, url };
+}
+
 export default {
   /**
    * Adds (creates) the item and a corresponding category if it does not exist.
@@ -17,6 +34,7 @@ export default {
   ): Promise<void> {
     context.commit("addItem", { itemName, categoryName });
   },
+
   async activateItem(
     context: ActionContext<ShoppingListState, JuteBagState>,
     { itemId, categoryId }: { itemId: string; categoryId: string }
@@ -30,37 +48,37 @@ export default {
   ): Promise<void> {
     context.commit("setQuantity", { itemId, quantity });
   },
+
   async toggleInCart(
     context: ActionContext<ShoppingListState, JuteBagState>,
     { itemId }: { itemId: string }
   ): Promise<void> {
     context.commit("toggleInCart", { itemId });
   },
+
   async deleteItem(
     context: ActionContext<ShoppingListState, JuteBagState>,
     { itemId }: { itemId: string }
   ): Promise<void> {
     context.commit("deleteItem", { itemId });
   },
+
   async uploadItems(
     context: ActionContext<ShoppingListState, JuteBagState>
   ): Promise<void> {
     context.commit("setSyncState", { syncState: "SYNCING" });
-    const isLoggedIn = context.rootGetters["user/isLoggedIn"] as boolean;
-    if (!isLoggedIn) {
-      console.error("User is not logged in, unable to sync");
+    const api = prepareStore(context, "shoppingbag");
+    if (!api.valid) {
       context.commit("setSyncState", { syncState: "SYNC_ERROR" });
       return;
     }
     const stringifiedData = JSON.stringify(
       context.getters["remoteDataExcerpt"]
     );
-    const user = context.rootGetters["user/user"] as User;
-    const postURL = "/bagpy/v2/" + user.email;
-    console.log("Pushing data:", stringifiedData);
-    console.log("POSTING TO ", postURL);
-    fetch(postURL, {
-      method: "POST",
+    // console.log("Pushing data:", stringifiedData);
+    console.log("POSTING TO ", api.url);
+    fetch(api.url, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
@@ -78,31 +96,36 @@ export default {
     // await new Promise((resolve) => setTimeout(resolve, 2000));
     // context.commit("setSyncState", { syncState: "SYNC" });
   },
+
   async downloadItems(
     context: ActionContext<ShoppingListState, JuteBagState>
   ): Promise<void> {
     context.commit("setSyncState", { syncState: "SYNCING" });
-    if (!context.rootGetters["user/isLoggedIn"]) {
-      console.error("User is not logged in");
+    const api = prepareStore(context, "shoppingbag");
+    if (!api.valid) {
       context.commit("setSyncState", { syncState: "SYNC_ERROR" });
       return;
     }
-    const user: User = context.rootGetters["user/user"];
-    const userEmail = user.email;
-    let jsonResponse: RemoteShoppingListState;
+    let jsonResponse: {
+      shoppingbag: {
+        key: string;
+        user: unknown;
+        content: string;
+      };
+    };
+
     try {
-      jsonResponse = await fetch("/bagpy/v2/" + userEmail).then((res) =>
-        res.json()
-      );
+      jsonResponse = await fetch(api.url).then((res) => res.json());
     } catch (e) {
       console.log("Error on download", e);
       context.commit("setSyncState", { syncState: "SYNC_ERROR" });
       return;
     }
     if (jsonResponse) {
-      console.log("Received object:", jsonResponse);
-      console.log(`There are ${jsonResponse.categories.length} categories`);
-      context.commit("setRemoteData", jsonResponse);
+      const content = JSON.parse(jsonResponse.shoppingbag.content);
+      console.log("Received object:", content);
+      console.log(`There are ${content.categories.length} categories`);
+      context.commit("setRemoteData", content);
       context.commit("computeNextItemId");
       context.commit("setSyncState", { syncState: "SYNC" });
     }

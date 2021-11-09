@@ -1,65 +1,53 @@
 <template>
-  <div class="m-0 p-0">
+  <div class="m0 p0">
     <div
       v-if="isInCart"
-      class="storedItem mt-1 text-success text-left font-weight-bold"
+      class="storedItem mt1 text-success text-left font-weight-bold"
       @click="toggleInCart"
     >
       {{ item.quantity }}x {{ item.itemName }}
     </div>
 
-    <div v-else class="bg-secondary rounded p-0 m-1 requiredItem">
-      <div class="d-flex py-1 align-items-center font-weight-bold text-light">
-        <div class="pl-1 text-left">
-          <div
-            class="btn-group m-0 p-0"
-            role="group"
-            aria-label="change quantity"
+    <div v-else>
+      <w-flex align-center class="my1 sh1 pa1 orange-light4--bg bdrs1">
+        <div class="pa1 buttonsize">
+          <w-button
+            type="button"
+            class="btn btn-primary"
+            shadow
+            lg
+            v-on:click="decreaseQty"
           >
-            <button
-              type="button"
-              class="btn btn-primary btn-sm"
-              v-on:click="decreaseQty"
-            >
-              -
-            </button>
-            <button
-              type="button"
-              class="btn btn-outline-primary bg-white btn-sm"
-            >
-              <b>{{ item.quantity }}</b>
-            </button>
-            <button
-              type="button"
-              class="btn btn-primary btn-sm"
-              v-on:click="increaseQty"
-            >
-              +
-            </button>
+            -
+          </w-button>
+          <w-button type="button" outline lg>
+            <b>{{ item.quantity }}</b>
+          </w-button>
+          <w-button
+            type="button"
+            class="btn btn-primary"
+            v-on:click="increaseQty"
+            lg
+          >
+            +
+          </w-button>
+        </div>
+        <div class="spacer pl2 itemNameDisplay" @click="toggleInCart">
+          <div class="itemtext">
+            {{ item.itemName }}
           </div>
         </div>
-        <div
-          class="container-fluid pl-3 text-left mt-1 itemNameDisplay"
-          @click="toggleInCart"
-        >
-          {{ item.itemName }}
-        </div>
-        <div class="ml-auto mr-1">
-          <button
-            type="button"
-            class="btn btn-danger btn-sm"
+        <div>
+          <w-button
+            bg-color="warning"
+            class="btn btn-danger btn-sm pt1"
             @click="deleteItem"
+            lg
           >
-            <span>
-              <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-                <path
-                  fill="currentColor"
-                  d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M16,10V17A1,1 0 0,1 15,18H9A1,1 0 0,1 8,17V10H16M13.5,6L14.5,7H17V9H7V7H9.5L10.5,6H13.5Z"
-                /></svg
-            ></span>
-          </button>
+            <w-icon lg class="pa1">mdi mdi-delete-empty</w-icon>
+          </w-button>
         </div>
-      </div>
+      </w-flex>
     </div>
   </div>
 </template>
@@ -120,5 +108,17 @@ export default defineComponent({
 }
 .itemNameDisplay {
   text-transform: capitalize;
+  text-align: left;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.itemtext {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.buttonsize {
+  min-width: 90px;
 }
 </style>

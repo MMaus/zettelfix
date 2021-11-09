@@ -1,61 +1,31 @@
 <template>
   <div class="bg-secondary shopping-background max">
-    <transition>
-      <categories-sidebar
-        v-if="sidebarVisible"
-        :categories="storedCategories"
-        @categorySelected="scrollToCategory"
-      />
-    </transition>
-    <div v-if="loggedIn" class="cardly">
-      <button
-        class="button btn btn-warning rounded"
-        :class="buttonClass"
-        @click="upload"
+    <w-flex wrap class="mb5">
+      <transition-group
+        name="transition-anim"
+        tag="div"
+        class="xs12 columns is-multiline"
       >
-        Save
-      </button>
-      <button
-        class="button btn btn-warning rounded ml-2"
-        :class="buttonClass"
-        @click="download"
-      >
-        Load
-      </button>
-    </div>
-
-    <!-- FIXME: pass in somehow category selector ... or use provide / inject -->
-    <div class="container mb-5">
-      <div class="row px-1">
         <category-panel
           v-for="cat in storedCategories"
           :key="cat.id"
           :category="cat"
           :id="'cat:' + cat.id"
           :mitt="emitter"
+          class="transition-anim-item"
           v-on="categoryCallbacks"
         >
         </category-panel>
-      </div>
-    </div>
-
-    <div class="spacer"></div>
-
-    <shopping-list-footer
-      @toggle-sidebar="toggleSidebar"
-      @added-to-category="scrollToCategory"
-    />
+      </transition-group>
+      <div class="bottom-spacer"></div>
+    </w-flex>
   </div>
 </template>
 
 <script lang="ts">
 import { Ref, provide, readonly, watch } from "vue";
 
-import ShoppingListFooter from "@/components/shoppinglist/ShoppingListFooter.vue";
-import CategoriesSidebar from "@/components/shoppinglist/CategoriesSidebar.vue";
 import CategoryPanel from "@/components/shoppinglist/CategoryPanel.vue";
-
-// import firebase from "firebase/app";
 
 import mitt from "mitt";
 
@@ -74,6 +44,9 @@ const itemRepo = new ItemRepository("jutebag.shoppinglist");
 const emitter = mitt();
 
 export default defineComponent({
+  components: {
+    CategoryPanel,
+  },
   setup() {
     const store = useStore() as Store<JuteBagState>;
 
@@ -86,6 +59,7 @@ export default defineComponent({
     );
 
     const user = ref(""); // some initial value
+    const showDrawer = ref(false); // some initial value
 
     // note: this is a reactive vue property ("ref")
     const items: Ref<Array<Item>> = itemRepo.itemsRef;
@@ -126,7 +100,7 @@ export default defineComponent({
     watch(
       () => store.getters["user/isLoggedIn"],
       (isLoggedIn) => {
-        loggedIn.value = (isLoggedIn as unknown) as boolean;
+        loggedIn.value = isLoggedIn as unknown as boolean;
       }
     );
 
@@ -166,11 +140,11 @@ export default defineComponent({
       itemRepo.pushCategory(categoryName);
     };
 
-    const toggleSidebar = function() {
+    const toggleSidebar = function () {
       sidebarVisible.value = !sidebarVisible.value;
     };
 
-    const scrollToCategory = function(catName: string) {
+    const scrollToCategory = function (catName: string) {
       console.log(`SCROLLING ... that cat name is ${catName}`);
       const cats = storedCategories.value as Array<Category>;
       console.log("CATS = ", cats);
@@ -186,7 +160,7 @@ export default defineComponent({
       console.log("elem offsetTop:" + elemPos2);
 
       // const offsetPosition = elementPosition ?? -headerOffset;
-      const offsetPosition = elemPos2! - headerOffset;
+      const offsetPosition = (elemPos2 || 0) - headerOffset;
       console.log(`scrolling to ${offsetPosition}`);
       window.scrollTo({
         top: offsetPosition,
@@ -198,28 +172,28 @@ export default defineComponent({
     };
 
     const categoryCallbacks = {
-      "toggle-cart": function(item: ShoppingItem) {
+      "toggle-cart": function (item: ShoppingItem) {
         console.log("====== toggle-cart called for", item); // ?? not cats!
       },
-      toggleCart: function(item: ShoppingItem) {
+      toggleCart: function (item: ShoppingItem) {
         console.log("====== toggleCart called for item", item);
       },
-      "delete-item": function(item: ShoppingItem) {
+      "delete-item": function (item: ShoppingItem) {
         console.log("delete item called for", item);
       },
-      "update-qty": function(item: ShoppingItem) {
+      "update-qty": function (item: ShoppingItem) {
         console.log("update qty for item", item);
       },
-      "update-category": function(item: ShoppingItem) {
+      "update-category": function (item: ShoppingItem) {
         console.log("update category for item", item);
       },
       // "pull-category": function(catId: string) {
       //   console.log("pull category category ", catId);
       // },
-      pullCategory: function(catId: Category) {
+      pullCategory: function (catId: Category) {
         store.dispatch("shopping/pullCategory", { categoryId: catId });
       },
-      pushCategory: function(catId: string) {
+      pushCategory: function (catId: string) {
         store.dispatch("shopping/pushCategory", { categoryId: catId });
       },
       // @delete-item="deleteItem"
@@ -244,6 +218,7 @@ export default defineComponent({
       categoryList,
       // UI functionality
       emitter,
+      showDrawer,
       // Cart change functionality
       upload,
       download,
@@ -257,12 +232,6 @@ export default defineComponent({
       sidebarVisible,
       scrollToCategory,
     };
-  },
-
-  components: {
-    ShoppingListFooter,
-    CategoriesSidebar,
-    CategoryPanel,
   },
 });
 </script>
@@ -286,12 +255,12 @@ export default defineComponent({
   font-weight: bold;
 }
 
-.spacer {
+.bottom-spacer {
   height: 5rem;
 }
 
 .max {
-  min-height: 80vh;
+  min-height: 95vh;
 }
 
 .shopping-background {
@@ -318,6 +287,30 @@ export default defineComponent({
   width: 100%;
   text-align: left;
   color: antiquewhite;
+}
+
+.transition-anim {
+  display: inline-block;
+}
+
+.transition-anim-move {
+  transition: transform 0.8s ease;
+}
+
+.transition-anim-item {
+  transition: all 0.5s;
+  display: inline-block;
+}
+.transition-item-enter, .tansition-item-leave-to
+/* .list-complete-leave-active below version 2.1.8 */ {
+  opacity: 0;
+  transform: translateY(30px);
+}
+.transition-item-leave-active {
+  position: absolute;
+}
+.transition-item-active {
+  position: absolute;
 }
 
 .v-enter-from,

@@ -1,49 +1,76 @@
-import { createRouter, createWebHashHistory  } from 'vue-router';
-import type { RouteRecordRaw } from 'vue-router';
-import Home from '../views/Home.vue'
+import { createRouter, createWebHashHistory } from "vue-router";
+import type { RouteRecordRaw } from "vue-router";
+import Home from "@/views/Home.vue";
+import ShoppingListView from "@/views/ShoppingListView.vue";
+import ShoppingListActions from "@/views/ShoppingListActions.vue";
+import Impressum from "@/views/Impressum.vue";
+import NoActions from "@/views/NoActions.vue";
 
 console.log("Creating router");
 
-// Array<any> works as well
-const routes: Array<RouteRecordRaw> = [ 
+const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
-    name: 'Home',
-    component: Home as any,
+    path: "/",
+    name: "Home",
+    components: {
+      default: Home,
+      actions: NoActions,
+    },
   },
   {
-    path: '/about',
-    name: 'About',
+    path: "/about",
+    name: "About",
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    components: {
+      default: () =>
+        import(/* webpackChunkName: "about" */ "@/views/About.vue"),
+      actions: NoActions,
+    },
   },
   {
-    path: '/shoppinglist',
-    name: 'Shopping List',
+    path: "/shoppinglist",
+    name: "Shopping List",
     // route level code-splitting
-    component: () => { return import(/* webpackChunkName: "shoppingList" */ '@/views/ShoppingListView.vue'); }
+    components: {
+      default: ShoppingListView,
+      actions: ShoppingListActions,
+    },
   },
   {
-    path: '/login',
-    name: 'Login',
+    path: "/login",
+    name: "Login",
     // route level code-splitting
-    component: () => import(/* webpackChunkName: "login" */ '../views/Login.vue')
+    components: {
+      default: () =>
+        import(/* webpackChunkName: "login" */ "@/views/Login.vue"),
+      actions: NoActions,
+    },
   },
   {
-    path: '/todo',
-    name: 'Todo',
-    // route level code-splitting
-    component: () => import(/* webpackChunkName: "todo" */ '../views/Todo.vue')
-  }
-]
+    path: "/todo",
+    name: "Todo",
+    components: {
+      default: () => import(/* webpackChunkName: "todo" */ "@/views/Todo.vue"),
+      actions: NoActions,
+    },
+  },
+  {
+    path: "/impressum",
+    name: "Impressum",
+    components: {
+      default: Impressum,
+      actions: NoActions,
+    },
+  },
+];
 
 console.log("Routes defined:" + routes.length);
 const router = createRouter({
   history: createWebHashHistory(),
-  routes
-})
+  routes,
+});
 
 console.log("Router created");
-export default router
+export default router;

@@ -1,111 +1,42 @@
 <template>
-  <div id="mainapp">
-    <div id="title" class="bg-dark text-light p-1">
-      <h2><img src="favicon.png" height="30em" />JuteBag.IO</h2>
-      <h3>Your Shopping Bag</h3>
+  <w-app>
+    <div id="mainapp">
+      <w-toolbar shadow fixed bg-color="primary">
+        <div class="pa2">
+          <router-link to="/">
+            <w-icon lg color="white">mdi mdi-home</w-icon>
+          </router-link>
+        </div>
+        <div class="title2">Zettelfix</div>
+        <div class="route-actions ma2 text-right">
+          <router-view name="actions"></router-view>
+        </div>
+        <div class="ml2">
+          <auth-button @click="showLoginDialog = true"></auth-button>
+        </div>
+      </w-toolbar>
+
+      <router-view class="view"></router-view>
+      <login-dialog :show="showLoginDialog" @close="showLoginDialog = false" />
+      <disclaimer-dialog
+        :show="showConsent"
+        @ok="onConsentConfirm"
+        @cancel="onConsentCancel"
+      ></disclaimer-dialog>
     </div>
-    <div
-      id="nav"
-      class="navbar m-0 navbar-expand-sm navbar-dark bg-secondary mb-1 pb-1 sticky-top"
-    >
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        data-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        Menu
-        <span class="navbar-toggler-icon text-right"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <router-link
-          to="/"
-          class="nav-item nav-link"
-          data-toggle="collapse"
-          data-target=".navbar-collapse.show"
-          >Home</router-link
-        >
-        <router-link
-          to="about"
-          class="nav-item nav-link"
-          data-toggle="collapse"
-          data-target=".navbar-collapse.show"
-          >About</router-link
-        >
-        <router-link
-          to="login"
-          class="nav-item nav-link"
-          data-toggle="collapse"
-          data-target=".navbar-collapse.show"
-          >Account</router-link
-        >
-        <router-link
-          to="todo"
-          class="nav-item nav-link"
-          data-toggle="collapse"
-          data-target=".navbar-collapse.show"
-          >Todo List</router-link
-        >
-        <router-link
-          to="shoppinglist"
-          class="nav-item nav-link"
-          data-toggle="collapse"
-          data-target=".navbar-collapse.show"
-          >Go Shopping!</router-link
-        >
-      </div>
-      <div class="boxed bg-success text-white lead p-2 rounded" v-if="loggedIn">
-        Signed In
-      </div>
-      <div
-        class="boxed bg-warning text-white lead p-2 rounded"
-        v-if="loggedOut"
-      >
-        Not logged in
-      </div>
-      <div
-        class="boxed bg-warning text-white lead p-2 rounded"
-        v-if="verificationRequired"
-      >
-        verify email!
-      </div>
-    </div>
-    <router-view class="view"></router-view>
-    <modal-dialog
-      :show="showConsent"
-      @ok="onConsentConfirm"
-      @cancel="onConcentCancel"
-    >
-      <h2>WARNING</h2>
-      <div class="text-left">
-        This application is a hobby project.
-        <strong>Do not provide personal information</strong>, because it is not
-        protected. Personal information may be anything which is not testing
-        data.
-        <br />
-        All data you enter will be stored locally in your browser.
-        <br />
-        If you create and use an account, those data will be stored on the
-        server, where they are publicly accessible! As this violates public
-        laws, you are not allowed to enter personal information when you are
-        using an account. Personal information may be any information you might
-        enter, except for testing purposes.
-        <br /><br />
-        <b>Do you agree to never enter any personal data here?</b>
-      </div>
-    </modal-dialog>
-  </div>
+  </w-app>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+import AuthButton from "./components/auth/AuthButton.vue";
+import LoginDialog from "./components/auth/LoginDialog.vue";
 // import firebase from "firebase/app";
 
 // // // Add the Firebase products that you want to use
 // import "firebase/auth";
-import ModalDialog from "./components/common/ModalDialog.vue";
+// import ModalDialog from "./components/common/ModalDialog.vue";
+import DisclaimerDialog from "./components/common/DisclaimerDialog.vue";
 
 // If you enabled Analytics in your project, add the Firebase SDK for Analytics
 // import "firebase/analytics";
@@ -122,13 +53,14 @@ function loginComplete(user) {
 }
 
 export default {
-  components: { ModalDialog },
+  components: { AuthButton, LoginDialog, DisclaimerDialog },
 
-  data: function() {
+  data: function () {
     return {
       loggedIn: false, //loginComplete(firebase.auth().currentUser),
       verificationRequired: false,
       loggedOut: true,
+      showLoginDialog: false,
     };
   },
 
@@ -148,7 +80,7 @@ export default {
       // this.showConsent = false;
       this.$store.dispatch("app/confirmConsent");
     },
-    onConcentCancel() {
+    onConsentCancel() {
       // this.showConsent = false;
     },
   },
@@ -157,6 +89,7 @@ export default {
     showConsent() {
       return !this.$store.getters["app/isConsentValid"];
     },
+    ...mapGetters("app", ["user"]),
   },
 };
 </script>
@@ -172,6 +105,7 @@ html {
 
 .view {
   height: 100%;
+  padding-top: 64px;
 }
 
 #app {
@@ -193,5 +127,9 @@ html {
 
 #nav a.router-link-exact-active {
   color: #42b983;
+}
+.route-actions {
+  flex-grow: 1;
+  /* border: 1px solid red; */
 }
 </style>

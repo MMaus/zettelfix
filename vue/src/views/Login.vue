@@ -59,13 +59,13 @@ export default {
     const loggedIn = ref(false);
     const currentUser = ref("");
 
-    const displaySuccess = function() {
+    const displaySuccess = function () {
       showError.value = false;
       showSuccess.value = true;
       successMsg.value = "Ois guad!";
     };
 
-    const displayError = function(error: any): void {
+    const displayError = function (error: any): void {
       console.log("received error: " + error);
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -75,15 +75,19 @@ export default {
       console.log("error displayed: " + error);
     };
 
-    const login = function() {
+    const login = function () {
       console.log("login clicked");
     };
 
-    const signUp = function() {};
+    const signUp = function () {
+      console.log("signing up ... currently rewritten");
+    };
 
-    const sendVerification = function() {};
+    const sendVerification = function () {
+      console.log("signing up ... currently rewritten");
+    };
 
-    const logout = function() {
+    const logout = function () {
       console.log("logout clicked");
     };
 

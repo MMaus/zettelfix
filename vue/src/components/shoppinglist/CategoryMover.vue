@@ -1,8 +1,14 @@
 <template>
-  <div class="col-4 p-0">
-    <span class="float-right">
-      <button class="btn border" @click="pullCategory">
-        <svg
+  <div class="p0 text-right">
+    <span class="text-right">
+      <w-button
+        bg-color="purple-light2"
+        class="white mr1 bdrs1"
+        lg
+        @click="pullCategory"
+        icon="mdi mdi-arrow-up-bold-box-outline"
+      >
+        <!-- <svg
           width="1.5em"
           height="1.5em"
           viewBox="0 0 16 16"
@@ -22,10 +28,17 @@
             fill-rule="evenodd"
             d="M8 11.5a.5.5 0 0 0 .5-.5V6a.5.5 0 0 0-1 0v5a.5.5 0 0 0 .5.5z"
           />
-        </svg>
-      </button>
-      <button class="btn border" @click="pushCategory">
-        <svg
+        </svg> -->
+      </w-button>
+      <w-button
+        bg-color="purple-light2"
+        lg
+        class="white bdrs1"
+        @click="pushCategory"
+        icon="mdi mdi-arrow-down-bold-box-outline"
+      >
+        >
+        <!-- <svg
           width="1.5em"
           height="1.5em"
           viewBox="0 0 16 16"
@@ -45,8 +58,8 @@
             fill-rule="evenodd"
             d="M8 4.5a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5z"
           />
-        </svg>
-      </button>
+        </svg> -->
+      </w-button>
     </span>
   </div>
 </template>

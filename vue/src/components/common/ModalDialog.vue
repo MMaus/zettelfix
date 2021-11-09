@@ -2,22 +2,22 @@
   <div class="background" v-if="showBackground" @click="onBackgroundClicked">
     <div class="modal-wrapper">
       <transition>
-        <div class="modal-container p-4 pt-5" v-if="showForeground" @click.stop>
+        <div class="modal-container p4 pt5" v-if="showForeground" @click.stop>
           <div class="modal-content">
             <slot></slot>
           </div>
           <div class="d-flex">
             <div class="ml-auto button-slot">
               <slot name="buttons">
-                <button
+                <w-button
                   class="btn button btn-primary"
                   @click="signal('cancel')"
                 >
                   Cancel
-                </button>
-                <button class="btn button btn-primary" @click="signal('ok')">
+                </w-button>
+                <w-button class="btn button btn-primary" @click="signal('ok')">
                   OK
-                </button>
+                </w-button>
               </slot>
             </div>
           </div>
@@ -91,23 +91,15 @@ export default defineComponent({
   width: 600px;
   max-width: 80vw;
   border-radius: 10px;
-  /* margin: 50px auto;
-  padding: 20px 30px; */
   margin: auto;
   padding-bottom: 10px;
   margin-bottom: 10px;
   background-color: whitesmoke;
-  /* -shadow: 0 2px 8px rgba(0, 0, 0, 0.33); */
-  /* transition: all 0.3s ease; */
   font-family: Helvetica, Arial, sans-serif;
-  /* overflow-y: scroll;
-  max-height: 49vh; */
 }
 
 .modal-content {
   padding: 20px;
-  /* background-color: whitesmoke; */
-  /* box-shadow: 0 3px 3px rgba(0, 0, 0, 0.33); */
   overflow-y: scroll;
   max-height: 50vh;
 }

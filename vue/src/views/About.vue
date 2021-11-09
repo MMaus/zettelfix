@@ -1,9 +1,10 @@
 <template>
   <div>
     <div class="jumbotron">
-      <h1>About JuteBag</h1>
+      <h1>About Zettelfix</h1>
       <p class="lead">
-        JuteBag is a shopping list application. Developed as a toy project, I
+        Zettelfix is the successor of JuteBag.<br />
+        JuteBag was a shopping list application. Developed as a toy project, I
         intend to explore as many technologies as possible while at the same
         time creating some useful application.
       </p>
@@ -19,9 +20,7 @@
     </button>
     <teleport to="body">
       <modal-dialog :show="showDialog" @background-click="showDialog = false">
-        <div>
-          This is the main text
-        </div>
+        <div>This is the main text</div>
         <template v-slot:buttons>
           <div>
             <button class="btn btn-primary" @click="toggleDialog">

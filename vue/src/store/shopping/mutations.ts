@@ -199,6 +199,7 @@ function setSyncState(
   state: ShoppingListState,
   { syncState }: { syncState: SyncState }
 ): void {
+  console.log("SYNC STATE IS ", syncState);
   state.syncState = syncState;
 }
 

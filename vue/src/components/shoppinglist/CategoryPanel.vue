@@ -1,28 +1,42 @@
 <template>
   <div
-    class="col-md-6 col-xl-4 p-1 m-0"
+    class="xs12 md6 lg4 pa1"
     :class="{ 'col-4 greenish': !showItems, 'col-12': showItems }"
     :id="'cat:' + category.name"
   >
-    <div class="card">
-      <div
-        class="card-header text-left"
-        v-bind:class="{ 'text-success': isDone, 'category-done': isDone }"
-        @click="toggleShowNevertheless"
-      >
-        <div class="row">
-          <div :class="{ 'col-8': showItems, 'col-12': !showItems }">
-            <span class="category-title" :class="{ smallTitle: !showItems }">{{
-              category.catName
-            }}</span>
+    <w-card title-class="indigo-light5--bg" bg-color="orange-light5">
+      <template #title>
+        <w-flex>
+          <div
+            class="xs9 text-left pl5 indigo-dark3"
+            @click="toggleShowNevertheless"
+          >
+            {{ category.catName }}
           </div>
-          <category-mover
-            v-if="showItems"
-            v-on="{ pullCategory, pushCategory }"
-          />
-        </div>
-      </div>
-      <div class="card-body" v-if="showItems">
+          <div class="xs3">
+            <category-mover
+              v-if="showItems"
+              v-on="{ pullCategory, pushCategory }"
+            />
+          </div>
+        </w-flex>
+      </template>
+      <!-- <div
+          class="card-header text-left"
+          v-bind:class="{ 'text-success': isDone, 'category-done': isDone }"
+          @click="toggleShowNevertheless"
+        >
+          <div class="indigo-light5--bg">
+            <div :class="{ 'col-8': showItems, 'col-12': !showItems }">
+              <span
+                class="category-title"
+                :class="{ smallTitle: !showItems }"
+                >{{ category.catName }}</span
+              >
+            </div>
+          </div>
+        </div> -->
+      <div class="ma0 pa0" v-if="showItems">
         <transition-group tag="div" name="item-list">
           <shopping-item-display
             v-for="item in todoItems"
@@ -40,7 +54,7 @@
           ></shopping-item-display>
         </transition-group>
       </div>
-    </div>
+    </w-card>
   </div>
 </template>
 
@@ -69,12 +83,12 @@ export default defineComponent({
     },
   },
 
-  created: function() {
+  created: function () {
     this.mitt.on("do-open", this.doOpen as Handler);
   },
 
   methods: {
-    toggleShowNevertheless: function(): void {
+    toggleShowNevertheless: function (): void {
       if (!this.isDone) {
         this.showNevertheless = false;
         return;
@@ -82,22 +96,22 @@ export default defineComponent({
 
       this.showNevertheless = !this.showNevertheless;
     },
-    doOpen: function(catName: string): void {
+    doOpen: function (catName: string): void {
       if (this.category.catName === catName) {
         this.showNevertheless = true;
       }
     },
 
-    pullCategory: function() {
+    pullCategory: function () {
       console.log("PULLING BABY");
       this.$emit("pull-category", this.category.id);
     },
-    pushCategory: function() {
+    pushCategory: function () {
       console.log("PUSH IT TO THE LIMIT BABY");
       this.$emit("push-category", this.category.id);
     },
 
-    logToggle: function(firstArg: any, secondArg: any) {
+    logToggle: function (firstArg: any, secondArg: any) {
       console.log("logtoggle called");
       console.log("first arg:", firstArg);
       console.log("second arg:", secondArg);

@@ -17,4 +17,12 @@ export default {
     console.log("FOUND VALUE" + state.enableShoppingListImport);
     return state.enableShoppingListImport;
   },
+  user(state: AppState): string {
+    console.log("GETTING USER = ", state.user, state);
+    return state.user || ""; // FIXME: PUT USER IN USER MODULE?, FIXME: refactor 'user' to 'account'
+  },
+  userLoggedIn(state: AppState): boolean {
+    console.log("QUERYING FOR USER LOGGED IN, STATE IS ", state.loggedIn);
+    return state.loggedIn;
+  },
 };

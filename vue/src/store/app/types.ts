@@ -3,5 +3,8 @@ export interface AppState {
   // at least not out-of-the-box
   // TODO: check if vuex-persist supports deserialization into (Date) objects
   lastConsent: number;
+  user: string | null;
+  loggedIn: boolean;
+  loginTime: number | null;
   enableShoppingListImport: boolean;
 }

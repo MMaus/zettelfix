@@ -1,4 +1,4 @@
-# jutebag
+# Zettelfix.de
 
 # NEWS
 
@@ -12,6 +12,11 @@ Thus, the work here is currently quite pragmatic, i.e. focussed on achieving
 results rather quickly than properly.
 
 ## Build & Deploy
+
+### Additional Requirement: node-sass
+
+On my system, I needed to install node-sass globally
+(> sudo npm install -g node-sass)
 
 npm run build
 
