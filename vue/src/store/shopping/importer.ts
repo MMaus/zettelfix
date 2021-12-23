@@ -3,7 +3,7 @@ import { ItemRepository } from "@/use/itemStore";
 import { Category, ShoppingItem } from "./types";
 import { Category as OldCat } from "@/use/localApi";
 
-function importState() {
+function importState(): Array<Category> {
   const itemStore = new ItemRepository("jutebag.shoppinglist");
 
   const newCategories: Array<Category> = [];

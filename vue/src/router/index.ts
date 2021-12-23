@@ -5,6 +5,7 @@ import ShoppingListView from "@/views/ShoppingListView.vue";
 import ShoppingListActions from "@/views/ShoppingListActions.vue";
 import Impressum from "@/views/Impressum.vue";
 import NoActions from "@/views/NoActions.vue";
+import TodoActions from "@/views/TodoActions.vue";
 
 console.log("Creating router");
 
@@ -53,7 +54,7 @@ const routes: Array<RouteRecordRaw> = [
     name: "Todo",
     components: {
       default: () => import(/* webpackChunkName: "todo" */ "@/views/Todo.vue"),
-      actions: NoActions,
+      actions: TodoActions,
     },
   },
   {

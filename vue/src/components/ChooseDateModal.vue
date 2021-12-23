@@ -6,45 +6,81 @@
           <div class="date-modal-header">
             <slot name="header"> Choose next action time </slot>
           </div>
-          <div>{{ showDate() }}</div><div>{{ showTime() }}</div>
+          <div>{{ showDate() }}</div>
+          <div>{{ showTime() }}</div>
 
           <div class="date-modal-body">
             <!-- "snooze selection" with exponential zoom -->
             <!-- -->
             <div>
-                <button class="btn bg-secondary text-white pm-0" @click="resetDate()">now</button>
+              <button
+                class="btn bg-secondary text-white pm-0"
+                @click="resetDate()"
+              >
+                now
+              </button>
             </div>
             <div>
-            Day
+              Day
               <div class="btn-group">
-                <button class="btn bg-secondary text-white pm-0" @click="incDate(1)">+1</button>
-                <button class="btn bg-primary text-white pm-0" @click="incDate(2)">+2</button>
-                <button class="btn bg-primary text-white pm-0" @click="incDate(5)">+5</button>
-                <button class="btn bg-primary text-white pm-0" @click="incDate(7)">+7</button>
-                <button class="btn bg-primary text-white pm-0" @click="incDate(28)">+28</button>
+                <button
+                  class="btn bg-secondary text-white pm-0"
+                  @click="incDate(1)"
+                >
+                  +1
+                </button>
+                <button
+                  class="btn bg-primary text-white pm-0"
+                  @click="incDate(2)"
+                >
+                  +2
+                </button>
+                <button
+                  class="btn bg-primary text-white pm-0"
+                  @click="incDate(5)"
+                >
+                  +5
+                </button>
+                <button
+                  class="btn bg-primary text-white pm-0"
+                  @click="incDate(7)"
+                >
+                  +7
+                </button>
+                <button
+                  class="btn bg-primary text-white pm-0"
+                  @click="incDate(28)"
+                >
+                  +28
+                </button>
               </div>
             </div>
 
-
             <div class="mt-2">
               Time
-            <div class="btn-group">
-              <button class="btn bg-secondary text-white pm-0" @click="setTime(8, 0)">morning</button>
-              <button class="btn bg-primary text-white pm-0" @click="setTime(15, 0)">afternoon</button>
+              <div class="btn-group">
+                <button
+                  class="btn bg-secondary text-white pm-0"
+                  @click="setTime(8, 0)"
+                >
+                  morning
+                </button>
+                <button
+                  class="btn bg-primary text-white pm-0"
+                  @click="setTime(15, 0)"
+                >
+                  afternoon
+                </button>
+              </div>
             </div>
-            </div>
-
-
           </div>
 
           <div class="date-modal-footer">
-              <button class="btn bg-success text-white" @click="submit">
-            <slot name="footer">
-                Choose
-            </slot>
-              </button>
+            <button class="btn bg-success text-white" @click="submit">
+              <slot name="footer"> Choose </slot>
+            </button>
           </div>
-          <div><hr></div>
+          <div><hr /></div>
         </div>
       </div>
     </div>
@@ -66,16 +102,16 @@ export default defineComponent({
       emit("close", selectedTime.value);
     };
 
-    const incDate = function(nDays: number) {
+    const incDate = function (nDays: number) {
       const copy = new Date(selectedTime.value.getTime());
       copy.setDate(selectedTime.value.getDate() + nDays);
-      console.log("updated date")
+      console.log("updated date");
       selectedTime.value = copy;
-    }
+    };
 
-    const resetDate = function() {
+    const resetDate = function () {
       selectedTime.value = new Date();
-    }
+    };
 
     const showDate = () => {
       // const formatter = new Intl.DateTimeFormat();
@@ -83,19 +119,38 @@ export default defineComponent({
       // return "" + JSON.stringify(formattedDate); //selectedTime.value;
       const t = selectedTime.value;
       const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]; // note that weeks start with Sundays!
-      const daytime = "" + t.getHours() + ":" + (t.getMinutes() < 10 ? "0" : "") + t.getMinutes();
-      return "" + days[t.getDay()] + ", " + t.getDate() + "." + (t.getMonth() + 1) + "." + t.getFullYear();
+      const daytime =
+        "" +
+        t.getHours() +
+        ":" +
+        (t.getMinutes() < 10 ? "0" : "") +
+        t.getMinutes();
+      return (
+        "" +
+        days[t.getDay()] +
+        ", " +
+        t.getDate() +
+        "." +
+        (t.getMonth() + 1) +
+        "." +
+        t.getFullYear()
+      );
     };
 
     const showTime = () => {
       const t = selectedTime.value;
-      const daytime = "" + t.getHours() + ":" + (t.getMinutes() < 10 ? "0" : "") + t.getMinutes();
+      const daytime =
+        "" +
+        t.getHours() +
+        ":" +
+        (t.getMinutes() < 10 ? "0" : "") +
+        t.getMinutes();
       return daytime;
     };
 
     const setTime = (hours: number, minutes: number) => {
-      console.log("function called with " + hours)
-      console.log("function called with " + minutes)
+      console.log("function called with " + hours);
+      console.log("function called with " + minutes);
       const currentDate = new Date(selectedTime.value);
       currentDate.setHours(hours);
       currentDate.setMinutes(minutes);
@@ -108,7 +163,7 @@ export default defineComponent({
       showTime,
       incDate,
       setTime,
-      resetDate
+      resetDate,
     };
   },
 });
@@ -178,6 +233,4 @@ export default defineComponent({
   -webkit-transform: scale(1.1);
   transform: scale(1.1);
 }
-
-
 </style>
