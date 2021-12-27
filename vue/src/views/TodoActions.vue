@@ -12,15 +12,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watchEffect } from "vue";
+import { ref } from "vue";
 import AddTodoDialog from "@/components/AddTodoDialog.vue";
+import { useStore } from "vuex";
+
+const store = useStore();
 
 const showIt = ref(false);
 function createItem(label: string) {
-  console.log("creating item ", label);
+  if (label) {
+    store.dispatch("todo/createTodoItem", { label });
+  }
+  showIt.value = false;
 }
-
-watchEffect(() => console.log("DialogOpen is now", showIt.value));
 
 // import AddItemPanel from "@/components/shoppinglist/AddItemPanel.vue";
 // import { mapActions, mapGetters, Store, useStore } from "vuex";

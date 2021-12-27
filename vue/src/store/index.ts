@@ -1,5 +1,6 @@
 import { createStore, Store } from "vuex";
 import shopping from "./shopping/";
+import todo from "./todo/";
 import user from "./user/";
 import app from "./app/";
 import { JuteBagState } from "./types";
@@ -11,6 +12,7 @@ const vuexLocal = new VuexPersistence<JuteBagState>({
   reducer: (state) => ({
     app: state.app,
     shopping: state.shopping,
+    todo: state.todo,
   }), // remove this reducer to store the entire state
 });
 
@@ -19,6 +21,7 @@ export default function (): Store<JuteBagState> {
     modules: {
       user,
       shopping,
+      todo,
       app,
     },
     plugins: [vuexLocal.plugin],

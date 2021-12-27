@@ -63,8 +63,9 @@ import { TodoDAO, LocalTodoTask } from "@/use/todoUtil";
 import { TodoItem } from "@/use/localApi";
 import TodoItemComponent from "@/components/TodoItemComponent.vue";
 import TodoInfo from "@/components/todolist/TodoInfo.vue";
+import { mapGetters } from "vuex";
 
-const todoDao = new TodoDAO("todo_v1");
+// const todoDao = new TodoDAO("todo_v1");
 
 export default defineComponent({
   data: function () {
@@ -76,12 +77,13 @@ export default defineComponent({
   },
 
   computed: {
+    ...mapGetters("todo", ["getTodoItems"]),
     sortedList: function (): TodoItem[] {
-      if (!todoDao.todoItemsReactive) {
+      if (!this.getTodoItems) {
         console.log("===todoitems unclear");
         return [];
       }
-      const itemListCopy = [...todoDao.todoItemsReactive];
+      const itemListCopy = [...this.getTodoItems];
       console.log("RENDERING LIST: " + JSON.stringify(itemListCopy));
       itemListCopy.sort(
         (a, b) =>
@@ -99,63 +101,71 @@ export default defineComponent({
     },
 
     storeRemote: function () {
-      if (this.userEmail) {
-        todoDao.upload(this.userEmail);
-        console.log("storing remotely");
-      } else {
-        console.error("user not logged in / email not verified");
-      }
+      console.log("UPLOAD NOT IMPLEMENTED!");
+      // if (this.userEmail) {
+      //   todoDao.upload(this.userEmail);
+      //   console.log("storing remotely");
+      // } else {
+      //   console.error("user not logged in / email not verified");
+      // }
     },
 
     loadRemote: function () {
-      if (this.userEmail) {
-        console.log("fetching items from remote for " + this.userEmail);
-        todoDao.download(this.userEmail);
-      } else {
-        console.error("user not logged in / user not verified");
-      }
+      console.log("DOWNLOAD NOT IMPLEMENTED!");
+      // if (this.userEmail) {
+      //   console.log("fetching items from remote for " + this.userEmail);
+      //   todoDao.download(this.userEmail);
+      // } else {
+      //   console.error("user not logged in / user not verified");
+      // }
     },
 
     onRemoveTask: function (todoId: string) {
+      console.log("REMOVING TASK NOT YET IMPLEMENTED");
       console.log("removed task from " + todoId + ". now storing stuff");
-      todoDao.storeLocally();
+      // todoDao.storeLocally();
     },
 
     onDataChage: function (todoId: string, todoText: string) {
+      console.log("DATA CHANGE NOT YET IMPLEMENTED");
       console.log("Data changed in " + todoId + " - " + todoText);
-      const todoTask = new LocalTodoTask(todoText);
-      const todoItem = todoDao.getItem(todoId);
-      console.log("retrieved item " + todoItem);
-      todoItem?.taskList.push(todoTask);
-      if (todoItem) {
-        todoDao.storeLocally();
-      }
+      // const todoTask = new LocalTodoTask(todoText);
+      // const todoItem = todoDao.getItem(todoId);
+      // console.log("retrieved item " + todoItem);
+      // todoItem?.taskList.push(todoTask);
+      // if (todoItem) {
+      //   todoDao.storeLocally();
+      // }
     },
 
     onClearItem: function (todoId: string) {
-      console.log("requested to clear " + todoId);
-      todoDao.removeByLabel(todoId);
+      console.log("REMOVING ITEM NOT YET IMPLEMENTED");
+      // console.log("requested to clear " + todoId);
+      // todoDao.removeByLabel(todoId);
     },
 
     onRearrangedTasks: function () {
-      console.log("tasks rearranged, storing locally");
-      todoDao.storeLocally();
+      console.log("TASK REARRANGING NOT YET IMPLEMENTED locally");
+      console.log("REMOVING ITEM NOT YET IMPLEMENTED");
+      // todoDao.storeLocally();
     },
 
     onDateChanged: function (todoId: string, newDate: Date) {
-      const todoItem = todoDao.getItem(todoId);
-      if (todoItem) {
-        todoItem.nextActionTime = newDate;
-        todoDao.storeLocally();
-      }
+      console.log("DATE CHANGE NOT YET IMPLEMENTED");
+      // const todoItem = todoDao.getItem(todoId);
+      // if (todoItem) {
+      //   todoItem.nextActionTime = newDate;
+      //   todoDao.storeLocally();
+      // }
     },
 
     onNewItem: function (newItem: string) {
       console.log("on new Item called.");
       console.log("newItem is: " + newItem);
-      if (newItem) {
-        todoDao.createTodo(newItem);
-      }
+      this.$store.dispatch("todo/createTodoItem", newItem);
+      // if (newItem) {
+      //   todoDao.createTodo(newItem);
+      // }
       this.showModal = false;
     },
   },

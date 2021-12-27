@@ -51,12 +51,12 @@ if (enableImport) {
   });
 
   store.commit("app/disableShoppingListImport");
-  console.log("=== IMPORT DISABLED ===");
-  if (!anyItemImported) {
-    const itemStore = new ItemRepository("zettelfix.shoppinglist");
-    console.log("deleting store");
-    // itemStore.deleteStore();
-  }
+  // console.log("=== IMPORT DISABLED ===");
+  // if (!anyItemImported) {
+  //   const itemStore = new ItemRepository("zettelfix.shoppinglist");
+  //   console.log("deleting store");
+  //   // itemStore.deleteStore();
+  // }
 }
 
 // Vue.config.devtools = process.env.NODE_ENV === "development";

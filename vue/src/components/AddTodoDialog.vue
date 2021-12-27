@@ -11,13 +11,15 @@
 
     <template #actions>
       <div class="spacer"></div>
-      <w-button class="btn" @click="submit">Add</w-button>
+      <w-button class="btn" :disabled="!itemData.trim()" @click="submit"
+        >Add</w-button
+      >
     </template>
   </w-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref, defineEmits, defineProps, watchEffect } from "vue";
+import { ref, defineEmits, defineProps } from "vue";
 
 const props = defineProps<{
   dialogOpen: boolean;
@@ -28,10 +30,6 @@ const emit = defineEmits<{
   (e: "update:dialogOpen", value: boolean): void;
   (e: "close", label: string): void;
 }>();
-
-watchEffect(() =>
-  console.log("IN DIALOG COMPONENT, WE HAVE OPEN=", props.dialogOpen)
-);
 
 function handleClose(val: boolean) {
   emit("update:dialogOpen", val);
