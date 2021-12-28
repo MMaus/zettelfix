@@ -21,7 +21,7 @@ const store = useStore();
 const showIt = ref(false);
 function createItem(label: string) {
   if (label) {
-    store.dispatch("todo/createTodoItem", { label });
+    store.dispatch("todo/createTodoItem", label);
   }
   showIt.value = false;
 }

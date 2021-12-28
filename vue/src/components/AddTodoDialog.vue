@@ -1,5 +1,10 @@
 <template>
-  <w-dialog :model-value="props.dialogOpen" @input="handleClose">
+  <w-dialog
+    :model-value="props.dialogOpen"
+    @input="handleClose"
+    :width="600"
+    class="mx3"
+  >
     <template #title><h4 class="black">Create new Todo item</h4> </template>
     <w-input
       type="text"
@@ -37,10 +42,9 @@ function handleClose(val: boolean) {
 
 const submit = (e: Event) => {
   e.stopPropagation();
-  // if (newItem.value?.value) {
-  //   itemData = newItem.value.value!;
-  console.log("You entered " + itemData.value);
-  // }
-  emit("close", itemData.value);
+  if (itemData.value) {
+    emit("close", itemData.value);
+    itemData.value = "";
+  }
 };
 </script>

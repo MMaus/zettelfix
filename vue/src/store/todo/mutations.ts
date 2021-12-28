@@ -4,56 +4,78 @@ import {
   TodoItem,
   SyncState,
   RemoteTodoListState,
+  TaskStatus,
 } from "./types";
 
-function computeNextItemId(state: TodoListState): void {
-  // let nextId = state.nextItemId;
-  // let nextCategoryId = state.nextCategoryId;
-  // for (const cat of state.todoItems) {
-  //   try {
-  //     const numCandidate = cat.id?.split("y")[1];
-  //     if (numCandidate != undefined) {
-  //       const higherNumber = Math.ceil(+numCandidate + 1);
-  //       if (higherNumber > nextCategoryId) {
-  //         nextCategoryId = higherNumber;
-  //       }
-  //     }
-  //   } catch (ignored) {
-  //     /* exception is okay, we can safely ignore it*/
-  //   }
-  //   for (const it of cat.taskList) {
-  //     try {
-  //       const numCandidate = it.id?.split(":")[1];
-  //       if (numCandidate != undefined) {
-  //         const higherNumber = Math.ceil(+numCandidate + 1);
-  //         if (higherNumber > nextId) {
-  //           nextId = higherNumber;
-  //         }
-  //       }
-  //     } catch (ignored) {
-  //       /* exception is okay, we can safely ignore it*/
-  //     }
-  //   }
-  // }
-  // console.log("initialized nextItemId = ", nextId);
-  // console.log("initialized nextCategoryId = ", nextCategoryId);
-  // state.nextItemId = nextId;
-  // state.nextCategoryId = nextCategoryId;
+import _ from "lodash";
+
+function addTask(
+  state: TodoListState,
+  data: {
+    todoLabel: string;
+    taskLabel: string;
+  }
+): void {
+  const index = _.findIndex(
+    state.todoItems,
+    (it) => it.label.trim() === data.todoLabel.trim()
+  );
+  if (index < 0) {
+    console.error("Unable to locate todo item with label ", data.todoLabel);
+    return;
+  }
+  state.todoItems[index].taskList.push({
+    label: data.taskLabel,
+    status: TaskStatus.TODO,
+  });
 }
 
-// function createCategory(state: TodoListState, name: string): TodoTask {
-//   const newCategory: TodoTask = {
-//     id: "category" + state.nextCategoryId,
-//     catName: name,
-//     items: [],
-//     isDone: true,
-//   };
-//   state.nextCategoryId = state.nextCategoryId + 1;
-//   state.todoItems.push(newCategory);
-//   return newCategory;
-// }
+function deleteTodoItem(state: TodoListState, todoLabel: string): void {
+  _.remove(state.todoItems, (it) => it.label.trim() === todoLabel.trim());
+}
 
-function addItem(state: TodoListState, todoItem: TodoItem): void {
+function changeDate(
+  state: TodoListState,
+  data: { todoLabel: string; newDate: Date }
+): void {
+  const index = _.findIndex(
+    state.todoItems,
+    (it) => it.label.trim() === data.todoLabel.trim()
+  );
+  if (index < 0) {
+    console.error("Unable to locate todo item with label ", data.todoLabel);
+    return;
+  }
+  state.todoItems[index].nextActionTime = data.newDate;
+}
+
+function raiseTask(
+  state: TodoListState,
+  data: { todoLabel: string; taskLabel: string }
+): void {
+  const index = _.findIndex(
+    state.todoItems,
+    (it) => it.label.trim() === data.todoLabel.trim()
+  );
+  if (index < 0) {
+    console.error("Unable to locate todo item with label ", data.todoLabel);
+    return;
+  }
+  const todoTask = state.todoItems[index];
+  console.log(`raising ${todoTask.label} / ${data.taskLabel}`);
+  const taskListCopy = [...todoTask.taskList];
+  const raisedTasks = _.remove(
+    taskListCopy,
+    (it) => it.label.trim() === data.taskLabel.trim()
+  );
+  console.log("RAISED TASKS:", raisedTasks);
+  const newTaskList = _.concat(raisedTasks, ...taskListCopy);
+  console.log("NEW TASK LIST:", newTaskList);
+  todoTask["taskList"] = newTaskList;
+}
+
+function addTodoItem(state: TodoListState, todoItem: TodoItem): void {
+  console.log("ADDING ITEM ", todoItem);
   state.todoItems.push(todoItem);
   // let category = state.categories.find((cat) => cat.catName === categoryName);
   // if (category === undefined) {
@@ -75,15 +97,22 @@ function addItem(state: TodoListState, todoItem: TodoItem): void {
   state.syncState = "NOT_SYNCED";
 }
 
-function deleteItem(state: TodoListState, { itemId }: { itemId: string }) {
-  // const { itemIndex, categoryIndex } = locateItem(state, itemId);
-  // state.categories[categoryIndex].items.splice(itemIndex, 1);
-  // state.syncState = "NOT_SYNCED";
-  // const category = state.categories[categoryIndex];
-  // category.isDone = isCategoryDone(category);
-  // if (state.categories.find((cat) => cat.items.length === 0)) {
-  //   state.categories = state.categories.filter((cat) => cat.items.length > 0);
-  // }
+function deleteTodoTask(
+  state: TodoListState,
+  data: { todoLabel: string; taskLabel: string }
+) {
+  const index = _.findIndex(
+    state.todoItems,
+    (it) => it.label.trim() === data.todoLabel.trim()
+  );
+  if (index < 0) {
+    console.error("Unable to locate todo item with label ", data.todoLabel);
+    return;
+  }
+  _.remove(
+    state.todoItems[index].taskList,
+    (it) => it.label.trim() === data.taskLabel.trim()
+  );
 }
 
 function setRemoteData(
@@ -105,9 +134,12 @@ function setSyncState(
 }
 
 export default {
-  addItem,
-  computeNextItemId,
-  deleteItem,
+  addTodoItem,
+  addTask,
+  changeDate,
+  deleteTodoItem,
+  deleteTodoTask,
+  raiseTask,
   setRemoteData,
   setSyncState,
 } as MutationTree<TodoListState>;

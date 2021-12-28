@@ -50,18 +50,11 @@ export default {
     context.commit("setQuantity", { itemId, quantity });
   },
 
-  async toggleInCart(
-    context: ActionContext<TodoListState, JuteBagState>,
-    { itemId }: { itemId: string }
-  ): Promise<void> {
-    context.commit("toggleInCart", { itemId });
-  },
-
   async deleteItem(
     context: ActionContext<TodoListState, JuteBagState>,
     { itemId }: { itemId: string }
   ): Promise<void> {
-    context.commit("deleteItem", { itemId });
+    context.commit("deleteTodoTask", { itemId });
   },
 
   async uploadItems(
@@ -132,15 +125,53 @@ export default {
     }
   },
 
+  addTodoTask(
+    context: ActionContext<TodoListState, JuteBagState>,
+    data: {
+      todoLabel: string;
+      taskLabel: string;
+    }
+  ): void {
+    context.commit("addTask", data);
+  },
+
+  raiseTask(
+    context: ActionContext<TodoListState, JuteBagState>,
+    data: { todoLabel: string; taskLabel: string }
+  ): void {
+    context.commit("raiseTask", data);
+  },
+
   createTodoItem(
     context: ActionContext<TodoListState, JuteBagState>,
-    newItemLabel: unknown
+    newItemLabel: string
   ): void {
     const newItem = {
       label: newItemLabel,
       nextActionTime: new Date(),
       taskList: [],
     } as TodoItem;
-    context.commit("addItem", newItem);
+    context.commit("addTodoItem", newItem);
+  },
+
+  deleteTodoItem(
+    context: ActionContext<TodoListState, JuteBagState>,
+    todoLabel: string
+  ): void {
+    context.commit("deleteTodoItem", todoLabel);
+  },
+
+  deleteTodoTask(
+    context: ActionContext<TodoListState, JuteBagState>,
+    data: { todoLabel: string; taskLabel: string }
+  ): void {
+    context.commit("deleteTodoTask", data);
+  },
+
+  changeDate(
+    context: ActionContext<TodoListState, JuteBagState>,
+    data: { todoLabel: string; newDate: Date }
+  ): void {
+    context.commit("changeDate", data);
   },
 };

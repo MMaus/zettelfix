@@ -7,7 +7,8 @@
             <span
               class="title2"
               :class="{ indigo: isDue() && !isOverdue(), white: isOverdue() }"
-              >{{ data.label }}</span
+            >
+              {{ data.label }}</span
             >
           </div>
           <div class="spacer"></div>
@@ -39,7 +40,7 @@
           <!-- <w-flex wrap> -->
           <transition-group tag="div" name="task-list">
             <div
-              v-for="task in tasks"
+              v-for="task in props.data.taskList"
               :key="task.label"
               class="xs12 pa2 my1 todo-background"
             >
@@ -67,7 +68,9 @@
               v-on:keyup.enter="addTask"
               placeholder="add new task"
             />
-            <w-button bg-color="primary" @click="addTask">add</w-button>
+            <w-button bg-color="primary" @click="addTask" class="ml1"
+              >add</w-button
+            >
           </w-flex>
         </div>
         <choose-date-dialog v-model="showDateModal" @date-chosen="onNewDate">
@@ -78,23 +81,33 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps, defineEmits, ref, Ref } from "vue";
-import { TodoTask, TodoItem } from "@/use/localApi";
+import {
+  computed,
+  defineProps,
+  defineEmits,
+  ref,
+  Ref,
+  PropType,
+  watchEffect,
+  reactive,
+} from "vue";
+import { TodoItem, TodoTask } from "@/use/localApi";
 
 import ChooseDateDialog from "./ChooseDateDialog.vue";
+import _ from "lodash";
 
 const props = defineProps({
   data: {
-    type: Object,
+    type: Object as PropType<TodoItem>,
     required: true,
   },
 });
 
 const emit = defineEmits<{
   (e: "clear-item", label: string): void;
-  (e: "data-change", todoLabel: string, task: string): void;
+  (e: "add-task", todoLabel: string, tasklabel: string): void;
   (e: "remove-task", todoLabel: string, task: string): void;
-  (e: "rearranged-tasks", todoLabel: string): void;
+  (e: "raise-task", todoLabel: string, taskLabel: string): void;
   (e: "date-changed", todoLabel: string, date: Date): void;
 }>();
 
@@ -103,7 +116,7 @@ const emit = defineEmits<{
 // console.log("context.data:" + JSON.stringify(context));
 
 const newTask = ref(""); // will be set by Vue
-const tasks: Ref<Array<TodoTask>> = ref(props.data.taskList);
+
 // props.data.tasks = ref([]); // Ref<Array<TodoTask>> = ref([]);
 // const tasks = props.data.tasks;
 
@@ -124,7 +137,7 @@ const addTask = function (evt: Event) {
     const taskLabel = newTask.value;
     console.log("taskLabel = " + taskLabel);
     newTask.value = "";
-    emit("data-change", props.data.label, taskLabel);
+    emit("add-task", props.data.label, taskLabel);
     // props.data.tasks.push(item);
   }
 };
@@ -170,29 +183,19 @@ const isOverdue = () => {
 };
 
 const remove = (taskLabel: string) => {
-  let idx = 0;
-  while (idx < tasks.value.length) {
-    if (tasks.value[idx].label === taskLabel) {
-      tasks.value.splice(idx, 1);
-    }
-    idx++;
-  }
-  console.log("removing " + taskLabel);
+  // let idx = 0;
+  // while (idx < tasks.length) {
+  //   if (tasks.value[idx].label === taskLabel) {
+  //     tasks.value.splice(idx, 1);
+  //   }
+  //   idx++;
+  // }
+  // console.log("removing " + taskLabel);
   emit("remove-task", props.data.label, taskLabel);
 };
 
 const raise = (taskLabel: string) => {
-  console.log("raising " + taskLabel);
-  let idx = 0;
-  while (idx < tasks.value.length) {
-    if (tasks.value[idx].label === taskLabel) {
-      const itemToRaise = tasks.value.splice(idx, 1)[0];
-      tasks.value.splice(0, 0, itemToRaise);
-      break;
-    }
-    idx++;
-  }
-  emit("rearranged-tasks", props.data.label);
+  emit("raise-task", props.data.label, taskLabel);
 };
 
 const onNewDate = function (newDate: Date) {
