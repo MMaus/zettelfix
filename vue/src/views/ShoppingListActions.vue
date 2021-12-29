@@ -61,9 +61,10 @@ import AddItemPanel from "@/components/shoppinglist/AddItemPanel.vue";
 import { mapActions, mapGetters, Store, useStore } from "vuex";
 import { SyncState } from "@/store/shopping/types";
 import { JuteBagState } from "@/store/types";
-export default {
+import { defineComponent } from "vue";
+export default defineComponent({
   components: { AddItemPanel },
-  data(): unknown {
+  data() {
     return {
       showDrawer: false,
       selectedShop: null as string | null,
@@ -81,8 +82,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("app", ["userLoggedIn"]),
     ...mapGetters("shopping", ["syncState"]),
+    ...mapGetters("app", ["userLoggedIn"]),
     syncIcon(): { color: string; icon: string } {
       const store = useStore() as Store<JuteBagState>;
       const theSyncState = store.getters["shopping/syncState"] as SyncState;
@@ -121,5 +122,5 @@ export default {
       console.log("selected action:", action);
     },
   },
-};
+});
 </script>

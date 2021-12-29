@@ -57,74 +57,6 @@ export default {
     context.commit("deleteTodoTask", { itemId });
   },
 
-  async uploadItems(
-    context: ActionContext<TodoListState, JuteBagState>
-  ): Promise<void> {
-    context.commit("setSyncState", { syncState: "SYNCING" });
-    const api = prepareStore(context, "shoppingbag");
-    if (!api.valid) {
-      context.commit("setSyncState", { syncState: "SYNC_ERROR" });
-      return;
-    }
-    const stringifiedData = JSON.stringify(
-      context.getters["remoteDataExcerpt"]
-    );
-    // console.log("Pushing data:", stringifiedData);
-    console.log("POSTING TO ", api.url);
-    fetch(api.url, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: stringifiedData,
-    })
-      .then((res) => res.json())
-      .then((json) => {
-        console.log("received POST result:" + JSON.stringify(json));
-        context.commit("setSyncState", { syncState: "SYNC" });
-      })
-      .catch((err) => {
-        console.log("POST error: " + err);
-        context.commit("setSyncState", { syncState: "SYNC_ERROR" });
-      });
-    // await new Promise((resolve) => setTimeout(resolve, 2000));
-    // context.commit("setSyncState", { syncState: "SYNC" });
-  },
-
-  async downloadItems(
-    context: ActionContext<TodoListState, JuteBagState>
-  ): Promise<void> {
-    context.commit("setSyncState", { syncState: "SYNCING" });
-    const api = prepareStore(context, "shoppingbag");
-    if (!api.valid) {
-      context.commit("setSyncState", { syncState: "SYNC_ERROR" });
-      return;
-    }
-    let jsonResponse: {
-      shoppingbag: {
-        key: string;
-        user: unknown;
-        content: string;
-      };
-    };
-
-    try {
-      jsonResponse = await fetch(api.url).then((res) => res.json());
-    } catch (e) {
-      console.log("Error on download", e);
-      context.commit("setSyncState", { syncState: "SYNC_ERROR" });
-      return;
-    }
-    if (jsonResponse) {
-      const content = JSON.parse(jsonResponse.shoppingbag.content);
-      console.log("Received object:", content);
-      console.log(`There are ${content.categories.length} categories`);
-      context.commit("setRemoteData", content);
-      context.commit("computeNextItemId");
-      context.commit("setSyncState", { syncState: "SYNC" });
-    }
-  },
-
   addTodoTask(
     context: ActionContext<TodoListState, JuteBagState>,
     data: {
@@ -173,5 +105,71 @@ export default {
     data: { todoLabel: string; newDate: Date }
   ): void {
     context.commit("changeDate", data);
+  },
+
+  async upload(
+    context: ActionContext<TodoListState, JuteBagState>
+  ): Promise<void> {
+    context.commit("setSyncState", { syncState: "SYNCING" });
+    const api = prepareStore(context, "todolist");
+    if (!api.valid) {
+      context.commit("setSyncState", { syncState: "SYNC_ERROR" });
+      return;
+    }
+    const stringifiedData = JSON.stringify(
+      context.getters["getRemoteDataExcerpt"]
+    );
+    // console.log("Pushing data:", stringifiedData);
+    console.log("PUTTING TO TO ", api.url);
+    fetch(api.url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: stringifiedData,
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        console.log("received PUT result:" + JSON.stringify(json));
+        context.commit("setSyncState", { syncState: "SYNC" });
+      })
+      .catch((err) => {
+        console.log("POST error: " + err);
+        context.commit("setSyncState", { syncState: "SYNC_ERROR" });
+      });
+    // await new Promise((resolve) => setTimeout(resolve, 2000));
+    // context.commit("setSyncState", { syncState: "SYNC" });
+  },
+
+  async download(
+    context: ActionContext<TodoListState, JuteBagState>
+  ): Promise<void> {
+    context.commit("setSyncState", { syncState: "SYNCING" });
+    const api = prepareStore(context, "todolist");
+    if (!api.valid) {
+      context.commit("setSyncState", { syncState: "SYNC_ERROR" });
+      return;
+    }
+    let jsonResponse: {
+      todolist: {
+        key: string;
+        user: unknown;
+        content: string;
+      };
+    };
+
+    try {
+      jsonResponse = await fetch(api.url).then((res) => res.json());
+    } catch (e) {
+      console.log("Error on download", e);
+      context.commit("setSyncState", { syncState: "SYNC_ERROR" });
+      return;
+    }
+    if (jsonResponse) {
+      const content = JSON.parse(jsonResponse.todolist.content);
+      console.log("Received object:", content);
+      context.commit("setRemoteData", content);
+      context.commit("setSyncState", { syncState: "SYNC" });
+    }
   },
 };

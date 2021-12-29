@@ -5,15 +5,15 @@ export default {
     return state.todoItems;
   },
 
-  getRemoteStateExcerpt(state: TodoListState): unknown {
+  getRemoteDataExcerpt(state: TodoListState): unknown {
     // This is debug info for a weird chaching behaviour I observed in Vue 2
     // If this works as expected, this debugging information is no longer required
-    console.log("RETRIEVING FRESH EXCERPT");
+    console.log("RETRIEVING FRESH TODO LIST EXCERPT");
     return {
       todoItems: state.todoItems,
       version: state.version,
-      nextCategoryId: state.nextCategoryId,
-      nextItemId: state.nextItemId,
+      // nextCategoryId: state.nextCategoryId,
+      // nextItemId: state.nextItemId,
     };
   },
 

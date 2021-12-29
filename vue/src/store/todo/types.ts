@@ -3,8 +3,8 @@ export type SyncState = "SYNC" | "SYNCING" | "NOT_SYNCED" | "SYNC_ERROR";
 export interface RemoteTodoListState {
   todoItems: Array<TodoItem>;
   version: number;
-  nextCategoryId: number;
-  nextItemId: number;
+  // nextCategoryId: number;
+  // nextItemId: number;
 }
 
 export interface TodoListState extends RemoteTodoListState {

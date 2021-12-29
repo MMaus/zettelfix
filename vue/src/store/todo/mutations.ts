@@ -28,10 +28,12 @@ function addTask(
     label: data.taskLabel,
     status: TaskStatus.TODO,
   });
+  state.syncState = "NOT_SYNCED";
 }
 
 function deleteTodoItem(state: TodoListState, todoLabel: string): void {
   _.remove(state.todoItems, (it) => it.label.trim() === todoLabel.trim());
+  state.syncState = "NOT_SYNCED";
 }
 
 function changeDate(
@@ -47,6 +49,7 @@ function changeDate(
     return;
   }
   state.todoItems[index].nextActionTime = data.newDate;
+  state.syncState = "NOT_SYNCED";
 }
 
 function raiseTask(
@@ -72,28 +75,12 @@ function raiseTask(
   const newTaskList = _.concat(raisedTasks, ...taskListCopy);
   console.log("NEW TASK LIST:", newTaskList);
   todoTask["taskList"] = newTaskList;
+  state.syncState = "NOT_SYNCED";
 }
 
 function addTodoItem(state: TodoListState, todoItem: TodoItem): void {
   console.log("ADDING ITEM ", todoItem);
   state.todoItems.push(todoItem);
-  // let category = state.categories.find((cat) => cat.catName === categoryName);
-  // if (category === undefined) {
-  //   category = createCategory(state, categoryName);
-  // }
-  // const qty = Number.isFinite(quantity) ? quantity : 1;
-  // const item = {
-  //   id: "item:" + state.nextItemId,
-  //   itemName,
-  //   quantity: qty,
-  //   inCart: inCart ? true : false,
-  // } as ShoppingItem;
-  // state.nextItemId = state.nextItemId + 1;
-  // category.isDone = isCategoryDone(category);
-  // category.items.push(item);
-  // if (!item.inCart) {
-  //   category.isDone = false;
-  // }
   state.syncState = "NOT_SYNCED";
 }
 
@@ -113,6 +100,7 @@ function deleteTodoTask(
     state.todoItems[index].taskList,
     (it) => it.label.trim() === data.taskLabel.trim()
   );
+  state.syncState = "NOT_SYNCED";
 }
 
 function setRemoteData(
@@ -120,9 +108,10 @@ function setRemoteData(
   remoteData: RemoteTodoListState
 ): void {
   console.log("Received remote data with version:", remoteData.version);
+  state.todoItems = remoteData.todoItems;
   // state.categories = remoteData.categories;
-  state.nextCategoryId = remoteData.nextCategoryId;
-  state.nextItemId = remoteData.nextItemId;
+  // state.nextCategoryId = remoteData.nextCategoryId;
+  // state.nextItemId = remoteData.nextItemId;
 }
 
 function setSyncState(
