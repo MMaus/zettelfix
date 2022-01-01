@@ -4,9 +4,7 @@
       <router-card title="Shopping List" target="shoppinglist">
         <img alt="zettelfix logo" src="../assets/logo.png" />
       </router-card>
-      <router-card title="TODO - List" target="todo">
-        <w-icon size="90px">mdi mdi-list-status</w-icon>
-      </router-card>
+      <todolist-button></todolist-button>
       <router-card target="about" title="About">
         <w-icon size="90px">mdi mdi-list-status</w-icon>
         About
@@ -24,13 +22,12 @@
   </div>
 </template>
 
-<script>
-// @ is an alias to /src
-
+<script lang="ts">
 import RouterCard from "@/components/home/RouterCard.vue";
+import TodolistButton from "@/components/todolist/TodolistButton.vue";
 
 export default {
-  components: { RouterCard },
+  components: { RouterCard, TodolistButton },
   name: "Home",
 };
 </script>

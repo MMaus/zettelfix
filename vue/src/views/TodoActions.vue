@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import AddTodoDialog from "@/components/AddTodoDialog.vue";
+import AddTodoDialog from "@/components/todolist/AddTodoDialog.vue";
 import { useStore } from "vuex";
 import SyncButton from "@/components/common/SyncButton.vue";
 

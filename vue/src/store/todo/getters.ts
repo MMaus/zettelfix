@@ -1,8 +1,29 @@
 import { TodoListState, SyncState, TodoItem } from "./types";
 
+function getRemainingSeconds(item: TodoItem) {
+  console.log("Remaining seconds of {}", item);
+  return Math.round(
+    Math.round(new Date(item.nextActionTime).getTime() - Date.now()) / 1000
+  );
+}
+
 export default {
   getTodoItems(state: TodoListState): Array<TodoItem> {
     return state.todoItems;
+  },
+
+  getDueItems(state: TodoListState): Array<TodoItem> {
+    return state.todoItems.filter((it) => {
+      const remainingSeconds = getRemainingSeconds(it);
+      return remainingSeconds < 0 && remainingSeconds > -24 * 60 * 60;
+    });
+  },
+
+  getOverdueItems(state: TodoListState): Array<TodoItem> {
+    return state.todoItems.filter((it) => {
+      const remainingSeconds = getRemainingSeconds(it);
+      return remainingSeconds < -24 * 60 * 60;
+    });
   },
 
   getRemoteDataExcerpt(state: TodoListState): unknown {
