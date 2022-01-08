@@ -12,6 +12,9 @@
       <router-card target="login" title="Account">
         <w-icon size="90px">mdi mdi-card-account-details</w-icon>
       </router-card>
+      <router-card target="settings" title="Settings / Debug">
+        <w-icon size="90px">mdi mdi-cogs</w-icon>
+      </router-card>
     </w-flex>
 
     <footer class="footer">
