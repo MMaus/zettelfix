@@ -40,6 +40,7 @@ require_once __DIR__ . "/session.php";
 
 use controller\ClobStorageController;
 use \controller\exception\HttpStatusException;
+use \push\controller\PushNotificationController;
 
 $API_URL = $cfg['api']['api_base_url'];
 
@@ -96,6 +97,11 @@ try {
             break;
         case 'migrate_db':
             require_once __DIR__ . "/controller/migrate_db.php";
+            break;
+        case 'push':
+            $controller = new PushNotificationController();
+            $response = $controller->processRequest($verb);
+            echo json_encode($response->toArray());
             break;
 
         case 'clob-storage':

@@ -4,3 +4,5 @@ zettelfix.strato.ini
 zettelfix.ini
 deploy.sh
 deploy_exclude.txt
+migrations-db.php
+migrations-db.strato.php

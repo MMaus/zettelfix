@@ -14,7 +14,34 @@ workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 // workbox.precaching.suppressWarnings();
 // workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 
+self.addEventListener("activate", createSubscription);
+
+const vapidPublicKey =
+  "BDblmNRCphgQjmHS8f6ShrdACeV-SF_Y3OPx7HxxLu_xTuNkdPxGIw8pas9sZamDmjbZzU_mVzqD08HfJbM5ZNc";
+
 console.log("============== Service Worker v4 still alive!!");
+function createSubscription(event) {
+  console.log(
+    "============= SERVICE WORKER: activation callback. Creating subscription"
+  );
+  try {
+    // const publicVapidEnc = encodeToUInt8Array(vapidPublicKey);
+    Uint8Array.from;
+    const options = {
+      userVisibleOnly: true,
+      applicationServerKey: vapidPublicKey,
+    };
+    self.registration.pushManager
+      .subscribe(options)
+      .then((sub) => console.log("=== CREATED SUBSCRIPTION: ", sub))
+      .catch((e) => console.error("Creating subscription FAILED", e));
+  } catch (e) {
+    console.error("Error during creation of push subscription", e);
+  }
+}
+
+// const vapidPublicKey =
+//   "BDblmNRCphgQjmHS8f6ShrdACeV-SF_Y3OPx7HxxLu_xTuNkdPxGIw8pas9sZamDmjbZzU_mVzqD08HfJbM5ZNc";
 
 self.addEventListener("message", (event) => {
   console.log("event heard");
