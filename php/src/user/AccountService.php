@@ -3,6 +3,7 @@
 namespace user;
 
 use Doctrine\ORM\EntityManager;
+use \repo\model\User;
 
 // FIXME: make proper constraints on account, e.g. email must be provided, email verification, ...
 class AccountService {
@@ -13,6 +14,13 @@ class AccountService {
     function __construct() {
         global $entityManager;
         $this->entityManager = $entityManager;
+    }
+
+    function getUser(string $account): User {
+        $query = $this->entityManager->createQuery('SELECT u FROM \repo\model\User u WHERE u.account = :account');
+        $query->setParameter('account', $account);
+        $user = $query->getOneOrNullResult();
+        return $user;
     }
 
     function loginValid(string $account, string $password): bool {

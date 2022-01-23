@@ -13,7 +13,6 @@ class DbMigration {
     static function fromFileContent($fileName, $fileContent): DbMigration {
         $fileNameParts = explode(DIRECTORY_SEPARATOR, $fileName);
         $fname = end($fileNameParts);
-        echo "FILE NAME: $fname";
         $fileContentStripped = preg_replace('/\s+/', '', $fileContent);
         $fhash = sha1($fileContentStripped);
         $dbMigration = new DbMigration();
@@ -83,6 +82,3 @@ class DbMigration {
 
 
 }
-
-
-?>

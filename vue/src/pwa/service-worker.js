@@ -1,62 +1,93 @@
-console.log("============== Hi from service worker v2!");
-// self.__precacheManifest = [].concat(self.__precacheManifest || []);
-
-if (typeof workbox === undefined) {
-  console.log("========== workbox is undefined!");
+self.__precacheManifest = [].concat(self.__precacheManifest || []);
+if (typeof workbox === "undefined") {
+  console.error("Serviceworker: workbox is undefined!");
 } else {
   console.log("workbox is ", workbox);
+  workbox.core.setCacheNameDetails({ prefix: "Zettelfix" });
+  workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 }
 
-workbox.core.setCacheNameDetails({ prefix: "Zettelfix" });
+// FIXME: fetch from backend
 
-self.__precacheManifest = [].concat(self.__precacheManifest || []);
-workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
-// workbox.precaching.suppressWarnings();
-// workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
-
-self.addEventListener("activate", createSubscription);
-
-const vapidPublicKey =
-  "BDblmNRCphgQjmHS8f6ShrdACeV-SF_Y3OPx7HxxLu_xTuNkdPxGIw8pas9sZamDmjbZzU_mVzqD08HfJbM5ZNc";
-
-console.log("============== Service Worker v4 still alive!!");
-function createSubscription(event) {
+console.log("============== Service Worker v4-b still alive!!");
+async function createSubscription(event) {
   console.log(
     "============= SERVICE WORKER: activation callback. Creating subscription"
   );
+  const vapidPublicKey = await fetch("api/push/vapid").then((res) =>
+    res.text()
+  );
+  console.log("Obtained VAPID Key", vapidPublicKey);
   try {
-    // const publicVapidEnc = encodeToUInt8Array(vapidPublicKey);
-    Uint8Array.from;
     const options = {
       userVisibleOnly: true,
       applicationServerKey: vapidPublicKey,
     };
     self.registration.pushManager
       .subscribe(options)
-      .then((sub) => console.log("=== CREATED SUBSCRIPTION: ", sub))
+      .then((sub) => {
+        console.log("---- POSTING TO API ---");
+        fetch("api/push/subscription", {
+          method: "POST",
+          cache: "no-cache",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(sub.toJSON()),
+        })
+          .then((res) => {
+            console.log("---- server responded with === ", res.status);
+            if (res.status < 300) {
+              console.log("Subscription activated: ", res.status);
+              res
+                .text()
+                .then((msg) =>
+                  console.info("Success Response message was:", msg)
+                );
+            } else {
+              console.error(
+                "Error creating subscription:",
+                res.status,
+                res.text()
+              );
+              res
+                .text()
+                .then((msg) => console.error("Response message was:", msg));
+            }
+          })
+          .catch((err) => console.log("Error creating push subscription", err));
+      })
       .catch((e) => console.error("Creating subscription FAILED", e));
   } catch (e) {
     console.error("Error during creation of push subscription", e);
   }
 }
 
-// const vapidPublicKey =
-//   "BDblmNRCphgQjmHS8f6ShrdACeV-SF_Y3OPx7HxxLu_xTuNkdPxGIw8pas9sZamDmjbZzU_mVzqD08HfJbM5ZNc";
+self.addEventListener("notificationclick", (event) => {
+  console.log("User clicked on notification", event);
+});
 
 self.addEventListener("message", (event) => {
   console.log("event heard");
   console.log("event origin:", event.origin);
   const isMatch = event.origin === self.location.origin;
   console.log("match: ", isMatch);
+  const data = event.data;
   if (isMatch) {
-    // self.setTimeout(() => showAlarm(event.data), 20000);
-    const prom = new Promise((resolver) =>
-      self.setTimeout(
-        () => showAlarmAndResolve(resolver, event.data),
-        30 * 60_000
-      )
-    );
-    // event.waitUntil(prom);
+    if (data.command === "subscribe") {
+      console.log("registering");
+      createSubscription();
+    } else if (data.command === "testnofitication") {
+      const prom = new Promise((resolver) =>
+        self.setTimeout(
+          () => showAlarmAndResolve(resolver, event.data),
+          1 * 60_000
+        )
+      );
+      event.waitUntil(prom);
+    } else {
+      console.log("UNKNOWN COMMAND " + data.command + " in " + data);
+    }
   }
 
   console.log("event data:", event.data);
@@ -98,6 +129,21 @@ async function showAlarmAndResolve(resolver, text) {
   //   );
 }
 
+self.addEventListener("push", (event) => {
+  console.log("=== RECEIVED PUSH NOTIFICATION!", event.data);
+  const options = {
+    body: "Hallo Nachricht! " + event.data,
+    icon: undefined,
+    image: undefined,
+    tag: "alert",
+  };
+
+  event.waitUntil(
+    self.registration.showNotification("Hallo Welt (Titel)!", options)
+  );
+  console.log("=== RECEIVED PUSH NOTIFICATION!", event.data.json());
+});
+
 //Web Push Notifications//
 // let click_open_url;
 // self.addEventListener("push", function (event) {
@@ -133,3 +179,11 @@ async function showAlarmAndResolve(resolver, text) {
 // });
 
 console.log("============== Service Worker v6 init done!!");
+if (self.registration) {
+  ("=== INFO == During script loading, self.registration *is* known - creating subscription()!");
+  createSubscription();
+} else {
+  console.log(
+    "=== INFO == During script loading, self.registration is not known!"
+  );
+}
