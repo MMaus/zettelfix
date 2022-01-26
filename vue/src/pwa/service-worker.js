@@ -11,9 +11,7 @@ if (typeof workbox === "undefined") {
 
 console.log("============== Service Worker v4-b still alive!!");
 async function createSubscription(event) {
-  console.log(
-    "============= SERVICE WORKER: activation callback. Creating subscription"
-  );
+  console.log("============= SERVICE WORKER: Creating subscription");
   const vapidPublicKey = await fetch("api/push/vapid").then((res) =>
     res.text()
   );
@@ -75,15 +73,9 @@ self.addEventListener("message", (event) => {
   const data = event.data;
   if (isMatch) {
     if (data.command === "subscribe") {
-      console.log("registering");
       createSubscription();
     } else if (data.command === "testnofitication") {
-      const prom = new Promise((resolver) =>
-        self.setTimeout(
-          () => showAlarmAndResolve(resolver, event.data),
-          1 * 60_000
-        )
-      );
+      const prom = waitAndShowNotification(event.data);
       event.waitUntil(prom);
     } else {
       console.log("UNKNOWN COMMAND " + data.command + " in " + data);
@@ -92,6 +84,12 @@ self.addEventListener("message", (event) => {
 
   console.log("event data:", event.data);
 });
+
+async function waitAndShowNotification(msg) {
+  return new Promise((resolver) =>
+    self.setTimeout(() => showAlarmAndResolve(resolver, msg), 1 * 60_000)
+  );
+}
 
 self.addEventListener("install", function (event) {
   console.log("== service worker on install event");
@@ -124,9 +122,6 @@ async function showAlarmAndResolve(resolver, text) {
     options
   );
   resolver();
-  //   event.waitUntil(
-  //     self.registration.showNotification("Hallo Welt (Titel)!", options)
-  //   );
 }
 
 self.addEventListener("push", (event) => {
@@ -179,11 +174,11 @@ self.addEventListener("push", (event) => {
 // });
 
 console.log("============== Service Worker v6 init done!!");
-if (self.registration) {
-  ("=== INFO == During script loading, self.registration *is* known - creating subscription()!");
-  createSubscription();
-} else {
-  console.log(
-    "=== INFO == During script loading, self.registration is not known!"
-  );
-}
+// if (self.registration) {
+//   ("=== INFO == During script loading, self.registration *is* known - creating subscription()!");
+//   createSubscription();
+// } else {
+//   console.log(
+//     "=== INFO == During script loading, self.registration is not known!"
+//   );
+// }
