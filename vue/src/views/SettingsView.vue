@@ -37,6 +37,11 @@
         Notification permission:
         <w-checkbox v-model="notificationPermission"></w-checkbox>
       </div>
+      <div>
+        <w-button @click="unsubscribe">Unsubscribe</w-button>
+        <span v-if="unsubscriptionSuccess">unsubscription Successful!</span>
+        <span v-if="unsubscriptionFailed">unsubscription failed!</span>
+      </div>
     </w-card>
   </div>
 </template>
@@ -64,6 +69,21 @@ if (!("serviceWorker" in navigator)) {
     reg.pushManager.getSubscription().then((sub) => {
       console.log("-- Subscription exists:", !!sub);
       subsciptionExists.value = !!sub;
+    });
+  });
+}
+
+const unsubscriptionSuccess = ref(false);
+const unsubscriptionFailed = ref(false);
+function unsubscribe() {
+  navigator.serviceWorker.ready.then((reg) => {
+    console.log("-- Service worker ready!");
+    workerReady.value = true;
+    reg.pushManager.getSubscription().then((sub) => {
+      sub?.unsubscribe().then((res) => {
+        unsubscriptionSuccess.value = res;
+        unsubscriptionFailed.value = !res;
+      });
     });
   });
 }

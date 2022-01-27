@@ -28,13 +28,11 @@ class PushNotificationController {
                 return "Subscription already present";
             } else if ($pathSegments[0] === "trigger") {
                 global $cfg;
-                echo "body: $requestBody";
-                echo "as array: ";
-                print_r(json_decode($requestBody, true));
                 if (json_decode($requestBody, true)["code"] === $cfg["app"]["cron_password"]) {
                     $this->pushNotificationService->sendNotifications("");
                     return "Sent";
                 } else {
+                    echo "Whopsie, password mismatch!\n";
                     throw new HttpStatusException("Forbidden", 403);
                 }
             }
