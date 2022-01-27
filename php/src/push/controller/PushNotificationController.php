@@ -27,10 +27,16 @@ class PushNotificationController {
                 }
                 return "Subscription already present";
             } else if ($pathSegments[0] === "trigger") {
-                // FIXME: actually, this also should be a POST, but then the registrations must have a distinct path
-                // technically, we might trigger only some parts, e.g. all "TODO"s
-                $this->pushNotificationService->sendNotifications("");
-                return "Sent";
+                global $cfg;
+                echo "body: $requestBody";
+                echo "as array: ";
+                print_r(json_decode($requestBody, true));
+                if (json_decode($requestBody, true)["code"] === $cfg["app"]["cron_password"]) {
+                    $this->pushNotificationService->sendNotifications("");
+                    return "Sent";
+                } else {
+                    throw new HttpStatusException("Forbidden", 403);
+                }
             }
             throw new HttpStatusException("Not found", 404);
         } else if ($verb === "GET") {
