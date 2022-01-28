@@ -61,10 +61,6 @@ async function createSubscription(event) {
   }
 }
 
-self.addEventListener("notificationclick", (event) => {
-  console.log("User clicked on notification", event);
-});
-
 self.addEventListener("message", (event) => {
   console.log("event heard");
   console.log("event origin:", event.origin);
@@ -111,32 +107,94 @@ async function showAlarmAndResolve(resolver, text) {
   //   //     image: push_message.notification.image,
   //   //     tag: "alert",
   //   //   };
+  // actions: [  // a list of "ACTION"s which will be available at the event of the notificationclick listener,
+  // where `event.action` contains the "action" field of the Action object selected. to the event of the
+  //   {
+  //     title: "open TODO",
+  //     action: "",
+  //     icon: "todo-icon",
+  //   },
+  // ],
+
   const options = {
-    body: text,
-    icon: undefined,
-    image: undefined,
-    tag: "alert",
+    body: "Sieh Dir Deine Aufgaben in Zettelfix an! ", // message body text
+    icon: "img/todo.png", // ICON URL
+    // image: "img/todo.png", // image URL - a big image displayed below the text!
+    link: "/todo",
+    renotify: true,
+    vibrate: [300, 200, 300],
+    // tag: "alert",
   };
-  await self.registration.showNotification(
-    "Nachricht fetzt! (Dies ist der  Titel)",
-    options
-  );
-  resolver();
+  // FIXME: mayve
+  // await self.registration.showNotification("Deine Aufgaben für heute", options);
+  // resolver();
 }
 
 self.addEventListener("push", (event) => {
-  console.log("=== RECEIVED PUSH NOTIFICATION!", event.data);
   const options = {
-    body: "Hallo Nachricht! " + event.data,
-    icon: undefined,
-    image: undefined,
-    tag: "alert",
+    body: "Sieh Dir Deine Aufgaben in Zettelfix an! ", // message body text
+    icon: "img/todo.png", // ICON URL
+    // image: "img/todo.png", // image URL
+    link: "/todo",
+    renotify: true,
+    vibrate: [300, 200, 300],
+    tag: "alert-todo",
   };
+  // FIXME: checkout options.onclick !
+  self.registration.showNotification("Deine Aufgaben für heute", options);
+  // event.waitUntil(
+  //   self.registration.showNotification("Hallo Welt (Titel)!", options)
+  // );
+});
 
+// from https://stackoverflow.com/a/63249009/2055010
+// self.addEventListener("notificationclick", function (event) {
+//   console.log("On notification click: ", event.notification.tag);
+//   // Android doesn't close the notification when you click on it
+//   // See: http://crbug.com/463146
+//   event.notification.close();
+
+//   // This looks to see if the current is already open and
+//   // focuses if it is
+//   event.waitUntil(
+//     clients
+//       .matchAll({
+//         type: "window",
+//       })
+//       .then(function (clientList) {
+//         for (var i = 0; i < clientList.length; i++) {
+//           var client = clientList[i];
+//           if (client.url == "/" && "focus" in client) return client.focus();
+//         }
+//         if (clients.openWindow) {
+//           return clients.openWindow("/");
+//         }
+//       })
+//   );
+// });
+
+// modified from https://stackoverflow.com/a/63249009/2055010
+self.addEventListener("notificationclick", function (event) {
+  console.log("On notification click: ", event.notification.tag);
+  // Android doesn't close the notification when you click on it
+  // See: http://crbug.com/463146
+  event.notification.close();
+
+  // This looks to see if the current is already open and
+  // focuses if it is
   event.waitUntil(
-    self.registration.showNotification("Hallo Welt (Titel)!", options)
+    self.clients.matchAll({ type: "window" }).then(function (clientList) {
+      for (var i = 0; i < clientList.length; i++) {
+        var client = clientList[i];
+        if (client.url == "/" && "focus" in client) {
+          return client.focus();
+        }
+      }
+      if (self.clients.openWindow) {
+        return self.clients.openWindow("/");
+      }
+    })
   );
-  console.log("=== RECEIVED PUSH NOTIFICATION!", event.data.json());
 });
 
 //Web Push Notifications//

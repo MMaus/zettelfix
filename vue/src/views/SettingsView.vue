@@ -42,6 +42,7 @@
         <span v-if="unsubscriptionSuccess">unsubscription Successful!</span>
         <span v-if="unsubscriptionFailed">unsubscription failed!</span>
       </div>
+      <div><img src="img/todo.png" /></div>
     </w-card>
   </div>
 </template>
