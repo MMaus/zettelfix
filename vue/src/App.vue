@@ -4,7 +4,9 @@
       <w-toolbar shadow fixed bg-color="primary">
         <div class="pa2">
           <router-link to="/">
-            <w-icon lg color="white">mdi mdi-home</w-icon>
+            <w-button shadow>
+              <w-icon lg color="white">mdi mdi-home</w-icon>
+            </w-button>
           </router-link>
         </div>
         <div class="title2">Zettelfix</div>
