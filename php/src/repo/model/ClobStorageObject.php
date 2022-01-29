@@ -21,8 +21,8 @@ class ClobStorageObject implements JsonSerializable {
     private $id;
 
     /**
-     * One Product has One Shipment.
-     * @ORM\OneToOne(targetEntity="\repo\model\User")
+     * Many CLOB may belong to one User.
+     * @ORM\ManyToOne(targetEntity="\repo\model\User")
      * @ORM\JoinColumn(name="USER_ID", referencedColumnName="id")
      */
     private $user;
@@ -32,6 +32,7 @@ class ClobStorageObject implements JsonSerializable {
      * @var string
      */
     private $key = "";
+
 
     /**
      * @ORM\Column(type="integer", name="RECENT_VERSION")

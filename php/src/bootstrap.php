@@ -40,6 +40,7 @@ require_once __DIR__ . "/session.php";
 
 use controller\ClobStorageController;
 use \controller\exception\HttpStatusException;
+use \push\controller\PushNotificationController;
 
 $API_URL = $cfg['api']['api_base_url'];
 
@@ -55,10 +56,6 @@ $API_URL = $cfg['api']['api_base_url'];
 // FIXME: create UrlParser object, at least use unset() to clean up vars
 $request = parse_url($_SERVER['REQUEST_URI']);
 $fullPath = $request['path'];
-
-// FIXME: remove
-//echo "=====> $fullPath";
-//die($fullPath);
 
 $apiPath = "";
 if (str_starts_with($fullPath, $API_URL)) {
@@ -91,15 +88,18 @@ try {
         case 'login':
             require_once __DIR__ . "/controller/login.php";
             break;
-        case 'auth':
-            require_once __DIR__ . "/controller/auth.php";
-            break;
         case 'migrate_db':
             require_once __DIR__ . "/controller/migrate_db.php";
             break;
+        case 'push':
+            // FIXME: Return proper HTTP Reponse Object
+            $controller = new PushNotificationController();
+            $response = $controller->processRequest($verb, $subdomains, $requestBody);
+            echo $response;
+            // echo "OK";
+            break;
 
         case 'clob-storage':
-            // FIXME create controller
             $controller = new ClobStorageController();
             $response = $controller->processRequest($verb, $subdomains, $requestBody);
             echo json_encode($response);

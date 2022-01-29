@@ -2,6 +2,8 @@
 
 namespace repo\model;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
 
@@ -33,6 +35,13 @@ class User implements JsonSerializable {
     private $name = "";
 
     /**
+     * @ORM\OneToMany(targetEntity="\repo\model\PushRegistration", 
+     * mappedBy="user")
+     * @var Collection
+     */
+    private $pushRegistrations;
+
+    /**
      * @ORM\Column(type="string", name="password_hash")
      * @var string
      */
@@ -41,6 +50,7 @@ class User implements JsonSerializable {
     public function __construct($account, $passwordHash) {
         $this->account = $account;
         $this->passwordHash = $passwordHash;
+        $this->pushRegistrations = new ArrayCollection();
     }
 
     public function getAccount(): string {
@@ -49,6 +59,10 @@ class User implements JsonSerializable {
 
     public function getPasswordHash(): string {
         return $this->passwordHash;
+    }
+
+    public function getPushRegistrations(): Collection {
+        return $this->pushRegistrations;
     }
 
     public function jsonSerialize(): mixed {

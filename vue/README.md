@@ -13,6 +13,12 @@ results rather quickly than properly.
 
 ## Build & Deploy
 
+### Backend: Migrations
+
+To setup the database, you have to query (i.e. GET) <host>/api/migrate_db .
+The proper database migration tool doctrine-migrate unfortunately does not work
+with my current hosting provider, so I had to implement this custom solution.
+
 ### Additional Requirement: node-sass
 
 On my system, I needed to install node-sass globally

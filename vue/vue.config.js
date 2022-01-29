@@ -8,6 +8,11 @@ module.exports = {
   pwa: {
     name: "Zettelfix",
     themeColor: "#F5A623",
+    workboxPluginMode: "InjectManifest",
+    workboxOptions: {
+      swSrc: "src/pwa/service-worker.js",
+      swDest: "service-worker.js",
+    },
   },
 
   devServer: {

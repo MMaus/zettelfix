@@ -17,7 +17,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { TodoItem } from "@/use/localApi";
-import TodoItemComponent from "@/components/TodoItemComponent.vue";
+import TodoItemComponent from "@/components/todolist/TodoItemComponent.vue";
 import TodoInfo from "@/components/todolist/TodoInfo.vue";
 import { mapGetters } from "vuex";
 
@@ -54,26 +54,6 @@ export default defineComponent({
     openModal: function () {
       console.log("opening modal dialog");
       this.showModal = true;
-    },
-
-    storeRemote: function () {
-      console.log("UPLOAD NOT IMPLEMENTED!");
-      // if (this.userEmail) {
-      //   todoDao.upload(this.userEmail);
-      //   console.log("storing remotely");
-      // } else {
-      //   console.error("user not logged in / email not verified");
-      // }
-    },
-
-    loadRemote: function () {
-      console.log("DOWNLOAD NOT IMPLEMENTED!");
-      // if (this.userEmail) {
-      //   console.log("fetching items from remote for " + this.userEmail);
-      //   todoDao.download(this.userEmail);
-      // } else {
-      //   console.error("user not logged in / user not verified");
-      // }
     },
 
     deleteTodoTask: function (todoLabel: string, taskLabel: string) {

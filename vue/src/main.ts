@@ -4,13 +4,8 @@ import "./registerServiceWorker";
 import router from "./router";
 import generateStore from "@/store";
 
-// import "bootstrap";
-// import "bootstrap/dist/css/bootstrap.min.css";
-// import "jquery/src/jquery.js";
-// import "bootstrap/dist/js/bootstrap.min.js";
 import { importState } from "./store/shopping/importer";
 import { Category } from "./store/shopping/types";
-import { ItemRepository } from "./use/itemStore";
 
 import WaveUI from "wave-ui";
 import "wave-ui/dist/wave-ui.css";
