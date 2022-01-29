@@ -7,11 +7,7 @@ if (typeof workbox === "undefined") {
   workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 }
 
-// FIXME: fetch from backend
-
-console.log("============== Service Worker v4-b still alive!!");
 async function createSubscription(event) {
-  console.log("============= SERVICE WORKER: Creating subscription");
   const vapidPublicKey = await fetch("api/push/vapid").then((res) =>
     res.text()
   );
@@ -24,7 +20,6 @@ async function createSubscription(event) {
     self.registration.pushManager
       .subscribe(options)
       .then((sub) => {
-        console.log("---- POSTING TO API ---");
         fetch("api/push/subscription", {
           method: "POST",
           cache: "no-cache",
@@ -34,23 +29,10 @@ async function createSubscription(event) {
           body: JSON.stringify(sub.toJSON()),
         })
           .then((res) => {
-            console.log("---- server responded with === ", res.status);
             if (res.status < 300) {
               console.log("Subscription activated: ", res.status);
-              res
-                .text()
-                .then((msg) =>
-                  console.info("Success Response message was:", msg)
-                );
             } else {
-              console.error(
-                "Error creating subscription:",
-                res.status,
-                res.text()
-              );
-              res
-                .text()
-                .then((msg) => console.error("Response message was:", msg));
+              console.error("Error creating subscription:", res.status);
             }
           })
           .catch((err) => console.log("Error creating push subscription", err));
@@ -147,32 +129,6 @@ self.addEventListener("push", (event) => {
   // );
 });
 
-// from https://stackoverflow.com/a/63249009/2055010
-// self.addEventListener("notificationclick", function (event) {
-//   console.log("On notification click: ", event.notification.tag);
-//   // Android doesn't close the notification when you click on it
-//   // See: http://crbug.com/463146
-//   event.notification.close();
-
-//   // This looks to see if the current is already open and
-//   // focuses if it is
-//   event.waitUntil(
-//     clients
-//       .matchAll({
-//         type: "window",
-//       })
-//       .then(function (clientList) {
-//         for (var i = 0; i < clientList.length; i++) {
-//           var client = clientList[i];
-//           if (client.url == "/" && "focus" in client) return client.focus();
-//         }
-//         if (clients.openWindow) {
-//           return clients.openWindow("/");
-//         }
-//       })
-//   );
-// });
-
 // modified from https://stackoverflow.com/a/63249009/2055010
 self.addEventListener("notificationclick", function (event) {
   console.log("On notification click: ", event.notification.tag);
@@ -196,47 +152,3 @@ self.addEventListener("notificationclick", function (event) {
     })
   );
 });
-
-//Web Push Notifications//
-// let click_open_url;
-// self.addEventListener("push", function (event) {
-//   console.log("push event heard!");
-//   //   let push_message = event.data.json();
-//   // push notification can send event.data.json() as well
-//   //   click_open_url = push_message.notification.data.url;
-//   //   const options = {
-//   //     body: push_message.notification.body,
-//   //     icon: push_message.notification.icon,
-//   //     image: push_message.notification.image,
-//   //     tag: "alert",
-//   //   };
-//   const options = {
-//     body: "Hallo Nachricht!",
-//     icon: undefined,
-//     image: undefined,
-//     tag: "alert",
-//   };
-//   event.waitUntil(
-//     self.registration.showNotification("Hallo Welt (Titel)!", options)
-//   );
-// });
-
-// self.addEventListener("notificationclick", function (event) {
-//   console.log("============ service worker: notification clicked");
-//   const clickedNotification = event.notification;
-//   clickedNotification.close();
-//   if (click_open_url) {
-//     const promiseChain = clients.openWindow(click_open_url);
-//     event.waitUntil(promiseChain);
-//   }
-// });
-
-console.log("============== Service Worker v6 init done!!");
-// if (self.registration) {
-//   ("=== INFO == During script loading, self.registration *is* known - creating subscription()!");
-//   createSubscription();
-// } else {
-//   console.log(
-//     "=== INFO == During script loading, self.registration is not known!"
-//   );
-// }

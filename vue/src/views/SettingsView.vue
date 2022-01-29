@@ -10,13 +10,19 @@
         <div class="spacer"></div>
         <div>
           <span v-if="!workerReady">(Service worker missing)</span>
-          <w-switch
-            color="success"
-            label="enable"
+          <w-button
+            bg-color="success"
+            label="subscribe to notifications"
             :disabled="!workerReady"
-            v-model="enableTodoPush"
-          >
-          </w-switch>
+            @click="subscribe"
+            >Subscribe
+          </w-button>
+          <w-button
+            label="unsubscribe"
+            :disabled="!subsciptionExists"
+            @click="unsubscribe"
+            >Unsubscribe
+          </w-button>
         </div>
       </w-flex>
       <div class="mt5 pa2 text-left grey-light5--bg">
@@ -28,32 +34,12 @@
           <w-button @click="subscribe">Subscribe!</w-button>
         </div>
       </div>
-      <div>Worker ready: <w-checkbox v-model="workerReady"></w-checkbox></div>
-      <div>
-        Subscription exists:
-        <w-checkbox v-model="subsciptionExists"></w-checkbox>
-      </div>
-      <div>
-        Notification permission:
-        <w-checkbox v-model="notificationPermission"></w-checkbox>
-      </div>
-      <div>
-        <w-button @click="unsubscribe">Unsubscribe</w-button>
-        <span v-if="unsubscriptionSuccess">unsubscription Successful!</span>
-        <span v-if="unsubscriptionFailed">unsubscription failed!</span>
-      </div>
-      <div><img src="img/todo.png" /></div>
     </w-card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
-
-const enableTodoPush = ref(false);
-// const serviceWorkerEnabled = !!navigator.serviceWorker?.controller;
-
-console.log("Checking for service worker:");
+import { ref } from "vue";
 
 const workerReady = ref(false);
 const subsciptionExists = ref(false);
@@ -89,41 +75,18 @@ function unsubscribe() {
   });
 }
 
-watch(enableTodoPush, (isEnabled) => {
-  if (isEnabled) {
-    console.log("-- Starting registration of push notifications");
-    Notification.requestPermission((result) => {
-      if (result === "granted") {
-        if (navigator.serviceWorker.controller) {
-          console.log(
-            "starting to post to ",
-            navigator.serviceWorker.controller
-          );
-          navigator.serviceWorker.controller.postMessage({
-            command: "subscribe",
-          });
-        } else {
-          console.error("Service worker controller unknown!");
-        }
-      } else {
-        alert("No permissions for notifications granted!");
-        console.error(
-          "User did not grant permission for Notifications, answer is:",
-          result
-        );
-      }
-    });
-  }
-});
-
-function testWorker() {
-  console.log("testing worker!");
-
+function subscribe() {
+  console.log("-- Starting registration of push notifications");
   Notification.requestPermission((result) => {
     if (result === "granted") {
-      navigator.serviceWorker.controller?.postMessage({
-        command: "testnotification",
-      });
+      if (navigator.serviceWorker.controller) {
+        console.log("starting to post to ", navigator.serviceWorker.controller);
+        navigator.serviceWorker.controller.postMessage({
+          command: "subscribe",
+        });
+      } else {
+        console.error("Service worker controller unknown!");
+      }
     } else {
       alert("No permissions for notifications granted!");
       console.error(
@@ -134,16 +97,13 @@ function testWorker() {
   });
 }
 
-function subscribe() {
-  console.log("creating subscription (still vue)");
+function testWorker() {
+  console.log("testing worker!");
+
   Notification.requestPermission((result) => {
     if (result === "granted") {
-      console.log(
-        "Navigator service worker:",
-        navigator.serviceWorker.controller
-      );
       navigator.serviceWorker.controller?.postMessage({
-        command: "subscribe",
+        command: "testnotification",
       });
     } else {
       alert("No permissions for notifications granted!");
