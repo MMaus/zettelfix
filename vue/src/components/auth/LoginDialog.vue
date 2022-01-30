@@ -13,44 +13,59 @@
       <w-tabs :items="data.tabItems" bg-color="indigo-light5">
         <template v-slot:[`item-content.1`]>
           <h4>Login</h4>
-          <w-input v-model="data.account" type="email" label="Email" /><br />
-          <w-input
-            v-model="data.password"
-            type="password"
-            label="Password"
-          /><br />
-          <w-button
-            @click="closeDialog"
-            bg-color="grey"
-            color="white"
-            class="m-2"
-            >Cancel
-          </w-button>
-          <w-button @click="logIn">Log In</w-button>
+          <w-form no-keyup-validation>
+            <w-input
+              v-model="data.account"
+              type="email"
+              label="Email"
+              :validators="[validators.email, validators.required]"
+              required
+            /><br />
+            <w-input
+              v-model="data.password"
+              type="password"
+              label="Password"
+            /><br />
+            <w-button
+              @click="closeDialog"
+              bg-color="grey"
+              color="white"
+              class="m-2"
+              >Cancel
+            </w-button>
+            <w-button @click="logIn">Log In</w-button>
+          </w-form>
         </template>
         <template v-slot:[`item-content.2`]>
-          <h4>Sign Up</h4>
-          <w-input v-model="data.account" type="email" label="Email" /><br />
-          <w-input
-            v-model="data.password"
-            type="password"
-            label="Password"
-          /><br />
-          <w-input
-            v-model="data.passwordConfirm"
-            type="password"
-            label="Confirm Password"
-          /><br />
-          <w-button
-            @click="closeDialog"
-            bg-color="grey"
-            color="white"
-            class="m-2"
-            >Cancel
-          </w-button>
-          <w-button @click="register" :disabled="passwordsDiffer">{{
-            signUpButtonLabel
-          }}</w-button>
+          <w-form no-keyup-validation>
+            <h4>Sign Up</h4>
+            <w-input
+              v-model="data.account"
+              type="email"
+              label="Email"
+              :validators="[validators.email, validators.required]"
+            /><br />
+            <w-input
+              v-model="data.password"
+              type="password"
+              label="Password"
+            /><br />
+            <w-input
+              v-model="data.passwordConfirm"
+              type="password"
+              label="Confirm Password"
+            /><br />
+            <w-button
+              @click="closeDialog"
+              bg-color="grey"
+              color="white"
+              class="m-2"
+              >Cancel
+            </w-button>
+            <w-button @click="register" :disabled="passwordsDiffer">{{
+              signUpButtonLabel
+            }}</w-button></w-form
+          >
         </template>
       </w-tabs>
     </div>
@@ -72,12 +87,19 @@
 import { computed, defineComponent, onMounted, reactive, watch } from "vue";
 import { useStore } from "vuex";
 
+// Technically, this is too simplified and does not match RFC 822, but ... its handy and matches 99.99%
+const simpleEmailRegex = /^\S+@\S+\.\S+$/;
 export default defineComponent({
   emits: ["close"],
   props: {
     show: Boolean,
   },
   setup(props, context) {
+    const validators = {
+      required: (value: unknown) => !!value || "Eingabe erforderlich",
+      email: (value: string | null | undefined) =>
+        simpleEmailRegex.test("" + value) || "Ungültige Email",
+    };
     let data = reactive({
       showDialog: props.show,
       account: "",
@@ -119,6 +141,7 @@ export default defineComponent({
     onMounted(() => console.log("logged in: ", loggedIn));
     return {
       data,
+      validators,
       passwordsDiffer,
       loggedIn,
       signUpButtonLabel,
