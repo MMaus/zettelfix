@@ -52,12 +52,12 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: "/login",
-    name: "Login",
+    path: "/account",
+    name: "Account",
     // route level code-splitting
     components: {
       default: () =>
-        import(/* webpackChunkName: "login" */ "@/views/Login.vue"),
+        import(/* webpackChunkName: "login" */ "@/views/Account.vue"),
       actions: NoActions,
     },
   },

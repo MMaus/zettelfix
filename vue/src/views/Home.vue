@@ -9,7 +9,7 @@
         <w-icon size="90px">mdi mdi-list-status</w-icon>
         About
       </router-card>
-      <router-card target="login" title="Account">
+      <router-card target="account" title="Account">
         <w-icon size="90px">mdi mdi-card-account-details</w-icon>
       </router-card>
       <router-card target="settings" title="Settings / Debug">

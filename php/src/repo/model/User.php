@@ -25,7 +25,7 @@ class User implements JsonSerializable {
      * @ORM\Column(type="string", name="email")
      * @var string
      */
-    // FIXME: 'account' , 'email' and 'username' all refer to this, but not to 'name'.. UNIFY to 'account'
+    // FIXME: 'account' , 'email' both refer to this
     private $account = "";
 
     /**
@@ -33,6 +33,13 @@ class User implements JsonSerializable {
      * @var string
      */
     private $name = "";
+
+    /**
+     * @ORM\Column(type="boolean", name="EMAIL_VERIFIED"  )
+     * @var bool
+     */
+    private $emailVerified = false;
+
 
     /**
      * @ORM\OneToMany(targetEntity="\repo\model\PushRegistration", 
@@ -65,10 +72,19 @@ class User implements JsonSerializable {
         return $this->pushRegistrations;
     }
 
+    public function isEmailVerified(): bool {
+        return $this->emailVerified;
+    }
+
+    public function setEmailVerified(bool $verified): void {
+        $this->emailVerified = $verified;
+    }
+
     public function jsonSerialize(): mixed {
         return [
             "account" => $this->account,
             "name" => $this->name,
+            "emailVerified" => $this->emailVerified
         ];
     }
 }

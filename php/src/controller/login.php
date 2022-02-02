@@ -29,7 +29,7 @@ if ($method === "GET") {
     //     throw new HttpStatusException("Not found", 404);
 
     // }
-} elseif ($method === "POST") {
+} else if ($method === "POST") {
     $command = $request['command'];
 
     $accountService = new \user\AccountService();

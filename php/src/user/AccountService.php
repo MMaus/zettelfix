@@ -37,8 +37,13 @@ class AccountService {
         return true;
     }
 
-    function registerAccount(string $username, string $password): bool {
+    function registerAccount(string $rawUsername, string $password): bool {
         global $cfg;
+        $username = trim($rawUsername);
+        if (!preg_match("/^\S+@\S+\.\S+$/", $username)) {
+            echo "Illegal Email / user name :P (schema: foo@bar.com)"; // FIXME:  no echos :P
+            return false;
+        }
         $maxUsers = $cfg["app"]["max_users"];
         if ($maxUsers && $maxUsers > 0) {
             $query = $this->entityManager->createQuery('select count(u.id) FROM \repo\model\User u');
@@ -59,6 +64,7 @@ class AccountService {
         }
         $password_hash = password_hash($password, PASSWORD_BCRYPT);
         $newAccount = new \repo\model\User($username, $password_hash);
+        echo "Email verified: {$newAccount->isEmailVerified()}";
         $this->entityManager->persist($newAccount);
         $this->entityManager->flush();
         return true;
