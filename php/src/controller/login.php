@@ -16,19 +16,22 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 }
 
 if ($method === "GET") {
-    // FIXME: CHECK which path should be used. Actually GET on login/ is nice as well
     // FIXME: refactor this to a controller class
     // if (str_starts_with($apiPath, "/login/whoami")) {
-    if (!empty($_SESSION['account'])) {
-        $replyBody["loggedIn"] = true;
-        $replyBody["account"] = $_SESSION['account'];
+    // FIXME: use Path elements in /login/, e.g. /login/verifyEmail
+    if ($_GET['emailVerificationToken']) {
+        $accountService = new \user\AccountService();
+        $ok = $accountService->verifyEmail($_GET['emailVerificationToken']);
+        $replyBody['status'] = $ok ? 'OK' : 'BAD';
+        // FIXME: add HTTP forward to login or success notification page, or just include it here! :)
     } else {
-        $replyBody["loggedIn"] = false;
+        if (!empty($_SESSION['account'])) {
+            $replyBody["loggedIn"] = true;
+            $replyBody["account"] = $_SESSION['account'];
+        } else {
+            $replyBody["loggedIn"] = false;
+        }
     }
-    // } else {
-    //     throw new HttpStatusException("Not found", 404);
-
-    // }
 } else if ($method === "POST") {
     $command = $request['command'];
 
@@ -56,6 +59,16 @@ if ($method === "GET") {
         if ($requestOk) {
             session_regenerate_id();
             $_SESSION['account'] = $request["account"];
+        }
+    } elseif ($command === "sendVerificationEmail") {
+        if ($_SESSION["account"] === $request["account"]) {
+            $requestOk = $accountService->sendVerificationEmail($request["account"]);
+            if ($requestOk) {
+                session_regenerate_id();
+                $_SESSION['account'] = $request["account"];
+            }
+        } else {
+            $requestOk = false;
         }
     } else {
         header("Bad request", true, 400);

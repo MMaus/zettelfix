@@ -35,6 +35,12 @@ class User implements JsonSerializable {
     private $name = "";
 
     /**
+     * @ORM\Column(type="string", name="EMAIL_VERIFICATION_TOKEN"  )
+     * @var string
+     */
+    private $emailVerificationToken = "";
+
+    /**
      * @ORM\Column(type="boolean", name="EMAIL_VERIFIED"  )
      * @var bool
      */
@@ -78,6 +84,14 @@ class User implements JsonSerializable {
 
     public function setEmailVerified(bool $verified): void {
         $this->emailVerified = $verified;
+    }
+
+    public function getEmailVerificationToken(): string {
+        return $this->emailVerificationToken;
+    }
+
+    public function setEmailVerificationToken(?string $token): void {
+        $this->emailVerificationToken = $token;
     }
 
     public function jsonSerialize(): mixed {
