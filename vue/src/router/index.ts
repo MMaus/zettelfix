@@ -57,7 +57,19 @@ const routes: Array<RouteRecordRaw> = [
     // route level code-splitting
     components: {
       default: () =>
-        import(/* webpackChunkName: "login" */ "@/views/Account.vue"),
+        import(/* webpackChunkName: "account" */ "@/views/Account.vue"),
+      actions: NoActions,
+    },
+  },
+  {
+    path: "/resetPassword/:token",
+    name: "Reset Password",
+    // route level code-splitting
+    components: {
+      default: () =>
+        import(
+          /* webpackChunkName: "passwordReset" */ "@/views/PasswordResetView.vue"
+        ),
       actions: NoActions,
     },
   },

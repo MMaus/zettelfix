@@ -67,6 +67,27 @@
             }}</w-button></w-form
           >
         </template>
+        <template v-slot:[`item-content.3`]>
+          <w-form no-keyup-validation>
+            <h4>Reset Password</h4>
+            <w-input
+              v-model="data.account"
+              type="email"
+              label="Email"
+              :validators="[validators.email, validators.required]"
+            /><br />
+            <w-button
+              @click="closeDialog"
+              bg-color="grey"
+              color="white"
+              class="m-2"
+              >Cancel
+            </w-button>
+            <w-button @click="requestPasswordReset"
+              >Send password reset via e-mail
+            </w-button></w-form
+          >
+        </template>
       </w-tabs>
     </div>
     <div v-else>
@@ -108,6 +129,7 @@ export default defineComponent({
       tabItems: [
         { title: "Login", content: "Login (Placeholder)" },
         { title: "Sign Up", content: "SignUp (Placeholder)" },
+        { title: "Reset password", content: "Reset Password (Placeholder)" },
       ],
     });
     const store = useStore();
@@ -165,6 +187,19 @@ export default defineComponent({
           account: data.account,
           password: data.password,
         });
+      },
+      requestPasswordReset() {
+        const postData = {
+          command: "requestPasswordReset",
+          account: data.account,
+        };
+        fetch("api/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(postData),
+        }).then(() => context.emit("close")); // FIXME: handle reset, give feedback, ...
       },
       closeDialog() {
         context.emit("close");

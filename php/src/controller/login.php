@@ -19,7 +19,7 @@ if ($method === "GET") {
     // FIXME: refactor this to a controller class
     // if (str_starts_with($apiPath, "/login/whoami")) {
     // FIXME: use Path elements in /login/, e.g. /login/verifyEmail
-    if ($_GET['emailVerificationToken']) {
+    if (array_key_exists("emailVerificationToken", $_GET) && $_GET['emailVerificationToken']) {
         $accountService = new \user\AccountService();
         $ok = $accountService->verifyEmail($_GET['emailVerificationToken']);
         $replyBody['status'] = $ok ? 'OK' : 'BAD';
@@ -70,6 +70,13 @@ if ($method === "GET") {
         } else {
             $requestOk = false;
         }
+    } elseif ($command === "requestPasswordReset") {
+        // die("foo bar IST POST, REQUEST" . $command);
+        $replyBody['result'] = "Password request has been sent via mail";
+    } elseif ($command === "resetPassword") {
+        echo "setting new password for token " . $request["token"] . " to " . $request["password"];
+        $replyBody['result'] = "Password has been updated";
+        $requestOk = true;
     } else {
         header("Bad request", true, 400);
     }
