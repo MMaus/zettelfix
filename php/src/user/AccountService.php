@@ -37,10 +37,66 @@ class AccountService {
         return true;
     }
 
+    function sendPasswordResetEmail(string $account): bool {
+        if (!$this->accountExists($account) || !$this->isValidEmail($account)) {
+            return false;
+        }
+        $token = $this->generatePasswordResetTokenFor($account);
+        $urlToken = urlencode($token);
+        global $cfg;
+        $domain = $cfg['host']['domain'];
+        $api = $cfg['api']['api_base_url'];
+        $serviceEmail = $cfg['host']['serviceEmail'];
+        $message = "There is a password reset available for your account.\r\n" .
+            "If you did not requested a password reset, or if you do not wish to reset your password,\r\n" .
+            "then you do not have to do anything.\r\n\r\n" .
+            "To reset your password, open the link below in your browser.\r\n\r\n" .
+            "{$domain}/#/resetPassword/$urlToken\r\n\r\n" .
+            "Cheers!";
+        echo "Sending message: $message";
+        mail($account, "Password Reset", $message, ["From" => $serviceEmail]);
+        return true;
+        strtolower($account);
+        return true;
+    }
+
+    function resetPassword(string $token, string $password) {
+        $query = $this->entityManager->createQuery(
+            'SELECT u FROM \repo\model\User u WHERE u.passwordResetToken = :token ' .
+                ' AND u.passwordResetToken IS NOT NULL ' .
+                ' AND u.passwordResetTime > :maxTime '
+        );
+        $query->setParameter('token', $token);
+        $query->setParameter('maxTime', new \DateTime("now -2 hour"));
+        $users = $query->getResult();
+        if (sizeof($users) == 0) {
+            return false;
+        }
+        $user = $users[0];
+        $user->setPasswordHash(password_hash($password, PASSWORD_BCRYPT));
+        $user->setPasswordResetToken(null);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+        return true;
+    }
+
+
+    private function isValidEmail(string $email) {
+        return preg_match("/^\S+@\S+\.\S+$/", $email);
+    }
+
+    private function accountExists(string $account): bool {
+        $query = $this->entityManager->createQuery('SELECT u FROM \repo\model\User u WHERE u.account = :account');
+        $query->setParameter('account', strtolower($account));
+        $query->execute();
+        $count = sizeof($query->getResult());
+        return $count > 0;
+    }
+
     function registerAccount(string $rawUsername, string $password): bool {
         global $cfg;
         $username = trim($rawUsername);
-        if (!preg_match("/^\S+@\S+\.\S+$/", $username)) {
+        if (!$this->isValidEmail($username)) {
             echo "Illegal Email / user name :P (schema: foo@bar.com)"; // FIXME:  no echos :P
             return false;
         }
@@ -55,11 +111,7 @@ class AccountService {
             }
         }
 
-        $query = $this->entityManager->createQuery('SELECT u FROM \repo\model\User u WHERE u.account = :account');
-        $query->setParameter('account', strtolower($username));
-        $query->execute();
-        $count = sizeof($query->getResult());
-        if ($count > 0) {
+        if ($this->accountExists($username)) {
             return false;
         }
         $password_hash = password_hash($password, PASSWORD_BCRYPT);
@@ -86,7 +138,7 @@ class AccountService {
     }
 
     function sendVerificationEmail(string $email): bool {
-        $token = $this->generateTokenFor($email);
+        $token = $this->generateEmailVerificationTokenFor($email);
         global $cfg;
         $domain = $cfg['host']['domain'];
         $api = $cfg['api']['api_base_url'];
@@ -99,12 +151,23 @@ class AccountService {
         return true;
     }
 
-    function generateTokenFor(string $account): string {
+    private function generateEmailVerificationTokenFor(string $account): string {
         $token = base64_encode(random_bytes(42));
         $query = $this->entityManager->createQuery('SELECT u FROM \repo\model\User u WHERE u.account = :account');
         $query->setParameter('account', strtolower($account));
         $user = $query->getSingleResult();
         $user->setEmailVerificationToken($token);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+        return $token;
+    }
+
+    private function generatePasswordResetTokenFor(string $account): string {
+        $token = base64_encode(random_bytes(42));
+        $query = $this->entityManager->createQuery('SELECT u FROM \repo\model\User u WHERE u.account = :account');
+        $query->setParameter('account', strtolower($account));
+        $user = $query->getSingleResult();
+        $user->setPasswordResetToken($token);
         $this->entityManager->persist($user);
         $this->entityManager->flush();
         return $token;

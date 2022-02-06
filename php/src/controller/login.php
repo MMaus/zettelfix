@@ -71,12 +71,12 @@ if ($method === "GET") {
             $requestOk = false;
         }
     } elseif ($command === "requestPasswordReset") {
-        // die("foo bar IST POST, REQUEST" . $command);
+        $requestOk = $accountService->sendPasswordResetEmail($request["account"]);
         $replyBody['result'] = "Password request has been sent via mail";
     } elseif ($command === "resetPassword") {
-        echo "setting new password for token " . $request["token"] . " to " . $request["password"];
+        // echo "setting new password for token " . $request["token"] . " to " . $request["password"];
+        $requestOk = $accountService->resetPassword($request["token"], $request["password"]);
         $replyBody['result'] = "Password has been updated";
-        $requestOk = true;
     } else {
         header("Bad request", true, 400);
     }

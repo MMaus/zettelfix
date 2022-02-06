@@ -199,7 +199,12 @@ export default defineComponent({
             "Content-Type": "application/json",
           },
           body: JSON.stringify(postData),
-        }).then(() => context.emit("close")); // FIXME: handle reset, give feedback, ...
+        })
+          .then((res) => res.text())
+          .then((txt) => {
+            console.log("HEARD RESULT: ", txt);
+            context.emit("close");
+          }); // FIXME: handle reset, give feedback, ...
       },
       closeDialog() {
         context.emit("close");

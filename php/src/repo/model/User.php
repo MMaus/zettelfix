@@ -41,6 +41,18 @@ class User implements JsonSerializable {
     private $emailVerificationToken = "";
 
     /**
+     * @ORM\Column(type="string", name="PASSWORD_RESET_TOKEN"  )
+     * @var string
+     */
+    private $passwordResetToken = "";
+
+    /**
+     * @ORM\Column(type="datetime", name="PASSWORD_RESET_TIME"  )
+     * @var \DateTime
+     */
+    private $passwordResetTime;
+
+    /**
      * @ORM\Column(type="boolean", name="EMAIL_VERIFIED"  )
      * @var bool
      */
@@ -74,6 +86,10 @@ class User implements JsonSerializable {
         return $this->passwordHash;
     }
 
+    public function setPasswordHash(string $passwordHash): void {
+        $this->passwordHash = $passwordHash;
+    }
+
     public function getPushRegistrations(): Collection {
         return $this->pushRegistrations;
     }
@@ -92,6 +108,19 @@ class User implements JsonSerializable {
 
     public function setEmailVerificationToken(?string $token): void {
         $this->emailVerificationToken = $token;
+    }
+
+    public function getPasswordResetToken(): string {
+        return $this->passwordResetToken;
+    }
+
+    public function setPasswordResetToken(?string $token): void {
+        $this->passwordResetToken = $token;
+        $this->passwordResetTime = new \DateTime("now");
+    }
+
+    public function getPasswordResetTime(): \DateTime {
+        return $this->passwordResetTime;
     }
 
     public function jsonSerialize(): mixed {
