@@ -139,6 +139,7 @@ class AccountService {
 
     function sendVerificationEmail(string $email): bool {
         $token = $this->generateEmailVerificationTokenFor($email);
+        $token = urlencode($token);
         global $cfg;
         $domain = $cfg['host']['domain'];
         $api = $cfg['api']['api_base_url'];
