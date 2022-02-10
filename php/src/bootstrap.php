@@ -41,10 +41,20 @@ require_once __DIR__ . "/session.php";
 use controller\ClobStorageController;
 use \controller\exception\HttpStatusException;
 use \push\controller\PushNotificationController;
+use \auth\AuthFilter;
+use auth\AuthResult;
 
 $API_URL = $cfg['api']['api_base_url'];
 
 // TODO: potentially use ob_start() here!
+
+$authResult = (new AuthFilter())->validateRequest();
+if (!$authResult->isAuthorized()) {
+    http_response_code(401);
+    header("WWW-Authenticate: Basic; realm='zettelfix.de'");
+    echo "Authentication required";
+    return;
+}
 
 // FIXMEL Use introduce something like Spring's filter chain here
 // ... or chack if there is a framework (Laravel? Symphony?) which already

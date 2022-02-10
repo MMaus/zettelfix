@@ -41,6 +41,13 @@ class AccountService {
         if (!$this->accountExists($account) || !$this->isValidEmail($account)) {
             return false;
         }
+        $query = $this->entityManager->createQuery('SELECT u FROM \repo\model\User u WHERE u.account = :account');
+        $query->setParameter('account', strtolower($account));
+        $user = $query->getSingleResult();
+        if (!$user->isEmailVerified()) {
+            return false;
+        }
+
         $token = $this->generatePasswordResetTokenFor($account);
         $urlToken = urlencode($token);
         global $cfg;
