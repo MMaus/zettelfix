@@ -15,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     throw new HttpStatusException("Method not allowed", 405);
 }
 
+
 if ($method === "GET") {
     // FIXME: refactor this to a controller class
     // if (str_starts_with($apiPath, "/login/whoami")) {
@@ -38,9 +39,13 @@ if ($method === "GET") {
     $accountService = new \user\AccountService();
 
     $requestOk = false;
+    // FIXME: change api, use HTTP Headers instead of those weird custom command objects
     if ($command === "login") {
-        $requestOk = $accountService->loginValid($request["account"], $request["password"]);
-        if ($requestOk) {
+        $validation = $accountService->validateLogin($request["account"], $request["password"]);
+        if ($validation) {
+            $requestOk = true;
+            $replyBody['refreshToken'] = $validation['refreshToken'];
+            $replyBody['bearerToken'] = $validation['bearerToken'];
             $oldSession = session_id();
             session_regenerate_id();
             $_SESSION['account'] = $request["account"];

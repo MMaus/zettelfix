@@ -9,7 +9,6 @@ use JsonSerializable;
  * @ORM\Entity()
  * @ORM\Table("GENERIC_CLOB")
  */
-
 class ClobStorageObject implements JsonSerializable {
 
     /**

@@ -3,6 +3,8 @@
 namespace user;
 
 use \Doctrine\ORM\EntityManager;
+use repo\model\BearerToken;
+use repo\model\RefreshToken;
 use \repo\model\User;
 
 // FIXME: make proper constraints on account, e.g. email must be provided, email verification, ...
@@ -23,18 +25,30 @@ class AccountService {
         return $user;
     }
 
-    function loginValid(string $account, string $password): bool {
+    function validateLogin(string $account, string $password): ?array {
         // get_user
         $query = $this->entityManager->createQuery('SELECT u FROM \repo\model\User u WHERE u.account = :account');
         $query->setParameter('account', strtolower($account));
         $user = $query->getOneOrNullResult();
         if ($user == null) {
-            return false;
+            return null;
         }
         if (!password_verify($password, $user->getPasswordHash())) {
-            return false;
+            return null;
         }
-        return true;
+        $refreshToken = new RefreshToken();
+        $refreshToken->setUser($user);
+        $refreshToken->setTokenValue(urlencode(base64_encode(random_bytes(60))));
+        $bearerToken = new BearerToken();
+        $bearerToken->setUser($user);
+        $bearerToken->setTokenValue(urlencode(base64_encode(random_bytes(60))));
+        $this->entityManager->persist($refreshToken);
+        $this->entityManager->persist($bearerToken);
+        $this->entityManager->flush();
+        return [
+            'refreshToken' => $refreshToken->getTokenValue(),
+            'bearerToken' => $bearerToken->getTokenValue()
+        ];
     }
 
     function sendPasswordResetEmail(string $account): bool {

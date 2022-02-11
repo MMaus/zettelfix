@@ -48,13 +48,6 @@ $API_URL = $cfg['api']['api_base_url'];
 
 // TODO: potentially use ob_start() here!
 
-$authResult = (new AuthFilter())->validateRequest();
-if (!$authResult->isAuthorized()) {
-    http_response_code(401);
-    header("WWW-Authenticate: Basic; realm='zettelfix.de'");
-    echo "Authentication required";
-    return;
-}
 
 // FIXMEL Use introduce something like Spring's filter chain here
 // ... or chack if there is a framework (Laravel? Symphony?) which already
@@ -84,20 +77,34 @@ $verb = $_SERVER['REQUEST_METHOD'];
 // FIXME: run authentication
 // FIXME: refactor globals. Create $applicationContext global.
 
+
+// No authorization required for the login path
+
+
+
+
 $requestBody = file_get_contents("php://input");
 if (empty($requestBody)) {
     $requestBody = '';
 }
+$authResult = (new AuthFilter())->validateRequest();
 try {
     if (empty($domain)) {
         echo "no domain found in $fullPath -$apiPath - $domain";
         throw new HttpStatusException("Not found", 404);
     }
+    // No Auth required to log in :)
+    if ($domain === 'login') {
+        require_once __DIR__ . "/controller/login.php";
+    }
+
+    // all other domains need an authorized user
+    // FIXME: separate auth from domain logic; maybe introduce roles
+    if (!$authResult->isAuthorized()) {
+        throw new HttpStatusException("Authorization required");
+    }
     // FIXME: call controller objects here!
     switch ($domain) {
-        case 'login':
-            require_once __DIR__ . "/controller/login.php";
-            break;
         case 'migrate_db':
             require_once __DIR__ . "/controller/migrate_db.php";
             break;
@@ -121,9 +128,10 @@ try {
 } catch (HttpStatusException $e) {
     // FIXME: if $e->getCode() === 401 then add WWW-Authenticate headerfoo bar
     if ($e->getCode() === 401) {
-        die("401 not yet supported");
-        // TODO: make login stuff using HTTP standards (replace current custom solution)
-        // header("WWW-Authenticate: Basic", true, 401);
+        http_response_code(401);
+        header("WWW-Authenticate: Basic; realm='zettelfix.de'");
+        echo "Authentication required";
+        return;
     }
     http_response_code($e->getCode());
     echo $e->getMessage();
