@@ -39,9 +39,10 @@ class AuthFilter {
         if (!$result) {
             return new AuthResult(false, null);
         }
-        var_dump($result);
+        $account = $result['account'];
         // FIXME:  Validate expiry time, delete token if expired (or have a cron job for that?)
-        return new AuthResult(true, $result['account']);
+        $authResult = new AuthResult(true, $account);
+        return $authResult;
 
 
         // BELOW: First lines of code of how to use the session to store this stuff

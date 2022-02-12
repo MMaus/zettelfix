@@ -10,7 +10,7 @@ class AuthResult {
 
     function __construct(bool $authorized, ?string $account) {
         $this->isAuthorized = $authorized;
-        $this->$account = $account;
+        $this->account = $account;
     }
 
     function isAuthorized(): bool {

@@ -96,6 +96,7 @@ try {
     // No Auth required to log in :)
     if ($domain === 'login') {
         require_once __DIR__ . "/controller/login.php";
+        return;
     }
 
     // all other domains need an authorized user

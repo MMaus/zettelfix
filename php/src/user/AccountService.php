@@ -36,6 +36,10 @@ class AccountService {
         if (!password_verify($password, $user->getPasswordHash())) {
             return null;
         }
+        return $this->generateTokensFor($user);
+    }
+
+    private function generateTokensFor(User $user): array {
         $refreshToken = new RefreshToken();
         $refreshToken->setUser($user);
         $refreshToken->setTokenValue(urlencode(base64_encode(random_bytes(60))));
@@ -50,6 +54,7 @@ class AccountService {
             'bearerToken' => $bearerToken->getTokenValue()
         ];
     }
+
 
     function sendPasswordResetEmail(string $account): bool {
         if (!$this->accountExists($account) || !$this->isValidEmail($account)) {
@@ -197,5 +202,19 @@ class AccountService {
 
     function logout(string $username): bool {
         return true;
+    }
+
+    function createBearerToken(string $refreshToken): ?array {
+
+        $query = $this->entityManager->createQuery('SELECT t, u  from \repo\model\RefreshToken t
+        JOIN t.user u  WHERE t.tokenValue = :token ');
+        $query->setParameter("token", trim($refreshToken));
+        $token = $query->getOneOrNullResult();
+        if (!$token) {
+            return null;
+        }
+        $user = $token->getUser();
+        $this->entityManager->remove($token);
+        return $this->generateTokensFor($user);
     }
 }
