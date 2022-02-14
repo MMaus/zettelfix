@@ -40,10 +40,12 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { useStore } from "vuex";
 
 const workerReady = ref(false);
 const subsciptionExists = ref(false);
 const notificationPermission = ref(false);
+const store = useStore();
 if (Notification.permission === "granted") {
   notificationPermission.value = true;
 }
@@ -77,12 +79,14 @@ function unsubscribe() {
 
 function subscribe() {
   console.log("-- Starting registration of push notifications");
+  const token = store.getters["app/bearerToken"];
   Notification.requestPermission((result) => {
     if (result === "granted") {
       if (navigator.serviceWorker.controller) {
         console.log("starting to post to ", navigator.serviceWorker.controller);
         navigator.serviceWorker.controller.postMessage({
           command: "subscribe",
+          token: token,
         });
       } else {
         console.error("Service worker controller unknown!");

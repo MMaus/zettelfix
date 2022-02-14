@@ -1,8 +1,8 @@
 import { TodoItem } from "@/use/localApi";
 import { ActionContext } from "vuex";
+import { createStoreClient } from "../httpClient";
 import { JuteBagState } from "../types";
-import { User } from "../user/types";
-import { RemoteTodoListState, TodoListState } from "./types";
+import { TodoListState } from "./types";
 
 // FIXME: provide as generic util function
 function prepareStore(
@@ -17,7 +17,7 @@ function prepareStore(
     return result;
   }
   const user = context.rootGetters["app/user"] as string;
-  const url = "api/clob-storage/" + encodeURI(user) + "/" + storeKey;
+  const url = "/clob-storage/" + encodeURI(user) + "/" + storeKey;
   return { valid: true, url };
 }
 
@@ -121,13 +121,24 @@ export default {
     );
     // console.log("Pushing data:", stringifiedData);
     console.log("PUTTING TO TO ", api.url);
-    fetch(api.url, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: stringifiedData,
-    })
+    const httpClient = createStoreClient(
+      context.rootGetters,
+      (mutation: string, data: any) =>
+        context.commit(mutation, data, { root: true })
+    );
+    console.log(
+      "remote date excerpt:",
+      context.getters["getRemoteDataExcerpt"]
+    );
+    httpClient
+      .PUT(api.url, context.getters["getRemoteDataExcerpt"], "JSON")
+      // fetch(api.url, {
+      //   method: "PUT",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: stringifiedData,
+      // })
       .then((res) => res.json())
       .then((json) => {
         console.log("received PUT result:" + JSON.stringify(json));
@@ -158,8 +169,15 @@ export default {
       };
     };
 
+    const httpClient = createStoreClient(
+      context.rootGetters,
+      (mutation: string, data: any) =>
+        context.commit(mutation, data, { root: true })
+    );
     try {
-      jsonResponse = await fetch(api.url).then((res) => res.json());
+      console.log("===========================API URL =", api.url);
+      jsonResponse = await httpClient.GET(api.url).then((res) => res.json());
+      // jsonResponse = await fetch(api.url).then((res) => res.json());
     } catch (e) {
       console.log("Error on download", e);
       context.commit("setSyncState", { syncState: "SYNC_ERROR" });

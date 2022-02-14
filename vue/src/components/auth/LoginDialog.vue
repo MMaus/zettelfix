@@ -107,7 +107,7 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted, reactive, watch } from "vue";
 import { useStore } from "vuex";
-
+import { createClient } from "@/store/httpClient";
 // Technically, this is too simplified and does not match RFC 822, but ... its handy and matches 99.99%
 const simpleEmailRegex = /^\S+@\S+\.\S+$/;
 export default defineComponent({
@@ -133,6 +133,7 @@ export default defineComponent({
       ],
     });
     const store = useStore();
+    const httpClient = createClient(store);
     const loggedIn = computed(() => store.getters["app/userLoggedIn"]);
     watch(
       () => props.show,
@@ -175,8 +176,9 @@ export default defineComponent({
           password: data.password,
         });
       },
-      refresh() {
-        store.dispatch("app/refreshLogin");
+      async refresh() {
+        const loginStatus = await httpClient.GET("/login");
+        store.dispatch("app/updateLoginStatus", loginStatus);
       },
       logout() {
         store.dispatch("app/logout");
@@ -193,13 +195,8 @@ export default defineComponent({
           command: "requestPasswordReset",
           account: data.account,
         };
-        fetch("api/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(postData),
-        })
+        httpClient
+          .POST("/login", postData, "JSON")
           .then((res) => res.text())
           .then((txt) => {
             console.log("HEARD RESULT: ", txt);

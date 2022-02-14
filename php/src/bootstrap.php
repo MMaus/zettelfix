@@ -101,12 +101,12 @@ try {
 
     // all other domains need an authorized user
     // FIXME: separate auth from domain logic; maybe introduce roles
-    if (!$authResult->isAuthorized()) {
-        throw new HttpStatusException("Authorization required");
-    }
     // FIXME: call controller objects here!
     switch ($domain) {
         case 'migrate_db':
+            if (!$authResult->isAuthorized()) {
+                throw new HttpStatusException("Authorization required");
+            }
             require_once __DIR__ . "/controller/migrate_db.php";
             break;
         case 'push':
@@ -118,6 +118,9 @@ try {
             break;
 
         case 'clob-storage':
+            if (!$authResult->isAuthorized()) {
+                throw new HttpStatusException("Authorization required");
+            }
             $controller = new ClobStorageController();
             $response = $controller->processRequest($verb, $subdomains, $requestBody);
             echo json_encode($response);

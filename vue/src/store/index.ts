@@ -10,7 +10,11 @@ import VuexPersistence from "vuex-persist";
 const vuexLocal = new VuexPersistence<JuteBagState>({
   storage: window.localStorage,
   reducer: (state) => ({
-    app: state.app,
+    app: (() => {
+      const appState = Object.assign({}, state.app);
+      appState.bearerToken = undefined;
+      return appState;
+    })(),
     shopping: state.shopping,
     todo: state.todo,
   }), // remove this reducer to store the entire state

@@ -13,6 +13,7 @@ export default {
     const requestData = {
       command: "logout",
     };
+    // FIXME: proper Logout mechanism!
     const response = await fetch("api/login", {
       method: "POST",
       cache: "no-cache",
@@ -25,24 +26,34 @@ export default {
       context.commit("logout");
     }
   },
-  async refreshLogin(
-    context: ActionContext<AppState, JuteBagState>
-  ): Promise<void> {
-    const response = await fetch("api/login");
-    if (response.status >= 300) {
-      console.error(
-        `Fetch returned ${response.status}  : ${response.statusText}`
-      );
-      return;
-    }
-    const responseData = await response.json();
-    if (responseData.loggedIn) {
-      console.log("USER DATA =", responseData);
-      context.commit("setUser", responseData.account);
-    } else {
-      context.commit("logout");
+  updateLoginStatus(
+    context: ActionContext<AppState, JuteBagState>,
+    data: { account: string | null; loggedIn: boolean }
+  ): void {
+    if (data.loggedIn) {
+      context.commit("setUser", data.account);
     }
   },
+
+  // FIXME: delete after migration to auth headers
+  // async refreshLogin(
+  //   context: ActionContext<AppState, JuteBagState>
+  // ): Promise<void> {
+  //   const response = await fetch("api/login");
+  //   if (response.status >= 300) {
+  //     console.error(
+  //       `Fetch returned ${response.status}  : ${response.statusText}`
+  //     );
+  //     return;
+  //   }
+  //   const responseData = await response.json();
+  //   if (responseData.loggedIn) {
+  //     console.log("USER DATA =", responseData);
+  //     context.commit("setUser", responseData.account);
+  //   } else {
+  //     context.commit("logout");
+  //   }
+  // },
 
   async login(
     context: ActionContext<AppState, JuteBagState>,
@@ -70,6 +81,7 @@ export default {
     if (responseData.status === "OK") {
       console.log("Login OK");
       context.commit("setUser", data.account);
+      context.commit("setTokens", responseData);
       // FIXME: close dialog here
     } else {
       // FIXME: handle errors here

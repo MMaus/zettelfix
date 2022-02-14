@@ -7,4 +7,6 @@ export interface AppState {
   loggedIn: boolean;
   loginTime: number | null;
   enableShoppingListImport: boolean;
+  bearerToken?: string;
+  refreshToken?: string;
 }

@@ -12,7 +12,8 @@ class ClobStorageController {
      */
     public function processRequest(string $verb, array $pathSegments, string $requestBody = ''): array {
         $responseBody = array();
-        $user = $_SESSION['account'];
+        global $authResult;
+        $user = $authResult->getAccount();
         if (empty($user)) {
             throw new HttpStatusException("Authorization required", 401);
         }

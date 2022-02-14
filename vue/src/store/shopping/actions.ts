@@ -1,7 +1,7 @@
 import { ActionContext } from "vuex";
+import { createStoreClient } from "../httpClient";
 import { JuteBagState } from "../types";
-import { User } from "../user/types";
-import { RemoteShoppingListState, ShoppingListState } from "./types";
+import { ShoppingListState } from "./types";
 
 // FIXME: provide as generic util function
 function prepareStore(
@@ -16,7 +16,7 @@ function prepareStore(
     return result;
   }
   const user = context.rootGetters["app/user"] as string;
-  const url = "api/clob-storage/" + encodeURI(user) + "/" + storeKey;
+  const url = "/clob-storage/" + encodeURI(user) + "/" + storeKey;
   return { valid: true, url };
 }
 
@@ -72,18 +72,25 @@ export default {
       context.commit("setSyncState", { syncState: "SYNC_ERROR" });
       return;
     }
-    const stringifiedData = JSON.stringify(
-      context.getters["remoteDataExcerpt"]
-    );
+    // const stringifiedData = JSON.stringify(
+    //   context.getters["remoteDataExcerpt"]
+    // );
     // console.log("Pushing data:", stringifiedData);
     console.log("POSTING TO ", api.url);
-    fetch(api.url, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: stringifiedData,
-    })
+    const httpClient = createStoreClient(
+      context.rootGetters,
+      (mutation: string, data: any) =>
+        context.commit(mutation, data, { root: true })
+    );
+    httpClient
+      .PUT(api.url, context.getters["remoteDataExcerpt"], "JSON")
+      // fetch(api.url, {
+      //   method: "PUT",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: stringifiedData,
+      // })
       .then((res) => res.json())
       .then((json) => {
         console.log("received POST result:" + JSON.stringify(json));
@@ -115,7 +122,12 @@ export default {
     };
 
     try {
-      jsonResponse = await fetch(api.url).then((res) => res.json());
+      const httpClient = createStoreClient(
+        context.rootGetters,
+        (mutation: string, data: any) =>
+          context.commit(mutation, data, { root: true })
+      );
+      jsonResponse = await httpClient.GET(api.url).then((res) => res.json());
     } catch (e) {
       console.log("Error on download", e);
       context.commit("setSyncState", { syncState: "SYNC_ERROR" });

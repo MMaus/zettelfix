@@ -25,4 +25,10 @@ export default {
     console.log("QUERYING FOR USER LOGGED IN, STATE IS ", state.loggedIn);
     return state.loggedIn;
   },
+  bearerToken(state: AppState): string | undefined {
+    return state.bearerToken;
+  },
+  refreshToken(state: AppState): string | undefined {
+    return state.refreshToken;
+  },
 };

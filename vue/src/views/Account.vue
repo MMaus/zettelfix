@@ -80,6 +80,7 @@
 import { computed, ref } from "vue";
 import ChangePasswordDialog from "@/components/user/ChangePasswordDialog.vue";
 import { useStore } from "vuex";
+import { createClient } from "@/store/httpClient";
 const showChangePasswordDialog = ref(false);
 const store = useStore();
 const accountName = computed(
@@ -90,14 +91,20 @@ async function sendVerificationEmail() {
     command: "sendVerificationEmail",
     account: accountName.value,
   };
-  const response = await fetch("api/login/sendVerificationEmail", {
-    method: "POST",
-    cache: "no-cache",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(requestData),
-  });
+  const httpClient = createClient(useStore());
+  const response = await httpClient.POST(
+    "/login/sendVerificationEmail",
+    requestData,
+    "JSON"
+  );
+  // const response = await fetch("api/login/sendVerificationEmail", {
+  //   method: "POST",
+  //   cache: "no-cache",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  //   body: JSON.stringify(requestData),
+  // });
   console.log("Email Verification Response:", response);
 }
 </script>

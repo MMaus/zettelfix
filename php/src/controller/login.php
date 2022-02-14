@@ -3,6 +3,7 @@
 
 // FIXME: Refactor to a SessionController!
 
+use auth\AuthFilter;
 use controller\exception\HttpStatusException;
 
 $request = '';
@@ -62,31 +63,35 @@ if ($method === "GET") {
                 $requestOk = true;
                 $replyBody['refreshToken'] = $validation['refreshToken'];
                 $replyBody['bearerToken'] = $validation['bearerToken'];
-                $oldSession = session_id();
-                session_regenerate_id();
-                $_SESSION['account'] = $request["account"];
-                $newSession = session_id();
+                // $oldSession = session_id();
+                // session_regenerate_id();
+                // $_SESSION['account'] = $request["account"];
+                // $newSession = session_id();
             }
         } elseif ($command === "logout") {
+            // FIXME: add proper logout functionality: invalidate tokens
             session_destroy();
             if (isset($_SESSION["account"])) {
                 $requestOk = $accountService->logout($_SESSION["account"]);
             } else {
                 $requestOk = false;
             }
-            session_regenerate_id();
+            // session_regenerate_id();
         } elseif ($command === "register") {
             $requestOk = $accountService->registerAccount($request["account"], $request["password"]);
             if ($requestOk) {
-                session_regenerate_id();
-                $_SESSION['account'] = $request["account"];
+                // session_regenerate_id();
+                // $_SESSION['account'] = $request["account"];
             }
         } elseif ($command === "sendVerificationEmail") {
-            if ($_SESSION["account"] === $request["account"]) {
-                $requestOk = $accountService->sendVerificationEmail($request["account"]);
+            // if ($_SESSION["account"] === $request["account"]) {
+
+            $validation = (new AuthFilter())->validateRequest();
+            if ($validation->isAuthorized()) {
+                $requestOk = $accountService->sendVerificationEmail($validation->getAccount());
                 if ($requestOk) {
-                    session_regenerate_id();
-                    $_SESSION['account'] = $request["account"];
+                    // session_regenerate_id();
+                    // $_SESSION['account'] = $request["account"];
                 }
             } else {
                 $requestOk = false;

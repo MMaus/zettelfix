@@ -7,7 +7,8 @@ if (typeof workbox === "undefined") {
   workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 }
 
-async function createSubscription(event) {
+async function createSubscription(bearerToken) {
+  // FIXME: get Authentication Key (bearer token) from event!
   const vapidPublicKey = await fetch("api/push/vapid").then((res) =>
     res.text()
   );
@@ -25,6 +26,7 @@ async function createSubscription(event) {
           cache: "no-cache",
           headers: {
             "Content-Type": "application/json",
+            Authorization: "Bearer " + bearerToken,
           },
           body: JSON.stringify(sub.toJSON()),
         })
@@ -51,10 +53,7 @@ self.addEventListener("message", (event) => {
   const data = event.data;
   if (isMatch) {
     if (data.command === "subscribe") {
-      createSubscription();
-    } else if (data.command === "testnofitication") {
-      const prom = waitAndShowNotification(event.data);
-      event.waitUntil(prom);
+      createSubscription(data.token);
     } else {
       console.log("UNKNOWN COMMAND " + data.command + " in " + data);
     }
@@ -62,12 +61,6 @@ self.addEventListener("message", (event) => {
 
   console.log("event data:", event.data);
 });
-
-async function waitAndShowNotification(msg) {
-  return new Promise((resolver) =>
-    self.setTimeout(() => showAlarmAndResolve(resolver, msg), 1 * 60_000)
-  );
-}
 
 self.addEventListener("install", function (event) {
   console.log("== service worker on install event");
@@ -78,39 +71,6 @@ self.addEventListener("activate", function (event) {
   console.log("== service worker on activate event");
   event.waitUntil(self.clients.claim()); // Become available to all pages
 });
-
-async function showAlarmAndResolve(resolver, text) {
-  console.log("Resolution starting...");
-  //   self.Ser;
-  console.log("Resolver = ", resolver);
-  //   //   const options = {
-  //   //     body: push_message.notification.body,
-  //   //     icon: push_message.notification.icon,
-  //   //     image: push_message.notification.image,
-  //   //     tag: "alert",
-  //   //   };
-  // actions: [  // a list of "ACTION"s which will be available at the event of the notificationclick listener,
-  // where `event.action` contains the "action" field of the Action object selected. to the event of the
-  //   {
-  //     title: "open TODO",
-  //     action: "",
-  //     icon: "todo-icon",
-  //   },
-  // ],
-
-  const options = {
-    body: "Sieh Dir Deine Aufgaben in Zettelfix an! ", // message body text
-    icon: "img/todo.png", // ICON URL
-    // image: "img/todo.png", // image URL - a big image displayed below the text!
-    link: "/todo",
-    renotify: true,
-    vibrate: [300, 200, 300],
-    // tag: "alert",
-  };
-  // FIXME: mayve
-  // await self.registration.showNotification("Deine Aufgaben für heute", options);
-  // resolver();
-}
 
 self.addEventListener("push", (event) => {
   const options = {
