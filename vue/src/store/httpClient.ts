@@ -89,7 +89,7 @@ export function createStoreClient(
         cache: "no-cache",
         headers: {
           "Content-Type": contentTypeHeader,
-          Authorization: "Bearer " + bearer,
+          "X-Authorization": "Bearer " + bearer,
         },
         body: requestBody,
       } as RequestInit);
@@ -104,7 +104,7 @@ export function createStoreClient(
           method: "GET",
           cache: "no-cache",
           headers: {
-            Authorization: "Bearer " + bearer,
+            "X-Authorization": "Bearer " + bearer,
           },
         } as RequestInit);
 

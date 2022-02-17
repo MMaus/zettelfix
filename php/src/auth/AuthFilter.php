@@ -6,10 +6,10 @@ class AuthFilter {
 
     function validateRequest(): AuthResult {
         $headers = getallheaders();
-        if (!key_exists("Authorization", $headers)) {
+        if (!key_exists("X-Authorization", $headers)) {
             return new AuthResult(false, null);
         }
-        $auth = $headers["Authorization"];
+        $auth = $headers["X-Authorization"];
         // echo "auth = $auth";
         [$authType, $authValue] = explode(" ", $auth, 2);
         if ($authType === "Bearer") {
@@ -19,11 +19,13 @@ class AuthFilter {
             global $cfg;
             $decoded = base64_decode($authValue);
             [$user, $password] = explode(":", $decoded, 2);
-            if ($user == "service_db" && $password === $cfg['app']['service_db_password']) {
+            $refPassword = $cfg['app']['service_db_password'];
+            $refUser = "service_db";
+            if ($user == $refUser && $password == $refPassword) {
                 return new AuthResult(true, "service_db");
             }
             // This is a login; handled in a later feature
-            die("Basic Auth currently not supported");
+            die("Basic Auth for regular accounts not supported");
         }
         die("Unsupported Authentication method $authType");
         return new AuthResult(false, null);

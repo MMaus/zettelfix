@@ -26,7 +26,7 @@ async function createSubscription(bearerToken) {
           cache: "no-cache",
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer " + bearerToken,
+            "X-Authorization": "Bearer " + bearerToken,
           },
           body: JSON.stringify(sub.toJSON()),
         })
