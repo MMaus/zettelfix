@@ -32,17 +32,17 @@ class PushNotificationController {
                 }
                 return "Subscription already present";
             } else if ($pathSegments[0] === "trigger") {
-                if (!$authResult->isAuthorized() || $authResult->getAccount() != "service_db") {
+                if (!$authResult->isAuthorized() || $authResult->getAccount() != "cron") {
                     throw new HttpStatusException("Authentication required", 401);
                 }
                 global $cfg;
-                if (json_decode($requestBody, true)["code"] === $cfg["app"]["cron_password"]) {
-                    $this->pushNotificationService->sendNotifications("");
-                    return "Sent";
-                } else {
-                    echo "Whopsie, password mismatch!\n";
-                    throw new HttpStatusException("Forbidden", 403);
-                }
+                // if (json_decode($requestBody, true)["code"] === $cfg["app"]["cron_password"]) {
+                $this->pushNotificationService->sendNotifications("");
+                //     return "Sent";
+                // } else {
+                //     echo "Whopsie, password mismatch!\n";
+                //     throw new HttpStatusException("Forbidden", 403);
+                // }
             }
             throw new HttpStatusException("Not found", 404);
         } else if ($verb === "GET") {

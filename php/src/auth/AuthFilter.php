@@ -24,6 +24,9 @@ class AuthFilter {
             if ($user == $refUser && $password == $refPassword) {
                 return new AuthResult(true, "service_db");
             }
+            if ($user == "cron" && $password == $cfg['app']['cron_password']) {
+                return new AuthResult(true, "cron");
+            }
             // This is a login; handled in a later feature
             die("Basic Auth for regular accounts not supported");
         }
