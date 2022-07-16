@@ -2,7 +2,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import "./registerServiceWorker";
 import router from "./router";
-import generateStore from "@/store";
+import generateStore from "./store";
 
 import { importState } from "./store/shopping/importer";
 import { Category } from "./store/shopping/types";
