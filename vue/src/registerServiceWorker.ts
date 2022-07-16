@@ -2,9 +2,11 @@
 
 import { register } from "register-service-worker";
 
+// for webpack: baseUrl = process.env.BASE_URL
+const baseUrl = import.meta.env.BASE_URL;
 //  if (process.env.NODE_ENV === 'production') {
-console.log(`trying to look up ${process.env.BASE_URL}service-worker.js`);
-register(`${process.env.BASE_URL}service-worker.js`, {
+console.log(`trying to look up ${baseUrl}service-worker.js`);
+register(`${baseUrl}service-worker.js`, {
   ready() {
     console.log(
       "App is being served from cache by a service worker.\n" +

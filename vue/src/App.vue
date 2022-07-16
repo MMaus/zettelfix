@@ -29,7 +29,7 @@
   </w-app>
 </template>
 
-<script>
+<script lang="ts">
 import { mapGetters } from "vuex";
 import AuthButton from "./components/auth/AuthButton.vue";
 import LoginDialog from "./components/auth/LoginDialog.vue";
@@ -43,7 +43,7 @@ import DisclaimerDialog from "./components/common/DisclaimerDialog.vue";
 // If you enabled Analytics in your project, add the Firebase SDK for Analytics
 // import "firebase/analytics";
 
-function loginComplete(user) {
+function loginComplete(user: any) {
   console.log("=== User: ===" + user);
   if (user) {
     if (user.emailVerified) {
@@ -67,7 +67,7 @@ export default {
   },
 
   methods: {
-    toggleSignIn(user) {
+    toggleSignIn(user: any) {
       console.log("user changed to " + user);
       this.loggedIn = loginComplete(user);
       if (user) {
@@ -88,7 +88,7 @@ export default {
   },
 
   computed: {
-    showConsent() {
+    showConsent(): boolean {
       return !this.$store.getters["app/isConsentValid"];
     },
     ...mapGetters("app", ["user"]),
