@@ -2,13 +2,16 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { fileURLToPath, URL } from "url";
+import path from "path";
 // create default vite config
 export default defineConfig({
   plugins: [vue()],
   // use vite-cli to resolve modules
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
+      "@": path.resolve(__dirname, "./src"),
+      // "@": path.resolve(__dirname, "./src"),
+      // "@": fileURLToPath(new URL("./src", import.meta.url)),
       // "@": "src",
       // "@components": "src/components",
     },

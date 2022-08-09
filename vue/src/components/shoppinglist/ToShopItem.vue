@@ -63,36 +63,40 @@
             :key="cat.name"
             :value="cat.name"
             :selected="cat.name === item.category"
-            >{{ cat.name }}</option
           >
+            {{ cat.name }}
+          </option>
         </select>
       </div>
     </div>
   </div>
 </template>
-<script>
-export default {
-  data: function() {
+<script lang="ts">
+import { defineComponent, PropType } from "vue";
+import { Category } from "../../use/localApi";
+
+export default defineComponent({
+  data: function () {
     return {
       showOptions: false,
     };
   },
   methods: {
-    toggleCollapse: function() {
+    toggleCollapse: function () {
       this.showOptions = !this.showOptions;
     },
-    notifyDelete: function() {
+    notifyDelete: function () {
       this.emitChained("delete-item", this.item.id);
       console.log("Deleting " + this.item.name);
     },
-    increaseQty: function() {
+    increaseQty: function () {
       const copy = {};
       Object.assign(copy, this.item);
       copy.qty = this.item.qty + 1;
       this.emitChained("update-qty", copy);
     },
 
-    emitChained: function(eventName, eventData) {
+    emitChained: function (eventName: string, eventData: any) {
       console.log(`emitting ${eventName} with data:`, eventData);
       this.$emit(eventName, eventData);
       console.log("done emitting");
@@ -104,8 +108,10 @@ export default {
       }
     },
 
-    changeCategory: function(event) {
-      const copy = {};
+    changeCategory: function (event: any) {
+      const copy = {
+        category: undefined,
+      };
       Object.assign(copy, this.item);
       copy.category = event.target.value;
       this.emitChained("update-category", copy);
@@ -114,15 +120,15 @@ export default {
       );
     },
 
-    decreaseQty: function() {
-      const copy = {};
+    decreaseQty: function () {
+      const copy = { qty: 0 };
       Object.assign(copy, this.item);
       copy.qty = this.item.qty - 1;
       this.emitChained("update-qty", copy);
       console.log("Notifying cart toggle " + this.item.name);
     },
 
-    onClickHandler: function() {
+    onClickHandler: function () {
       console.log(`toggling item ${this.item.name}`);
       this.emitChained("toggle-cart", this.item);
     },
@@ -133,11 +139,11 @@ export default {
       required: true,
     },
     categories: {
-      type: Array,
+      type: Array as PropType<Category[]>,
       required: true,
     },
   },
-};
+});
 </script>
 <style scoped>
 .stored-item {

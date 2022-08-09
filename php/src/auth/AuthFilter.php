@@ -5,11 +5,11 @@ namespace auth;
 class AuthFilter {
 
     function validateRequest(): AuthResult {
-        $headers = getallheaders();
-        if (!key_exists("X-Authorization", $headers)) {
+        $headers = array_change_key_case(getallheaders(), CASE_LOWER);
+        if (!key_exists("x-authorization", $headers)) {
             return new AuthResult(false, null);
         }
-        $auth = $headers["X-Authorization"];
+        $auth = $headers["x-authorization"];
         // echo "auth = $auth";
         [$authType, $authValue] = explode(" ", $auth, 2);
         if ($authType === "Bearer") {
