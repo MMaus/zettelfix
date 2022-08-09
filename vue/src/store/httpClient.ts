@@ -55,8 +55,15 @@ export function createStoreClient(
     optionsProvider: (token: string) => RequestInit
   ): Promise<Response> {
     let bearerToken: string = getters["app/bearerToken"];
+    console.log(
+      "RUNNING REQUEST FOR PATH ",
+      path,
+      " with bearer ",
+      bearerToken
+    );
     if (!bearerToken) {
       bearerToken = await refreshBearerToken();
+      console.log("Refreshing bearer token, new bearer token is ", bearerToken);
     }
     let result = await fetch("api" + path, optionsProvider(bearerToken));
     if (result.status < 300) {
