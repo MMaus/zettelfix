@@ -22,7 +22,7 @@
           <datalist id="itemlist">
             <option
               v-for="item in allItems"
-              :key="item.id"
+              :key="item.id + 'item'"
               :value="item.itemName"
             >
               {{ item.itemName }}

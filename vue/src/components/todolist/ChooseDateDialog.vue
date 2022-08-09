@@ -1,5 +1,8 @@
 <template>
-  <w-dialog :value="$props.showDialog" @input="$emit('input', false)">
+  <w-dialog
+    :model-value="props.showDialog"
+    @update:model-value="$emit('input', false)"
+  >
     <w-card title="Choose time of next action">
       <div class="title5">
         {{ showDate() }} {{ showTime()
@@ -50,11 +53,18 @@
 </template>
 
 <script setup lang="ts">
-import { defineEmits, ref } from "vue";
+import { defineProps, defineEmits, ref } from "vue";
+
+const props = defineProps<{
+  showDialog: boolean;
+  // date: Date;
+  // time: Date;
+  // loggedIn: boolean;
+}>();
 
 const emit = defineEmits<{
   (e: "date-chosen", date: Date): void;
-  (e: "input", showDialog: boolean): void;
+  (e: "input", selectedInput: boolean): void;
 }>();
 
 const proposedDate = new Date();

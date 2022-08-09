@@ -29,8 +29,9 @@
   </w-app>
 </template>
 
-<script lang="ts">
-import { mapGetters } from "vuex";
+<script setup lang="ts">
+import { computed, ref } from "vue";
+import { useStore } from "vuex";
 import AuthButton from "./components/auth/AuthButton.vue";
 import LoginDialog from "./components/auth/LoginDialog.vue";
 // import firebase from "firebase/app";
@@ -43,57 +44,61 @@ import DisclaimerDialog from "./components/common/DisclaimerDialog.vue";
 // If you enabled Analytics in your project, add the Firebase SDK for Analytics
 // import "firebase/analytics";
 
-function loginComplete(user: any) {
-  console.log("=== User: ===" + user);
-  if (user) {
-    if (user.emailVerified) {
-      return true;
-    }
-    return false;
-  }
-  return false;
+// function loginComplete(user: any) {
+//   console.log("=== User: ===" + user);
+//   if (user) {
+//     if (user.emailVerified) {
+//       return true;
+//     }
+//     return false;
+//   }
+//   return false;
+// }
+
+// export default {
+//   components: { AuthButton, LoginDialog, DisclaimerDialog },
+
+// data: function () {
+const store = useStore();
+// return {
+// const loggedIn = ref(false);
+// loggedIn: false, //loginComplete(firebase.auth().currentUser),
+// const verificationRequired = ref(false);
+const showLoginDialog = ref(false);
+// const doShowConsent =
+const showConsent = computed(() => !store.getters["app/isConsentValid"]);
+//   };
+// },
+
+// methods: {
+// toggleSignIn(user: any) {
+//   console.log("user changed to " + user);
+//   this.loggedIn = loginComplete(user);
+//   if (user) {
+//     this.verificationRequired = !user.emailVerified;
+//     this.loggedOut = false;
+//   } else {
+//     this.verificationRequired = false;
+//     this.loggedOut = true;
+//   }
+// },
+function onConsentConfirm() {
+  // this.showConsent = false;
+  store.dispatch("app/confirmConsent");
 }
+function onConsentCancel() {
+  console.error("Unable to proceed if consent is denied");
+  // showConsent.value = false;
+}
+// }
 
-export default {
-  components: { AuthButton, LoginDialog, DisclaimerDialog },
-
-  data: function () {
-    return {
-      loggedIn: false, //loginComplete(firebase.auth().currentUser),
-      verificationRequired: false,
-      loggedOut: true,
-      showLoginDialog: false,
-    };
-  },
-
-  methods: {
-    toggleSignIn(user: any) {
-      console.log("user changed to " + user);
-      this.loggedIn = loginComplete(user);
-      if (user) {
-        this.verificationRequired = !user.emailVerified;
-        this.loggedOut = false;
-      } else {
-        this.verificationRequired = false;
-        this.loggedOut = true;
-      }
-    },
-    onConsentConfirm() {
-      // this.showConsent = false;
-      this.$store.dispatch("app/confirmConsent");
-    },
-    onConsentCancel() {
-      // this.showConsent = false;
-    },
-  },
-
-  computed: {
-    showConsent(): boolean {
-      return !this.$store.getters["app/isConsentValid"];
-    },
-    ...mapGetters("app", ["user"]),
-  },
-};
+// computed: {
+// showConsent(): boolean {
+//   return !this.$store.getters["app/isConsentValid"];
+// },
+// ...mapGetters("app", ["user"]),
+//   },
+// };
 </script>
 
 <style>

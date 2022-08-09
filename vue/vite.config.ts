@@ -1,7 +1,6 @@
 /** @type {import('vite').UserConfig} */
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import { fileURLToPath, URL } from "url";
 import path from "path";
 // create default vite config
 export default defineConfig({
@@ -10,10 +9,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      // "@": path.resolve(__dirname, "./src"),
       // "@": fileURLToPath(new URL("./src", import.meta.url)),
-      // "@": "src",
-      // "@components": "src/components",
     },
   },
   // proxy all requests to /api to vite-server

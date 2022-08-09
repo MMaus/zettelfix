@@ -2,7 +2,7 @@
   <div
     class="xs12 md6 lg4 pa1"
     :class="{ 'col-4 greenish': !showItems, 'col-12': showItems }"
-    :id="'cat:' + category.name"
+    :id="'cat:' + category.catName"
   >
     <w-card title-class="indigo-light5--bg" bg-color="orange-light5">
       <template #title>
@@ -40,14 +40,14 @@
         <transition-group tag="div" name="item-list">
           <shopping-item-display
             v-for="item in todoItems"
-            :key="item.id"
+            :key="item.id + 'item'"
             :item="item"
             :category="category"
             @toggle-cart="logToggle"
           ></shopping-item-display>
           <shopping-item-display
             v-for="item in doneItems"
-            :key="item.id"
+            :key="item.id + 'item'"
             :item="item"
             :category="category"
             @toggle-cart="logToggle"
