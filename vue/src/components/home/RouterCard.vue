@@ -13,15 +13,12 @@
     </router-link>
   </div>
 </template>
-<script lang="ts">
-import { defineComponent } from "@vue/runtime-core";
-
-export default defineComponent({
-  props: {
-    target: String,
-    title: String,
-  },
-});
+<script setup lang="ts">
+import { defineProps } from "vue";
+defineProps<{
+  target: string;
+  title: string;
+}>();
 </script>
 <style scoped>
 .cardbox {

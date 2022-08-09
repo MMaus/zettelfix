@@ -90,7 +90,7 @@ export default defineComponent({
       console.log("Deleting " + this.item.name);
     },
     increaseQty: function () {
-      const copy = {};
+      const copy = { qty: 0 };
       Object.assign(copy, this.item);
       copy.qty = this.item.qty + 1;
       this.emitChained("update-qty", copy);

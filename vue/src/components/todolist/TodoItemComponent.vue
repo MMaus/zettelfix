@@ -73,7 +73,10 @@
             >
           </w-flex>
         </div>
-        <choose-date-dialog v-model="showDateModal" @date-chosen="onNewDate">
+        <choose-date-dialog
+          :showDialog="showDateModal"
+          @date-chosen="onNewDate"
+        >
         </choose-date-dialog>
       </div>
     </w-card>
