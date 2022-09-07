@@ -7,61 +7,54 @@
  * Provides a sequence for the given categories.
  */
 interface CategorySequencer {
-
-    getSequence(unsorted: Array<Category>): (Array<Category>); 
-
-
+  getSequence(unsorted: Array<Category>): Array<Category>;
 }
-
 
 /**
  * The Category groups shopping cart items
  */
 interface Category {
-    id: number;
-    name: string;
-    items: Array<Item>;
-    isDone: boolean;
+  id: number;
+  name: string;
+  items: Array<Item>;
+  isDone: boolean;
 }
-
 
 /**
  * An item in a shopping cart
  */
 interface Item {
-    id: number;
-    name: string;
-    category: string;
-    qty: number;
-    stored: boolean;
+  id: number;
+  name: string;
+  category: string;
+  qty: number;
+  stored: boolean;
 }
-
 
 /**
  * A topic to be done adds context to an enclosed list of tasks
  */
 enum TaskStatus {
-    TODO,
-    DONE
+  TODO,
+  DONE,
 }
 
 interface TodoTask {
-    label: string;
-    status: TaskStatus;
+  label: string;
+  status: TaskStatus;
 }
 
 interface TodoItem {
-    taskList: Array<TodoTask>;
-    nextActionTime: Date;
-    label: string;
+  taskList: Array<TodoTask>;
+  nextActionTime: Date;
+  label: string;
 }
 
 export {
-    TodoItem,
-    TaskStatus,
-    TodoTask,
-    Item,
-    Category,
-    CategorySequencer
+  type TodoItem,
+  TaskStatus,
+  type TodoTask,
+  type Item,
+  type Category,
+  type CategorySequencer,
 };
-
