@@ -9,6 +9,7 @@ import { Category } from "./store/shopping/types";
 
 import WaveUI from "wave-ui";
 import "wave-ui/dist/wave-ui.css";
+import { createPinia } from "pinia";
 
 //  TODO: checkout axios (npm install axios --save)
 // import axios from 'axios'
@@ -57,7 +58,7 @@ if (enableImport) {
 // Vue.config.devtools = process.env.NODE_ENV === "development";
 // Vue.config.devtools = true;
 
-const app = createApp(App).use(router).use(store);
+const app = createApp(App).use(router).use(store).use(createPinia());
 
 new WaveUI(app, {});
 

@@ -1,7 +1,16 @@
 <template>
   <div>
     <w-flex wrap>
-      <router-card title="Shopping List" target="shoppinglist">
+      <Transition>
+        <router-card
+          v-if="homeStore.showLegacyApps"
+          title="Shopping List (legacy)"
+          target="shoppinglist"
+        >
+          <img alt="zettelfix logo" src="../assets/logo.png" />
+        </router-card>
+      </Transition>
+      <router-card title="Shopping List (new)" target="shoppinglist2">
         <img alt="zettelfix logo" src="../assets/logo.png" />
       </router-card>
       <todolist-button></todolist-button>
@@ -25,14 +34,13 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import RouterCard from "@/components/home/RouterCard.vue";
 import TodolistButton from "@/components/todolist/TodolistButton.vue";
+import { ref } from "vue";
 
-export default {
-  components: { RouterCard, TodolistButton },
-  name: "Home",
-};
+import { useHomeStore } from "@/home/homestore";
+const homeStore = useHomeStore();
 </script>
 <style scoped>
 .footer {
@@ -42,5 +50,14 @@ export default {
   background-color: #234781;
   color: aliceblue;
   text-align: right;
+}
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
 }
 </style>

@@ -1,14 +1,19 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import type { RouteRecordRaw } from "vue-router";
 import Home from "@/views/Home.vue";
+import HomeActions from "@/views/HomeActions.vue";
 import ShoppingListView from "@/views/ShoppingListView.vue";
 import ShoppingListActions from "@/views/ShoppingListActions.vue";
+import ShoppingView from "@/views/ShoppingView.vue";
+import ShoppingActions from "@/views/ShoppingActions.vue";
 import Impressum from "@/views/Impressum.vue";
 import NoActions from "@/views/NoActions.vue";
 import TodoActions from "@/views/TodoActions.vue";
 import SettingsView from "@/views/SettingsView.vue";
 
-console.log("Creating router");
+import ShopsView from "@/components/shopping/ShopsView.vue";
+import ShoppingItemsView from "@/components/shopping/ShoppingItemsView.vue";
+import ShoppingNowView from "@/components/shopping/ShoppingNowView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -16,7 +21,7 @@ const routes: Array<RouteRecordRaw> = [
     name: "Home",
     components: {
       default: Home,
-      actions: NoActions,
+      actions: HomeActions,
     },
   },
   {
@@ -44,12 +49,52 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/shoppinglist",
-    name: "Shopping List",
+    name: "Shopping",
     // route level code-splitting
     components: {
       default: ShoppingListView,
       actions: ShoppingListActions,
     },
+  },
+  {
+    path: "/shoppinglist2",
+    name: "Shopping List",
+    // Fixme: route level code-splitting
+    components: {
+      default: ShoppingView,
+      actions: ShoppingActions,
+    },
+    children: [
+      {
+        path: "shops",
+        component: ShopsView,
+        meta: {
+          index: 1,
+          transitionName: "default",
+        },
+      },
+      {
+        path: "items",
+        component: ShoppingItemsView,
+        meta: {
+          index: 2,
+          transitionName: "default",
+        },
+      },
+      {
+        path: "shopping",
+        component: ShoppingNowView,
+        meta: {
+          index: 3,
+          transitionName: "default",
+        },
+      },
+      {
+        // default with redirect
+        path: "",
+        redirect: "/shoppinglist2/items",
+      },
+    ],
   },
   {
     path: "/account",
@@ -91,11 +136,16 @@ const routes: Array<RouteRecordRaw> = [
   },
 ];
 
-console.log("Routes defined:" + routes.length);
 const router = createRouter({
   history: createWebHashHistory(),
   routes,
 });
+router.afterEach((to, from) => {
+  if (!!to.meta?.index && !!from.meta?.index) {
+    to.meta.transitionName =
+      to.meta.index > from.meta.index ? "switchToRight" : "switchToLeft";
+    console.log(`Setting transition to ${to.meta.transitionName}.`);
+  }
+});
 
-console.log("Router created");
 export default router;

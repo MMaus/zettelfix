@@ -9,7 +9,7 @@
             </w-button>
           </router-link>
         </div>
-        <div class="title2">Zettelfix</div>
+        <div class="xs-hide"><span class="title2">Zettelfix</span></div>
         <div class="route-actions ma2 text-right">
           <router-view name="actions"></router-view>
         </div>
@@ -113,6 +113,11 @@ html {
 .view {
   height: 100%;
   padding-top: 64px;
+}
+
+.bordered {
+  border: 1px solid red;
+  padding: 1px;
 }
 
 #app {
