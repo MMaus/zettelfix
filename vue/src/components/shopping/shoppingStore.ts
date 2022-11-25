@@ -18,6 +18,7 @@ export const useShoppingStore = defineStore({
       this.shops.push(newShop);
     },
   },
+  persist: true,
 });
 
 export type UUID = string;

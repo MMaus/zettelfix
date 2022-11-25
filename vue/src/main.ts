@@ -11,6 +11,8 @@ import WaveUI from "wave-ui";
 import "wave-ui/dist/wave-ui.css";
 import { createPinia } from "pinia";
 
+import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
+
 //  TODO: checkout axios (npm install axios --save)
 // import axios from 'axios'
 // Vue.prototype.$axios = axios
@@ -58,7 +60,10 @@ if (enableImport) {
 // Vue.config.devtools = process.env.NODE_ENV === "development";
 // Vue.config.devtools = true;
 
-const app = createApp(App).use(router).use(store).use(createPinia());
+const pinia = createPinia();
+pinia.use(piniaPluginPersistedstate);
+
+const app = createApp(App).use(router).use(store).use(pinia);
 
 new WaveUI(app, {});
 
