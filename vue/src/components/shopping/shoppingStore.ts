@@ -17,6 +17,14 @@ export const useShoppingStore = defineStore({
       };
       this.shops.push(newShop);
     },
+    deleteShop(id: UUID) {
+      for (let idx = 0; idx < this.shops.length; idx++) {
+        if (this.shops[idx].id === id) {
+          this.shops.splice(idx, 1);
+          break;
+        }
+      }
+    },
   },
   persist: true,
 });

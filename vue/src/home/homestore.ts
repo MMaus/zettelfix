@@ -5,4 +5,5 @@ export const useHomeStore = defineStore({
   state: () => ({
     showLegacyApps: true,
   }),
+  persist: true,
 });

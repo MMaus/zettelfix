@@ -1,5 +1,16 @@
 <template>
-  <w-card :title="shopTitle" title-class="amber-light5--bg">
+  <w-card title-class="amber-light5--bg">
+    <template #title>
+      <div class="title3">{{ shopTitle }}</div>
+      <div class="spacer"></div>
+      <w-confirm
+        @confirm="emit('deleteShop', props.shop.id)"
+        confirm="yes"
+        cancel="no"
+      >
+        <w-icon>mdi mdi-delete-forever-outline</w-icon>
+      </w-confirm>
+    </template>
     <add-shelf-dialog
       :shop-name="props.shop.name"
       v-model="dialogVisible"
@@ -15,15 +26,18 @@
   </w-card>
 </template>
 <script setup lang="ts">
-import { ref, watchEffect } from "vue";
-import { Shop } from "../shoppingStore";
+import { ref } from "vue";
+import { Shop, type UUID } from "../shoppingStore";
 import AddShelfDialog from "./AddShelfDialog.vue";
 
 const props = defineProps<{ shop: Shop }>();
+const emit = defineEmits<{
+  (eventName: "deleteShop", shopId: UUID): void;
+}>();
 
-const shopTitle = `Shop: ${props.shop.name}`;
-
+const shopTitle = props.shop.name || "(kein Name)";
 const dialogVisible = ref(false);
+
 const showAddShelfDialog = () => {
   dialogVisible.value = true;
 };

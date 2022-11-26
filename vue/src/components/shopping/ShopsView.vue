@@ -1,31 +1,28 @@
 <template>
   <w-card shadow title="Shops" title-class="amber-light3--bg">
-    <w-button @click="addShop">Add shop</w-button>
+    <w-button class="ma3" @click="showAddShopDialog = true">Add shop</w-button>
     <shop-display
       v-for="shop in shoppingStore.shops"
       :key="shop.id"
       :shop="shop"
+      @delete-shop="deleteShop"
       class="mb2"
     ></shop-display>
-    <div class="demo">
-      <h3>Shops</h3>
-      Shopping default view
-    </div>
+    <add-shop-dialog v-model="showAddShopDialog"></add-shop-dialog>
   </w-card>
 </template>
 <script setup lang="ts">
 import ShopDisplay from "./shops/ShopDisplay.vue";
-import { useShoppingStore } from "./shoppingStore";
+import AddShopDialog from "./shops/AddShopDialog.vue";
+import { useShoppingStore, UUID } from "./shoppingStore";
+import { ref } from "vue";
 const shoppingStore = useShoppingStore();
 
-const addShop = () => {
-  shoppingStore.createShop("Meier");
+const showAddShopDialog = ref(false);
+
+const deleteShop = (id: UUID) => {
+  shoppingStore.deleteShop(id);
 };
 
 shoppingStore.shops;
 </script>
-<style scoped>
-.demo {
-  background-color: aquamarine;
-}
-</style>
