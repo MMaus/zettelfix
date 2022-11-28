@@ -23,17 +23,31 @@
         >
       </div>
     </w-flex>
+    <shelf-display
+      v-for="shelf in shelves"
+      :key="shelf.id"
+      :shelf="shelf"
+    ></shelf-display>
   </w-card>
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
-import { Shop, type UUID } from "../shoppingStore";
+import type { Shelf, Shop, UUID } from "../shoppingStore";
 import AddShelfDialog from "./AddShelfDialog.vue";
+import ShelfDisplay from "./ShelfDisplay.vue";
 
 const props = defineProps<{ shop: Shop }>();
 const emit = defineEmits<{
   (eventName: "deleteShop", shopId: UUID): void;
 }>();
+
+const shelves: Shelf[] = [
+  {
+    id: "123-321",
+    name: "foo Bar shelf",
+    shops: [],
+  },
+];
 
 const shopTitle = props.shop.name || "(kein Name)";
 const dialogVisible = ref(false);
