@@ -8,6 +8,17 @@ export const useShoppingStore = defineStore({
     items: [] as Item[],
     shelves: [] as Shelf[],
   }),
+  getters: {
+    getShelves:
+      (state) =>
+      (shopId: UUID): Shelf[] => {
+        const shop = state.shops.find((s) => s.id === shopId);
+        if (!shop) {
+          return [];
+        }
+        return state.shelves.filter((shelf) => shop.shelves.includes(shelf.id));
+      },
+  },
   actions: {
     createShop(name: string) {
       const newShop: Shop = {
@@ -25,6 +36,21 @@ export const useShoppingStore = defineStore({
         }
       }
     },
+    addShelf(shopId: UUID, shelfName: string) {
+      // TODO: make this proper, distinguish between creating new shelf and adding existing shelf!
+      console.log(`PROTOTYPE: creating shelf ${shelfName} for shop ${shopId}`);
+      const shop = this.shops.find((s) => s.id === shopId);
+      if (!shop) {
+        throw new Error(`no shop with id ${shopId} found!`);
+      }
+      const shelf: Shelf = {
+        id: uuidv4(),
+        name: shelfName,
+        items: [],
+      };
+      this.shelves.push(shelf);
+      shop.shelves.push(shelf.id);
+    },
   },
   persist: true,
 });
@@ -36,14 +62,14 @@ type BaseType = {
   name: string;
 };
 
-export type Shelf = BaseType & {
-  shops: Array<UUID>;
-};
-
 export type Shop = BaseType & {
   shelves: Array<UUID>;
 };
 
+export type Shelf = BaseType & {
+  items: Array<UUID>;
+};
+
 export type Item = BaseType & {
-  shelves: Array<UUID>;
+  // shelves: Array<UUID>;
 };

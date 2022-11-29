@@ -14,6 +14,7 @@
     <add-shelf-dialog
       :shop-name="props.shop.name"
       v-model="dialogVisible"
+      @add-shelf="addShelf"
     ></add-shelf-dialog>
     <w-flex>
       <div class="grow"></div>
@@ -31,8 +32,8 @@
   </w-card>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
-import type { Shelf, Shop, UUID } from "../shoppingStore";
+import { ref, computed } from "vue";
+import { Shelf, Shop, useShoppingStore, UUID } from "../shoppingStore";
 import AddShelfDialog from "./AddShelfDialog.vue";
 import ShelfDisplay from "./ShelfDisplay.vue";
 
@@ -41,13 +42,19 @@ const emit = defineEmits<{
   (eventName: "deleteShop", shopId: UUID): void;
 }>();
 
-const shelves: Shelf[] = [
-  {
-    id: "123-321",
-    name: "foo Bar shelf",
-    shops: [],
-  },
-];
+const store = useShoppingStore();
+const shelves = computed(() => store.getShelves(props.shop.id));
+const addShelf = (shelfName: string) => {
+  store.addShelf(props.shop.id, shelfName);
+};
+
+// const shelves: Shelf[] = [
+//   {
+//     id: "123-321",
+//     name: "foo Bar shelf",
+//     items: [],
+//   },
+// ];
 
 const shopTitle = props.shop.name || "(kein Name)";
 const dialogVisible = ref(false);
