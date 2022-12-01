@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { v4 as uuidv4 } from "uuid";
+import { remove } from "lodash";
 
 export const useShoppingStore = defineStore({
   id: "shoppingStore",
@@ -50,6 +51,13 @@ export const useShoppingStore = defineStore({
       };
       this.shelves.push(shelf);
       shop.shelves.push(shelf.id);
+    },
+    deleteShelfFromShop(shelfId: UUID, shopId: UUID) {
+      const shop = this.shops.find((s) => s.id === shopId);
+      if (!shop) {
+        throw new Error(`no shop with id ${shopId} found!`);
+      }
+      remove(shop.shelves, (id) => id === shelfId);
     },
   },
   persist: true,

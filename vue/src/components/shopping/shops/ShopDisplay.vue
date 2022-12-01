@@ -28,6 +28,7 @@
       v-for="shelf in shelves"
       :key="shelf.id"
       :shelf="shelf"
+      @delete-shelf="deleteShelf"
     ></shelf-display>
   </w-card>
 </template>
@@ -48,18 +49,14 @@ const addShelf = (shelfName: string) => {
   store.addShelf(props.shop.id, shelfName);
 };
 
-// const shelves: Shelf[] = [
-//   {
-//     id: "123-321",
-//     name: "foo Bar shelf",
-//     items: [],
-//   },
-// ];
-
 const shopTitle = props.shop.name || "(kein Name)";
 const dialogVisible = ref(false);
 
 const showAddShelfDialog = () => {
   dialogVisible.value = true;
+};
+
+const deleteShelf = (shelfId: UUID) => {
+  store.deleteShelfFromShop(shelfId, props.shop.id);
 };
 </script>
