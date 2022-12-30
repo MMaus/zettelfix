@@ -3,12 +3,15 @@
     <template #title>
       <div class="title3">{{ shopTitle }}</div>
       <div class="spacer"></div>
+      <w-button class="ma1 sh1" @click="showAddShelfDialog">Add shelf</w-button>
+      <div class="mx3"></div>
       <w-confirm
         @confirm="emit('deleteShop', props.shop.id)"
         confirm="yes"
         cancel="no"
+        bg-color="warning-dark1"
       >
-        <w-icon>mdi mdi-delete-forever-outline</w-icon>
+        <w-icon lg color="white">mdi mdi-delete-forever-outline</w-icon>
       </w-confirm>
     </template>
     <add-shelf-dialog
@@ -18,11 +21,6 @@
     ></add-shelf-dialog>
     <w-flex>
       <div class="grow"></div>
-      <div>
-        <w-button class="ma1 sh1" @click="showAddShelfDialog"
-          >Add shelf</w-button
-        >
-      </div>
     </w-flex>
     <shelf-display
       v-for="shelf in shelves"

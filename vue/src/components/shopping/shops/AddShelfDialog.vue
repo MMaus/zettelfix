@@ -6,10 +6,7 @@
       width="600"
       height="400"
     >
-      <template #title>
-        Add shelf to {{ props.shopName }}<br />
-        <span class="warning">PROTOTYPE</span>
-      </template>
+      <template #title> Add shelf to {{ props.shopName }}</template>
       <w-input v-model="newShelfName"></w-input>
       <w-button @click="addShelf">Add</w-button>
     </w-dialog>

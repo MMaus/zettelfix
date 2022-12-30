@@ -1,6 +1,8 @@
 <template>
   <w-card shadow title="Shops" title-class="amber-light3--bg">
-    <w-button class="ma3" @click="showAddShopDialog = true">Add shop</w-button>
+    <w-button class="ma1 pa2" @click="showAddShopDialog = true">
+      <span class="title3 ma2 pa2">Add shop</span>
+    </w-button>
     <shop-display
       v-for="shop in shoppingStore.shops"
       :key="shop.id"
