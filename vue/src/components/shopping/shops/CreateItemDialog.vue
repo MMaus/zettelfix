@@ -26,7 +26,7 @@
         <template #item-content.2="{ item }">
           <div class="ma2">
             <select-shelves-component
-              v-model="selectedShelves"
+              v-model:selected-shelves="selectedShelves"
             ></select-shelves-component>
           </div>
           <w-button @click="activeTab = 0">

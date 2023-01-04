@@ -6,14 +6,18 @@
       won't be able to use it in a shopping list.
     </div>
     <div v-else>
+      <div v-if="numberOfSelectedShops == 0">
+        <span class="caption warning"
+          >Please select the shops for this item</span
+        >
+      </div>
       <w-flex wrap>
         <w-button
           class="ma1"
-          dark
           v-for="shop in selectedShops"
           :key="shop.id"
           :shadow="!shop.selected"
-          :bg-color="getClassOf(shop)"
+          :outline="!shop.selected"
           @click="toggleShopSelection(shop.id)"
           >{{ shop.name }}</w-button
         >
@@ -25,34 +29,33 @@
         class="ma1 heightLimited"
         title-class="amber-light5--bg title5"
       >
-        Selected rows: {{ selectedRows }}
+        <template #title>
+          Shelves in selected shops
+          <w-switch v-model="showOrphans" thin v-if="anyOrphanedShelf"
+            ><span class="caption">orphaned shelves</span></w-switch
+          >
+        </template>
+
         <w-table
           :headers="shelfTableHeaders"
           fixed-headers
           selectable-rows
           resizable-columns
           v-model:selected-rows="selectedRows"
+          class="h-40"
           :items="selectableShelves"
           :filter="shelfFilter"
-          class="bordered"
         >
           <template #no-data> There are no shelves registered yet </template>
           <template #item-cell.selected="{ item, label, header, index }">
-            <w-checkbox :model-value="item.selected" disabled> </w-checkbox>
+            <w-icon v-if="item.selected">mdi mdi-check-bold</w-icon>
+            <div v-else></div>
+          </template>
+          <template #item-cell.name="{ item }">
+            {{ item.name
+            }}<span v-if="item.orphaned" class="ml2 caption">(orphaned)</span>
           </template>
         </w-table>
-        <w-flex wrap class="text-left">
-          <div class="scroller">
-            <div
-              class="xs12 mb1"
-              v-for="shelf in availableShelves"
-              :key="shelf.id"
-            >
-              <w-checkbox></w-checkbox>
-              {{ shelf.name }} | {{ shelf.items }}
-            </div>
-          </div>
-        </w-flex>
       </w-card>
     </div>
   </div>
@@ -63,23 +66,22 @@ import { ref, computed, type Ref, watch } from "vue";
 import { useShoppingStore, UUID } from "../shoppingStore";
 
 const props = defineProps<{ selectedShelves: UUID[] }>();
+const emit = defineEmits<{
+  (eventName: "update:selected-shelves", selectedShelves: UUID[]): void;
+}>();
 const store = useShoppingStore();
 
 const shelvesWithShops = new Set(store.shops.flatMap((it) => it.shelves));
 
-// const shopIds = new Set(
-//   selectedShops.value.filter((it) => it.selected).flatMap((it) => it.shelves)
-// );
-// return store.shelves
-//   .filter((shelf) => shopIds.has(shelf.id))
-//   .sort((s1, s2) => (s1 || "").name.localeCompare(s2.name || ""));
+const showOrphans = ref(false);
 
-const shelfFilter = (item: { id: UUID }) => {
+const shelfFilter = (item: { id: UUID; orphaned: boolean }) => {
   return (
     selectedShops.value
       .filter((it) => it.selected)
       .flatMap((it) => it.shelves)
-      .indexOf(item.id) > -1
+      .indexOf(item.id) > -1 ||
+    (item.orphaned && showOrphans.value)
   );
 };
 
@@ -89,8 +91,12 @@ const selectableShelves = ref(
     selected: false,
     name: it.name,
     id: it.id,
-    orphaned: shelvesWithShops.has(it.id),
+    orphaned: !shelvesWithShops.has(it.id),
   }))
+);
+
+const anyOrphanedShelf: boolean = !!selectableShelves.value.find(
+  (it) => it.orphaned
 );
 
 const selectedRows = ref([]);
@@ -101,26 +107,13 @@ watch(
     const selectedShelfIDs = new Set(newSelection);
     for (let shelf of selectableShelves.value) {
       shelf.selected = selectedShelfIDs.has(shelf.id);
-      console.log(`updated shelf ${shelf.name} to selected: ${shelf.selected}`);
     }
+    emit("update:selected-shelves", newSelection);
   },
   {
     deep: true,
   }
 );
-
-// const updateSelection = (event: {
-//   item: { id: UUID; name: string; selected: boolean };
-// }) => {
-//   console.info(`updating stuff with event ${event}`, event);
-//   const itemIndex = selectableShelves.value.findIndex(
-//     (it) => it.id === event.item.id
-//   );
-//   if (itemIndex > 0) {
-//     selectableShelves.value[itemIndex].selected =
-//       !selectableShelves.value[itemIndex].selected;
-//   }
-// };
 
 const shelfTableHeaders = [
   { label: "", key: "selected", width: "45px" },
@@ -133,49 +126,13 @@ const selectedShops = ref(
     name: it.name,
     id: it.id,
     shelves: it.shelves,
-    selected: ref(true),
+    selected: false,
   }))
 );
 
-// const toggleShelf = (item: any) => {
-//   const index = selectableShelves.value.findIndex((it) => it.id == item.id);
-//   if (index > -1) {
-//     const currentValue = selectableShelves.value[index].selected;
-//     selectableShelves.value[index].selected = !currentValue;
-//   }
-//   console.info(`toggling shelf item `, item);
-// };
-
-// const addShelf = (shelfId: UUID) => {
-//   if (selectedShelves.value.indexOf(shelfId) < 0) {
-//     selectedShelves.value.push(shelfId);
-//   }
-// };
-
-// const selectedShelves = ref([]) as Ref<UUID[]>;
-
-const availableShelves = computed(() => {
-  const shopIds = new Set(
-    selectedShops.value.filter((it) => it.selected).flatMap((it) => it.shelves)
-  );
-  return store.shelves
-    .filter((shelf) => shopIds.has(shelf.id))
-    .sort((s1, s2) => (s1 || "").name.localeCompare(s2.name || ""));
+const numberOfSelectedShops = computed(() => {
+  return selectedShops.value.filter((it) => it.selected).length;
 });
-
-// const orphanedShelves = computed(() => {
-//   const shopIds = new Set(selectedShops.value.flatMap((it) => it.shelves));
-//   return store.shelves
-//     .filter((shelf) => !shopIds.has(shelf.id))
-//     .sort((s1, s2) => (s1 || "").name.localeCompare(s2.name || ""));
-// });
-
-const getClassOf = (shop: { selected: boolean }) => {
-  if (shop.selected) {
-    return "primary";
-  }
-  return "grey-light1";
-};
 
 const toggleShopSelection = (shopId: UUID) => {
   const prevValue = selectedShops.value.find(
@@ -188,10 +145,8 @@ const toggleShopSelection = (shopId: UUID) => {
 };
 </script>
 <style scoped>
-.scroller {
-  width: 100%;
+.h-40 {
   max-height: 40vh;
-  overflow-y: auto;
 }
 
 .heightLimites {
