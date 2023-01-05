@@ -84,16 +84,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  defineProps,
-  defineEmits,
-  ref,
-  Ref,
-  PropType,
-  watchEffect,
-  reactive,
-} from "vue";
+import { computed, ref, Ref, PropType } from "vue";
 import { TodoItem, TodoTask } from "@/use/localApi";
 
 import ChooseDateDialog from "./ChooseDateDialog.vue";

@@ -8,7 +8,7 @@
     >
       <template #title>
         <w-icon class="mr3">mdi mdi-book-plus-outline</w-icon>Create Item
-        <span class="ml2 text-italic">{{ newItemName }}</span>
+        <span class="ml2 text-italic success">{{ newItemName }}</span>
       </template>
 
       <w-tabs v-model="activeTab" :items="tabData">
@@ -32,7 +32,7 @@
           <w-button @click="activeTab = 0">
             <w-icon>mdi mdi-chevron-double-left</w-icon>back
           </w-button>
-          <w-button class="ml3" :disabled="!newItemName" @click="addItem">
+          <w-button class="ml3" :disabled="!newItemName" @click="createItem">
             Create Item
             <w-icon class="ml1">mdi mdi-check-bold</w-icon>
           </w-button>
@@ -49,7 +49,10 @@ import SelectShelvesComponent from "./SelectShelvesComponent.vue";
 const props = defineProps<{ modelValue: boolean }>();
 const emit = defineEmits<{
   (eventName: "update:modelValue", modelValue: boolean): void;
-  (eventName: "addItem", newItem: { itemName: string; shelves: UUID[] }): void;
+  (
+    eventName: "createItem",
+    newItem: { itemName: string; shelves: UUID[] }
+  ): void;
 }>();
 
 const activeTab = ref(0);
@@ -71,8 +74,8 @@ watch(
   }
 );
 
-const addItem = () => {
-  emit("addItem", {
+const createItem = () => {
+  emit("createItem", {
     itemName: newItemName.value,
     shelves: selectedShelves.value,
   });

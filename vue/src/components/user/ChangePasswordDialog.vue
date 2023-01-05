@@ -2,7 +2,7 @@
   <w-dialog v-model="dialogOpen"> Change Password here! </w-dialog>
 </template>
 <script setup lang="ts">
-import { ref, defineProps, defineEmits, watch } from "vue";
+import { ref, watch } from "vue";
 const dialogOpen = ref(false);
 const props = defineProps<{
   showDialog: boolean;

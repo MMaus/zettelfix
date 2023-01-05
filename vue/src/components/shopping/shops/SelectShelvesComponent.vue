@@ -7,9 +7,9 @@
     </div>
     <div v-else>
       <div v-if="numberOfSelectedShops == 0">
-        <span class="caption warning"
-          >Please select the shops for this item</span
-        >
+        <span class="caption warning">
+          <span class="warning">Please select the shops for this item</span>
+        </span>
       </div>
       <w-flex wrap>
         <w-button
@@ -30,10 +30,20 @@
         title-class="amber-light5--bg title5"
       >
         <template #title>
-          Shelves in selected shops
-          <w-switch v-model="showOrphans" thin v-if="anyOrphanedShelf"
-            ><span class="caption">orphaned shelves</span></w-switch
-          >
+          <w-flex>
+            <div>Shelves in selected shops</div>
+            <div class="spacer"></div>
+            <div>
+              <w-switch
+                class="ml-auto"
+                v-model="showOrphans"
+                thin
+                v-if="anyOrphanedShelf"
+              >
+                <span class="caption">orphaned shelves</span>
+              </w-switch>
+            </div>
+          </w-flex>
         </template>
 
         <w-table
@@ -87,12 +97,14 @@ const shelfFilter = (item: { id: UUID; orphaned: boolean }) => {
 
 // const selectableShelves = ref([]);
 const selectableShelves = ref(
-  store.shelves.map((it) => ({
-    selected: false,
-    name: it.name,
-    id: it.id,
-    orphaned: !shelvesWithShops.has(it.id),
-  }))
+  store.shelves
+    .map((it) => ({
+      selected: false,
+      name: it.name,
+      id: it.id,
+      orphaned: !shelvesWithShops.has(it.id),
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name))
 );
 
 const anyOrphanedShelf: boolean = !!selectableShelves.value.find(

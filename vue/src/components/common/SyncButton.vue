@@ -26,7 +26,7 @@
 </template>
 <script setup lang="ts">
 import { SyncState } from "@/store/todo/types";
-import { computed, defineProps, ref } from "vue";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
 
 const props = defineProps<{

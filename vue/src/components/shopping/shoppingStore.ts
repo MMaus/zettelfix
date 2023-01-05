@@ -59,6 +59,18 @@ export const useShoppingStore = defineStore({
       }
       remove(shop.shelves, (id) => id === shelfId);
     },
+    // TODO: delete orphaned shelf
+    createItem(itemName: string, shelves: UUID[]) {
+      const item: Item = {
+        id: uuidv4(),
+        name: itemName,
+      };
+      this.items.push(item);
+      shelves.forEach((it) => this.addItemToShelf(item.id, it));
+    },
+    addItemToShelf(itemId: UUID, shelfId: UUID) {
+      this.shelves.find((it) => it.id == shelfId)?.items.push(itemId);
+    },
   },
   persist: true,
 });
