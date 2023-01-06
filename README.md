@@ -5,7 +5,7 @@
 - brand new shopping cart experience: multiple shops supported
 - technical rewrite backend: Laravel (improved user management and security)
 - technical rewrite frontend: removing leftovers from Jutebag (predecessor project), migration to vue3
-- technical upgrade: Deployment process
+- technical upgrade: Deployment process automated with github actions
 
 2022 03 11: Sorry that this project is pausing for now...  
 I just switched my attention to another project, which is ML (no github repo in the near future - just getting started).  
