@@ -5,11 +5,13 @@
 - brand new shopping cart experience: multiple shops supported
 - technical rewrite backend: Laravel (improved user management and security)
 - technical rewrite frontend: removing leftovers from Jutebag (predecessor project), migration to vue3
+- technical upgrade: Deployment process
 
 2022 03 11: Sorry that this project is pausing for now...  
 I just switched my attention to another project, which is ML (no github repo in the near future - just getting started).  
 The current state of this project is far from finished, not even close to an alpha version. Despite being deployed at zettelfix.de and used regularly by me, I consider it still as experimental draft - my TODO list just for this project is overwhelming, and although I enjoy improving this, I also want to progress on my other projects - so this may become a dead end street.  
 Sorry for this.
+
 
 # Installation
 
