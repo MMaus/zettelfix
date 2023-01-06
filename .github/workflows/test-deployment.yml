@@ -4,18 +4,28 @@ on:
     branches: 
       - test
 
-jobs:
 
+jobs:
   build:
     name: Deploy Test version of zettelfix
     runs-on: ubuntu-latest
     steps:
-    - name: executing remote ssh commands using password
-      uses: appleboy/ssh-action@v0.1.6
-      with:
-        host: ${{ secrets.SSH_STRATO_HOST }}
-        username: ${{ secrets.SSH_STRATO_USERNAME }}
-        key: ${{ secrets.SSH_STRATO_KEY }}
-        passphrase: ${{ secrets.SSH_STRATO_KEY_EMAIL }}
-        port: ${{ secrets.SSH_STRATO_PORT }}
-        script: ~/scripts/update_zettelfix.sh
+      - name: executing remote ssh commands using password
+        run: |
+          ssh-add - <<< "$SSH_STRATO_KEY_2"
+          ssh hm10.net@ssh.strato.de '~/scripts/update-zettelfix.sh'
+
+
+#  build:
+#    name: Deploy Test version of zettelfix
+#    runs-on: ubuntu-latest
+#    steps:
+#    - name: executing remote ssh commands using password
+#      uses: appleboy/ssh-action@v0.1.6
+#      with:
+#        host: ${{ secrets.SSH_STRATO_HOST }}
+#        username: ${{ secrets.SSH_STRATO_USERNAME }}
+#        key: ${{ secrets.SSH_STRATO_KEY }}
+#        passphrase: ${{ secrets.SSH_STRATO_KEY_EMAIL }}
+#        port: ${{ secrets.SSH_STRATO_PORT }}
+#        script: ~/scripts/update_zettelfix.sh
