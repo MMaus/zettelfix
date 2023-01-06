@@ -1,14 +1,18 @@
 <template>
-  <w-card title-class="amber-light5--bg">
+  <w-card title-class="amber-light5--bg" shadow>
     <template #title>
       <div class="title3">{{ shopTitle }}</div>
       <div class="spacer"></div>
-      <w-button class="ma1 sh1" @click="showAddShelfDialog">Add shelf</w-button>
-      <div class="mx3"></div>
+      <w-button class="ma1" shadow @click="showAddShelfDialog"
+        ><w-icon class="mr2">mdi mdi-plus</w-icon>Add shelf</w-button
+      >
+      <div class="mx1"></div>
       <w-confirm
         @confirm="emit('deleteShop', props.shop.id)"
         confirm="yes"
+        :question="`Really delete shop ${props.shop.name}?`"
         cancel="no"
+        shadow
         bg-color="warning-dark1"
       >
         <w-icon lg color="white">mdi mdi-delete-forever-outline</w-icon>
@@ -19,22 +23,32 @@
       v-model="dialogVisible"
       @add-shelf="addShelf"
     ></add-shelf-dialog>
-    <w-flex>
-      <div class="grow"></div>
-    </w-flex>
-    <shelf-display
-      v-for="shelf in shelves"
-      :key="shelf.id"
-      :shelf="shelf"
-      @delete-shelf="deleteShelf"
-    ></shelf-display>
+    <w-table
+      :headers="shelfTableHeaders"
+      fixed-headers
+      class="h-40"
+      :items="shelves"
+    >
+      <template #item-cell.id="{ item }">
+        <w-confirm
+          @confirm="deleteShelf(item.id)"
+          confirm="yes"
+          :question="`Remove shelf ${item.name} from shop ${props.shop.name}?`"
+          cancel="no"
+          shadow
+          icon="mdi mdi-delete-forever-outline"
+          color="white"
+          bg-color="warning-dark1"
+        >
+        </w-confirm>
+      </template>
+    </w-table>
   </w-card>
 </template>
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { Shelf, Shop, useShoppingStore, UUID } from "../shoppingStore";
 import AddShelfDialog from "./AddShelfDialog.vue";
-import ShelfDisplay from "./ShelfDisplay.vue";
 
 const props = defineProps<{ shop: Shop }>();
 const emit = defineEmits<{
@@ -47,6 +61,11 @@ const addShelf = (shelfName: string) => {
   store.addShelf(props.shop.id, shelfName);
 };
 
+const shelfTableHeaders = [
+  { label: "Shelves", key: "name" },
+  { label: "", key: "id", width: "45px" },
+];
+
 const shopTitle = props.shop.name || "(kein Name)";
 const dialogVisible = ref(false);
 
@@ -58,3 +77,9 @@ const deleteShelf = (shelfId: UUID) => {
   store.deleteShelfFromShop(shelfId, props.shop.id);
 };
 </script>
+
+<style scoped>
+.h-40 {
+  max-height: 40vh;
+}
+</style>

@@ -8,7 +8,7 @@
           </div>
           <div class="spacer"></div>
           <div>
-            <w-button @click="showCreateItemDialog"
+            <w-button @click="showCreateItemDialog" shadow
               ><w-icon class="mr1">mdi mdi-plus</w-icon>Create Item</w-button
             >
           </div>
@@ -17,7 +17,7 @@
       <w-alert info v-if="store.items.length == 0">
         No shopping items. Please create some items.
       </w-alert>
-      <ul class="text-left">
+      <ul class="text-left ml4">
         <li v-for="item in store.items" :key="item.id">
           {{ item.name }}
         </li>

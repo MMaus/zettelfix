@@ -1,15 +1,25 @@
 <template>
   <w-card shadow title="Shops" title-class="amber-light3--bg">
-    <w-button class="ma1 pa2" @click="showAddShopDialog = true">
-      <span class="title3 ma2 pa2">Add shop</span>
-    </w-button>
-    <shop-display
-      v-for="shop in shoppingStore.shops"
-      :key="shop.id"
-      :shop="shop"
-      @delete-shop="deleteShop"
-      class="mb2"
-    ></shop-display>
+    <template #title>
+      <w-flex>
+        <div>Shops</div>
+        <div class="spacer"></div>
+        <div>
+          <w-button class="ma1 pa2" shadow @click="showAddShopDialog = true">
+            <w-icon class="mr2">mdi mdi-plus</w-icon> Add shop
+          </w-button>
+        </div>
+      </w-flex>
+    </template>
+    <w-flex wrap>
+      <div
+        class="xs12 pa2 md6 lg4 xl3"
+        v-for="shop in shoppingStore.shops"
+        :key="shop.id"
+      >
+        <shop-display :shop="shop" @delete-shop="deleteShop"></shop-display>
+      </div>
+    </w-flex>
     <add-shop-dialog v-model="showAddShopDialog"></add-shop-dialog>
   </w-card>
 </template>
