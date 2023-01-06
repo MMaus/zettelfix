@@ -28,7 +28,7 @@ jobs:
           SSH_HOST: ${{ secrets.SSH_STRATO_HOST }}
 
       - name: Update Zettelfix
-        run: ssh staging '~/scripts/update-zettelfix.sh'
+        run: ssh staging '~/scripts/update_zettelfix.sh'
 
 #       - name: Check out the source
 #         run: ssh staging 'cd my-application && git fetch && git reset --hard origin/master'
