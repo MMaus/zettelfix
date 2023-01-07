@@ -48,6 +48,11 @@ jobs:
           VITE_SHOW_STAGING_INFO: 1
 # for now, testing is disabled    
 #    - run: npm test
-      - run: |
-          rsync -arv public/ hm10.net@ssh.strato.de:dev/zettelfix/dist_develop/
+      - name: Adding Known Hosts
+        run: ssh-keyscan -H ${{ secrets.SSH_STRATO_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy via rsync
+        working-directory: vue
+        run: |
+          rsync -arv dist/ ${{ secrets.SSH_STRATO_USERNAME}}@${{ secrets.SSH_STRATO_HOST}}:dev/zettelfix/dist_develop/
 
