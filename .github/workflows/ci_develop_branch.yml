@@ -55,6 +55,6 @@ jobs:
       - name: Deploy via rsync
         working-directory: vue
         run: |
-          rsync -arv dist/ hm10.net@ssh.strato.de:dev/zettelfix/dist_develop/
+          rsync -arv -e "ssh -v" dist/ hm10.net@ssh.strato.de:dev/zettelfix/dist_develop/
           rsync -arv dist/ ${{ secrets.SSH_STRATO_USERNAME}}@${{ secrets.SSH_STRATO_HOST}}:dev/zettelfix/dist_develop/
 
