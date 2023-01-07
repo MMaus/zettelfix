@@ -26,4 +26,4 @@ the .htaccess-file
 
 COPY api/ into public/api at after npm build
 
-Project name: joote.net
+Project name: zettelfix.de
