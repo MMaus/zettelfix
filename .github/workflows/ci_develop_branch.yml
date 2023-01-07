@@ -1,12 +1,11 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+# This workflow will build the preview ("develop" branch) of the UI component,
+# and deploy it via rsync to strato
 
 name: Publish preview version (UI)
 
 on:
   push:
     branches: [ "develop" ]
-
 
 jobs:
   build:
@@ -22,14 +21,17 @@ jobs:
           node-version: '18.x'
           cache: 'npm'
           cache-dependency-path: vue/package-lock.json
-      - name: CI
+          
+      - name: NPM CI
         working-directory: vue
         run: npm ci
+        
       - name: build UI for DEVELOPMENT
         run: npm run build 
         working-directory: vue
         env:
           VITE_SHOW_STAGING_INFO: 1
+          
 # for now, testing is disabled    
 #    - run: npm test
 
@@ -49,6 +51,7 @@ jobs:
           SSH_USER: ${{ secrets.SSH_STRATO_USERNAME }}
           SSH_KEY: ${{ secrets.SSH_STRATO_KEY_2 }}
           SSH_HOST: ${{ secrets.SSH_STRATO_HOST }}
+          
       - name: Adding Known Hosts
         run: ssh-keyscan -H ${{ secrets.SSH_STRATO_HOST }} >> ~/.ssh/known_hosts
 
@@ -57,4 +60,9 @@ jobs:
           ls ~/.ssh
           ssh staging 'ls dev'
           rsync -arv vue/dist/ staging:dev/zettelfix/dist_develop/
+          
+      - name: Clean Up SSH
+        if: always()
+        run: |
+          rm ~/.ssh/staging.key
 
