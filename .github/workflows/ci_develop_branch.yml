@@ -16,20 +16,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-#       - name: Use Node.js 18.x
-#         uses: actions/setup-node@v3
-#         with:
-#           node-version: '18.x'
-#           cache: 'npm'
-#           cache-dependency-path: vue/package-lock.json
-#       - name: CI
-#         working-directory: vue
-#         run: npm ci
-#       - name: build UI for DEVELOPMENT
-#         run: npm run build 
-#         working-directory: vue
-#         env:
-#           VITE_SHOW_STAGING_INFO: 1
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+          cache-dependency-path: vue/package-lock.json
+      - name: CI
+        working-directory: vue
+        run: npm ci
+      - name: build UI for DEVELOPMENT
+        run: npm run build 
+        working-directory: vue
+        env:
+          VITE_SHOW_STAGING_INFO: 1
 # for now, testing is disabled    
 #    - run: npm test
 
@@ -56,6 +56,5 @@ jobs:
         run: |
           ls ~/.ssh
           ssh staging 'ls dev'
-          rsync -arv -e "ssh staging -v" vue/dist/ hm10.net@ssh.strato.de:dev/zettelfix/dist_develop/
-          rsync -arv vue/dist/ ${{ secrets.SSH_STRATO_USERNAME}}@${{ secrets.SSH_STRATO_HOST}}:dev/zettelfix/dist_develop/
+          rsync -arv vue/dist/ staging:dev/zettelfix/dist_develop/
 
