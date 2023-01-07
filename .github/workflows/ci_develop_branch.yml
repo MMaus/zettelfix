@@ -37,7 +37,7 @@ jobs:
         with:
           node-version: '18.x'
           cache: 'npm'
-          working-directory: vue
+          cache-dependency-path: vue/package-lock.json
       - name: CI
         working-directory: vue
         run: npm ci
