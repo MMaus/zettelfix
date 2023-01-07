@@ -17,7 +17,12 @@
           <auth-button @click="showLoginDialog = true"></auth-button>
         </div>
       </w-toolbar>
-
+      <div class="top-64"></div>
+      <div v-if="showStagingInfo">
+        <w-alert info
+          >Staging Area - visit zettelfix.de ({{ showStagingInfo }})</w-alert
+        >
+      </div>
       <router-view class="view"></router-view>
       <login-dialog :show="showLoginDialog" @close="showLoginDialog = false" />
       <disclaimer-dialog
@@ -34,6 +39,7 @@ import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import AuthButton from "./components/auth/AuthButton.vue";
 import LoginDialog from "./components/auth/LoginDialog.vue";
+
 // import firebase from "firebase/app";
 
 // // // Add the Firebase products that you want to use
@@ -82,6 +88,9 @@ const showConsent = computed(() => !store.getters["app/isConsentValid"]);
 //     this.loggedOut = true;
 //   }
 // },
+
+const showStagingInfo = import.meta.env.VITE_SHOW_STAGING_INFO;
+
 function onConsentConfirm() {
   // this.showConsent = false;
   store.dispatch("app/confirmConsent");
@@ -112,7 +121,6 @@ html {
 
 .view {
   height: 100%;
-  padding-top: 64px;
 }
 
 .bordered {
@@ -143,5 +151,8 @@ html {
 .route-actions {
   flex-grow: 1;
   /* border: 1px solid red; */
+}
+.top-64 {
+  margin-top: 64px;
 }
 </style>

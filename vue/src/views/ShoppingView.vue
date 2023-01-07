@@ -2,14 +2,20 @@
   <div>
     <div class="pa1">
       <router-view v-slot="{ Component, route }">
-        <transition :name="route.meta.transitionName" mode="default">
+        <transition :name="getTransitionName(route)" mode="default">
           <component :is="Component"></component>
         </transition>
       </router-view>
     </div>
   </div>
 </template>
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { RouteMeta } from "vue-router";
+
+const getTransitionName = (route: any) => {
+  return route.meta?.transitionName || "";
+};
+</script>
 <style scoped>
 .switchToRight-leave-active,
 .switchToRight-enter-active,
