@@ -27,9 +27,17 @@
     </w-flex>
 
     <footer class="footer">
-      <router-link to="impressum"
-        ><p class="body white mt2 mb1 mr4">Impressum</p></router-link
-      >
+      <w-flex>
+        <div>
+          <p class="body white mt2 mb1 ml2">build: {{ build_date }}</p>
+        </div>
+        <div class="spacer"></div>
+        <div>
+          <router-link to="impressum">
+            <p class="body white mt2 mb1 mr4">Impressum</p>
+          </router-link>
+        </div>
+      </w-flex>
     </footer>
   </div>
 </template>
@@ -38,8 +46,9 @@
 import RouterCard from "@/components/home/RouterCard.vue";
 import TodolistButton from "@/components/todolist/TodolistButton.vue";
 import { ref } from "vue";
-
 import { useHomeStore } from "@/home/homestore";
+
+const build_date = import.meta.env.VITE_BUILD_DATE;
 const homeStore = useHomeStore();
 </script>
 <style scoped>

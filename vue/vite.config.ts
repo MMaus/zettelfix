@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import path from "path";
 // create default vite config
+const now = new Date();
 export default defineConfig({
   plugins: [vue()],
   // use vite-cli to resolve modules

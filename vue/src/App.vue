@@ -20,7 +20,9 @@
       <div class="top-64"></div>
       <div v-if="showStagingInfo">
         <w-alert info
-          >Staging Area - visit zettelfix.de ({{ showStagingInfo }})</w-alert
+          >You are visiting the preview Version - visit
+          <a href="https://zettelfix.de">https://zettelfix.de</a> for the
+          current version.({{ showStagingInfo }})</w-alert
         >
       </div>
       <router-view class="view"></router-view>
