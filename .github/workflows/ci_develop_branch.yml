@@ -15,6 +15,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Set build date as environment variable
+        run: echo "VITE_BUILD_DATE=$(date)" >> $GITHUB_ENV
+
       - name: Use Node.js 18.x
         uses: actions/setup-node@v3
         with:
