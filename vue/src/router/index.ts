@@ -13,6 +13,7 @@ import SettingsView from "@/views/SettingsView.vue";
 
 import ShopsView from "@/components/shopping/ShopsView.vue";
 import ShoppingItemsView from "@/components/shopping/ShoppingItemsView.vue";
+import WhishlistView from "@/components/shopping/WhishlistView.vue";
 import ShoppingNowView from "@/components/shopping/ShoppingNowView.vue";
 
 const routes: Array<RouteRecordRaw> = [
@@ -82,10 +83,18 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
+        path: "whishlist",
+        component: WhishlistView,
+        meta: {
+          index: 3,
+          transitionName: "default",
+        },
+      },
+      {
         path: "shopping",
         component: ShoppingNowView,
         meta: {
-          index: 3,
+          index: 4,
           transitionName: "default",
         },
       },

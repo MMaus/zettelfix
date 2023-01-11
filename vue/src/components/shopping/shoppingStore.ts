@@ -8,6 +8,7 @@ export const useShoppingStore = defineStore({
     shops: [] as Shop[],
     items: [] as Item[],
     shelves: [] as Shelf[],
+    whishlist: [] as WhishlistItem[],
   }),
   getters: {
     getShelves:
@@ -19,8 +20,19 @@ export const useShoppingStore = defineStore({
         }
         return state.shelves.filter((shelf) => shop.shelves.includes(shelf.id));
       },
+    getItem: (state) => {
+      return (id: UUID) => state.items.find((it) => it.id == id);
+    },
   },
   actions: {
+    addItemToWhishlist(id: UUID, qty: number = 1) {
+      const existing = this.whishlist.find((it) => it.item == id);
+      if (!existing) {
+        this.whishlist.push({ item: id, amount: 1 });
+      } else {
+        existing.amount += 1;
+      }
+    },
     createShop(name: string) {
       const newShop: Shop = {
         name,
@@ -88,6 +100,11 @@ export type Shop = BaseType & {
 
 export type Shelf = BaseType & {
   items: Array<UUID>;
+};
+
+export type WhishlistItem = {
+  item: UUID;
+  amount: number;
 };
 
 export type Item = BaseType & {
