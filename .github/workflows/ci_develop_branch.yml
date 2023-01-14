@@ -23,15 +23,15 @@ jobs:
         with:
           node-version: '18.x'
           cache: 'npm'
-          cache-dependency-path: vue/package-lock.json
+          cache-dependency-path: frontend/package-lock.json
           
       - name: NPM CI
-        working-directory: vue
+        working-directory: frontend
         run: npm ci
         
       - name: build UI for DEVELOPMENT
         run: npm run build 
-        working-directory: vue
+        working-directory: frontend
         env:
           VITE_SHOW_STAGING_INFO: 1
           
@@ -62,7 +62,7 @@ jobs:
         run: |
           ls ~/.ssh
           ssh staging 'ls dev'
-          rsync -arv vue/dist/ staging:dev/zettelfix/dist_develop/
+          rsync -arv frontend/dist/ staging:dev/zettelfix/dist_develop/
           
       - name: Clean Up SSH
         if: always()
