@@ -1,4 +1,5 @@
 node_modules
-public
 *.code-workspace
 deploy_public.sh
+vapid.json
+vapid.strato.json

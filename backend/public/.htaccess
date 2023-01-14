@@ -1,0 +1,40 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    # We want to redirect EVERYTHING INCLUDING FOLDERS!
+    # RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 
+    # initially: stop, let browser redirect to the same URL without trailing slash
+    # RewriteRule ^ %1 [L,R=301]
+
+    # Send API Requests To Front Controller...
+    # We want to redirect EVERYTHING INCLUDING FOLDERS!
+    # RewriteCond %{REQUEST_FILENAME} !-d
+    # RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_URI} ^/api/
+    # Not sure if QSA is required
+    RewriteRule ^ index.php [L]
+
+    # Send Requests To SPA Controller...
+    # Alternatively: serve all files
+    # RewriteCond %{REQUEST_FILENAME} !-d
+    # RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_URI} !^/assets/
+    RewriteCond %{REQUEST_URI} !^/css/
+    RewriteCond %{REQUEST_URI} !^/img/
+    RewriteCond %{REQUEST_URI} !^/favicon
+    RewriteCond %{REQUEST_URI} !/index.php$
+    RewriteCond %{REQUEST_URI} !^/robots.txt$
+    RewriteRule ^ index.html [L]
+
+</IfModule>
