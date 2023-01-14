@@ -4,6 +4,11 @@ This project is a hobby project for self organisation (like shopping lists), pub
 
 It uses a PHP backend and Vue3 frontend.
 
+Note: there are subproject README.mds:
+
+- [Backend](backend/README.md)
+- [Frontend](frontend/README.md)
+
 # News
 
 2023 01 06: The project is alive, again. There is a major rewrite ongoing. This rewrite will most likely be a breaking change, that is, existing data will be discarded. Some of the major new features are:
@@ -32,6 +37,7 @@ Sorry for this.
 In short:
 
 - maybe: read "Installation" section first
+- READ THE BACKEND SETUP README BEFORE TO DO THE DATABASE MIGRATIONS!
 - cd into `backend`
 - install the backend: `composer install`
 - start backend with `php artisan serve`
