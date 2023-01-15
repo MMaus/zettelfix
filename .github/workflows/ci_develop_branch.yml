@@ -60,7 +60,7 @@ jobs:
 
       - name: "Backend: Update remote content"
         run: |
-          ssh strato "cd zettelfix.de/preview/backend; git checkout develop; git pull"
+          ssh strato "cd zettelfix.de/preview/backend; git checkout develop; git clean -f; git pull"
 
       - name: "Backend: Setup remote installation"
         run: |
@@ -77,7 +77,7 @@ jobs:
 
       - name: "Frontend: Deploy frontend via rsync"
         run: |
-          rsync -arv frontend/dist/ strato:zettelfix.de/preview/public/
+          rsync -arv frontend/dist/ strato:zettelfix.de/preview/backend/public/
 
       - name: Clean Up SSH
         if: always()
