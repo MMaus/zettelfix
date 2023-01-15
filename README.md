@@ -40,6 +40,7 @@ In short:
 - READ THE BACKEND SETUP README BEFORE TO DO THE DATABASE MIGRATIONS!
 - cd into `backend`
 - install the backend: `composer install`
+- run the db migrations (once) : `php artisan migrate`
 - start backend with `php artisan serve`
 - cd into `frontend`
 - install the frontend: `npm install`
