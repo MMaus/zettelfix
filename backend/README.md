@@ -19,6 +19,8 @@ Copy `.env.example` to `.env` and adapt it to the local needs.
 At the very least, you need to supply the correct database credentials for an empty MySQL database.  
 If you prefer to choose another database, you can configure it there as well. Please refer to the Laravel documentation.
 
+You should also set `APP_DEBUG=false`.
+
 ### Starting the backend
 
 Then, you need to setup the following commands:
@@ -32,3 +34,6 @@ Then, you need to setup the following commands:
 If you plan to deploy the application, you need to create an adapted .env file for the deployment stage as well.
 There, you need to adapt the database parameters as well.  
 Note that you might also want to adapt the host etc.
+
+The backend is installed from source. One option is to clone the repository initially at the destination, and `git pull` the
+latest source before each installation.

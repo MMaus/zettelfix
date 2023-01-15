@@ -58,10 +58,25 @@ jobs:
       - name: Adding Known Hosts
         run: ssh-keyscan -H ${{ secrets.SSH_STRATO_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy via rsync
+      - name: "Backend: Update remote content"
         run: |
-          ls ~/.ssh
-          ssh staging 'ls dev'
+          ssh {{ secrets.SSH_STRATO_USERNAME }}@{{ secrets.SSH_STRATO_HOST}} "cd zettelfix.de/preview/backend; git checkout develop; git pull"
+
+      - name: "Backend: Setup remote installation"
+        run: |
+          ssh {{ secrets.SSH_STRATO_USERNAME }}@{{ secrets.SSH_STRATO_HOST}} "cd zettelfix.de/preview/backend; composer install --optimize-autoloader --no-dev"
+
+      - name: "Backend: Database migrations"
+        run: |
+          ssh {{ secrets.SSH_STRATO_USERNAME }}@{{ secrets.SSH_STRATO_HOST}} "cd zettelfix.de/preview/backend; php-cli artisan migrate"
+
+      - name: "Backend: Optimizations"
+        run: |
+          ssh {{ secrets.SSH_STRATO_USERNAME }}@{{ secrets.SSH_STRATO_HOST}} "cd zettelfix.de/preview/backend; php-cli artisan config:cache"
+          ssh {{ secrets.SSH_STRATO_USERNAME }}@{{ secrets.SSH_STRATO_HOST}} "cd zettelfix.de/preview/backend; php-cli artisan route:cache"
+
+      - name: "Frontend: Deploy frontend via rsync"
+        run: |
           rsync -arv frontend/dist/ staging:zettelfix.de/preview/public/
 
       - name: Clean Up SSH
