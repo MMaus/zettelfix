@@ -5,12 +5,12 @@ name: Publish preview version (UI)
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: ["develop"]
 
 jobs:
   build:
     name: Build and deploy
-    runs-on: ubuntu-latest    
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -21,22 +21,22 @@ jobs:
       - name: Use Node.js 18.x
         uses: actions/setup-node@v3
         with:
-          node-version: '18.x'
-          cache: 'npm'
-          cache-dependency-path: vue/package-lock.json
-          
+          node-version: "18.x"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
       - name: NPM CI
-        working-directory: vue
+        working-directory: frontend
         run: npm ci
-        
+
       - name: build UI for DEVELOPMENT
-        run: npm run build 
-        working-directory: vue
+        run: npm run build
+        working-directory: frontend
         env:
           VITE_SHOW_STAGING_INFO: 1
-          
-# for now, testing is disabled    
-#    - run: npm test
+
+      # for now, testing is disabled
+      #    - run: npm test
 
       - name: Configure SSH
         run: |
@@ -54,7 +54,7 @@ jobs:
           SSH_USER: ${{ secrets.SSH_STRATO_USERNAME }}
           SSH_KEY: ${{ secrets.SSH_STRATO_KEY_2 }}
           SSH_HOST: ${{ secrets.SSH_STRATO_HOST }}
-          
+
       - name: Adding Known Hosts
         run: ssh-keyscan -H ${{ secrets.SSH_STRATO_HOST }} >> ~/.ssh/known_hosts
 
@@ -62,10 +62,9 @@ jobs:
         run: |
           ls ~/.ssh
           ssh staging 'ls dev'
-          rsync -arv vue/dist/ staging:dev/zettelfix/dist_develop/
-          
+          rsync -arv frontend/dist/ staging:zettelfix.de/preview/public/
+
       - name: Clean Up SSH
         if: always()
         run: |
           rm ~/.ssh/staging.key
-
