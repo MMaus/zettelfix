@@ -60,20 +60,20 @@ jobs:
 
       - name: "Backend: Update remote content"
         run: |
-          ssh {{ secrets.SSH_STRATO_USERNAME }}@{{ secrets.SSH_STRATO_HOST}} "cd zettelfix.de/preview/backend; git checkout develop; git pull"
+          ssh {{ secrets.SSH_STRATO_USERNAME }}@{{ secrets.SSH_STRATO_HOST }} "cd zettelfix.de/preview/backend; git checkout develop; git pull"
 
       - name: "Backend: Setup remote installation"
         run: |
-          ssh {{ secrets.SSH_STRATO_USERNAME }}@{{ secrets.SSH_STRATO_HOST}} "cd zettelfix.de/preview/backend; composer install --optimize-autoloader --no-dev"
+          ssh {{ secrets.SSH_STRATO_USERNAME }}@{{ secrets.SSH_STRATO_HOST }} "cd zettelfix.de/preview/backend; composer install --optimize-autoloader --no-dev"
 
       - name: "Backend: Database migrations"
         run: |
-          ssh {{ secrets.SSH_STRATO_USERNAME }}@{{ secrets.SSH_STRATO_HOST}} "cd zettelfix.de/preview/backend; php-cli artisan migrate"
+          ssh {{ secrets.SSH_STRATO_USERNAME }}@{{ secrets.SSH_STRATO_HOST }} "cd zettelfix.de/preview/backend; php-cli artisan migrate"
 
       - name: "Backend: Optimizations"
         run: |
-          ssh {{ secrets.SSH_STRATO_USERNAME }}@{{ secrets.SSH_STRATO_HOST}} "cd zettelfix.de/preview/backend; php-cli artisan config:cache"
-          ssh {{ secrets.SSH_STRATO_USERNAME }}@{{ secrets.SSH_STRATO_HOST}} "cd zettelfix.de/preview/backend; php-cli artisan route:cache"
+          ssh {{ secrets.SSH_STRATO_USERNAME }}@{{ secrets.SSH_STRATO_HOST }} "cd zettelfix.de/preview/backend; php-cli artisan config:cache"
+          ssh {{ secrets.SSH_STRATO_USERNAME }}@{{ secrets.SSH_STRATO_HOST }} "cd zettelfix.de/preview/backend; php-cli artisan route:cache"
 
       - name: "Frontend: Deploy frontend via rsync"
         run: |
