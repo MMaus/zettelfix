@@ -33,7 +33,7 @@ jobs:
         run: npm run build
         working-directory: frontend
         env:
-          VITE_SHOW_STAGING_INFO: 1
+          VITE_SHOW_strato_INFO: 1
 
       # for now, testing is disabled
       #    - run: npm test
@@ -41,13 +41,13 @@ jobs:
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh/
-          echo "$SSH_KEY" > ~/.ssh/staging.key
-          chmod 600 ~/.ssh/staging.key
+          echo "$SSH_KEY" > ~/.ssh/strato.key
+          chmod 600 ~/.ssh/strato.key
           cat >>~/.ssh/config <<END
-          Host staging
+          Host strato
             HostName $SSH_HOST
             User $SSH_USER
-            IdentityFile ~/.ssh/staging.key
+            IdentityFile ~/.ssh/strato.key
             StrictHostKeyChecking no
           END
         env:
@@ -60,26 +60,26 @@ jobs:
 
       - name: "Backend: Update remote content"
         run: |
-          ssh {{ secrets.SSH_STRATO_USERNAME }}@{{ secrets.SSH_STRATO_HOST }} "cd zettelfix.de/preview/backend; git checkout develop; git pull"
+          ssh strato "cd zettelfix.de/preview/backend; git checkout develop; git pull"
 
       - name: "Backend: Setup remote installation"
         run: |
-          ssh {{ secrets.SSH_STRATO_USERNAME }}@{{ secrets.SSH_STRATO_HOST }} "cd zettelfix.de/preview/backend; composer install --optimize-autoloader --no-dev"
+          ssh strato "cd zettelfix.de/preview/backend; composer install --optimize-autoloader --no-dev"
 
       - name: "Backend: Database migrations"
         run: |
-          ssh {{ secrets.SSH_STRATO_USERNAME }}@{{ secrets.SSH_STRATO_HOST }} "cd zettelfix.de/preview/backend; php-cli artisan migrate"
+          ssh strato "cd zettelfix.de/preview/backend; php-cli artisan migrate"
 
       - name: "Backend: Optimizations"
         run: |
-          ssh {{ secrets.SSH_STRATO_USERNAME }}@{{ secrets.SSH_STRATO_HOST }} "cd zettelfix.de/preview/backend; php-cli artisan config:cache"
-          ssh {{ secrets.SSH_STRATO_USERNAME }}@{{ secrets.SSH_STRATO_HOST }} "cd zettelfix.de/preview/backend; php-cli artisan route:cache"
+          ssh strato "cd zettelfix.de/preview/backend; php-cli artisan config:cache"
+          ssh strato "cd zettelfix.de/preview/backend; php-cli artisan route:cache"
 
       - name: "Frontend: Deploy frontend via rsync"
         run: |
-          rsync -arv frontend/dist/ staging:zettelfix.de/preview/public/
+          rsync -arv frontend/dist/ strato:zettelfix.de/preview/public/
 
       - name: Clean Up SSH
         if: always()
         run: |
-          rm ~/.ssh/staging.key
+          rm ~/.ssh/strato.key
