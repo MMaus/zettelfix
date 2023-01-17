@@ -35,20 +35,30 @@ class JsonBagController extends Controller {
         if (json_last_error() != JSON_ERROR_NONE) {
             return response(['message' => 'request body could not be parsed as json received'], 422);
         }
+        $sha = hash('sha256', serialize($request->all()));
+        // return  $sha
+
         $bag = $request->user()->bags()->where('name', '=', $name)->get()->first();
         if (!$bag) {
             $bag = $request->user()->bags()->create(
                 [
                     "content" => $request->all(),
                     'version' => 1,
-                    'name' => $name
+                    'name' => $name,
+                    'sha' => $sha
                 ],
 
             );
         } else {
-            $bag->update(
-                ['content' => $request->all()]
-            );
+            if ($bag->sha != $sha) {
+                $bag->update(
+                    [
+                        'content' => $request->all(),
+                        'sha' => $sha,
+                        'version' => $bag->version + 1
+                    ]
+                );
+            }
         }
         return response($bag);
     }

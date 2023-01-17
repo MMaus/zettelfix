@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->bigInteger('version');
+            $table->string('sha');
             $table->json('content');
         });
     }

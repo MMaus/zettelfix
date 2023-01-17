@@ -14,6 +14,7 @@ class JsonBag extends Model {
     protected $fillable = [
         'version',
         'content',
-        'name'
+        'name',
+        'sha'
     ];
 }
