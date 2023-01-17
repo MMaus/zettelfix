@@ -37,3 +37,21 @@ Note that you might also want to adapt the host etc.
 
 The backend is installed from source. One option is to clone the repository initially at the destination, and `git pull` the
 latest source before each installation.
+
+# Functionality
+
+The functionality should be provided via OpenAPI. This is work in progress on the TODO list (#45).
+
+For now, the following routes exist (under context /api):
+
+-   POST /auth/register: register new user
+-   POST /auth/login : login (a bearer token is returned)
+-   GET /bags : (protected) get all bags from user, might change to: get meta info for all bags (i.e. without content)
+-   GET /bags/{name} : (protected) get a user's bag of a specific name, provides `ETag` and `Last-Modified` headers
+-   PUT /bags/{name} : (protected) create or update a given bag for that user; supports `If-Match` header
+-   DELETE /bags/{name} : (protected) delete one of the user's bags
+-   POST /auth/logout : (protected) logout and invalidate the bearer token
+-   GET /user : (protected) get user information
+
+For details, issue a request and work with the error messages.
+_protected_ routes require a bearer token, available at /auth/login)
