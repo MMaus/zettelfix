@@ -6,6 +6,10 @@ use App\Models\JsonBag;
 use Illuminate\Http\Request;
 
 class JsonBagController extends Controller {
+
+    // from https://www.php.net/manual/en/class.datetimeinterface.php
+    const RFC7231_DATE = "D, d M Y H:i:s \\G\\M\\T";
+
     /**
      * Display a listing of the resource.
      *
@@ -21,8 +25,7 @@ class JsonBagController extends Controller {
         if (!$bag) {
             return response(["message" => "user {$request->user()->name} has no bag $name"], 404);
         }
-        return response($bag);
-        // return response($request->user());
+        return JsonBagController::createResponse($bag);
     }
 
     /**
@@ -39,6 +42,7 @@ class JsonBagController extends Controller {
         // return  $sha
 
         $bag = $request->user()->bags()->where('name', '=', $name)->get()->first();
+        $returnCode = 200;
         if (!$bag) {
             $bag = $request->user()->bags()->create(
                 [
@@ -49,7 +53,12 @@ class JsonBagController extends Controller {
                 ],
 
             );
+            $returnCode = 201;
         } else {
+            $givenVersion = $request->header("if-match");
+            if ($givenVersion && $givenVersion != "{$bag->version}") {
+                return response(['message' => "provided version $givenVersion does not match {$bag->version}"], 412);
+            }
             if ($bag->sha != $sha) {
                 $bag->update(
                     [
@@ -60,7 +69,7 @@ class JsonBagController extends Controller {
                 );
             }
         }
-        return response($bag);
+        return JsonBagController::createResponse($bag, $returnCode);
     }
 
     /**
@@ -117,5 +126,16 @@ class JsonBagController extends Controller {
      */
     public function update(Request $request, JsonBag $jsonBag) {
         //
+    }
+
+    /**
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    function createResponse(JsonBag $bag, $code = 200) {
+        return response($bag, $code, [
+            "ETag" => "{$bag->version}",
+            "Last-Modified" => $bag->updated_at->format(self::RFC7231_DATE)
+        ]);
     }
 }

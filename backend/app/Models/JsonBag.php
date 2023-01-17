@@ -10,6 +10,9 @@ class JsonBag extends Model {
 
     protected $casts = ["content" => "object"];
 
+    protected $hidden = [
+        'user_id'
+    ];
 
     protected $fillable = [
         'version',
