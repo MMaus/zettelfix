@@ -25,6 +25,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/bags', [JsonBagController::class, 'index']);
     Route::get('/bags/{name}', [JsonBagController::class, 'byName']);
     Route::put('/bags/{name}', [JsonBagController::class, 'put']);
+    Route::delete('/bags/{name}', [JsonBagController::class, 'delete']);
     Route::post('/auth/logout', [UserController::class, 'logout']);
 });
 

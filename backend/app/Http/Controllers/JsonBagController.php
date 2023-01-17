@@ -32,26 +32,40 @@ class JsonBagController extends Controller {
      */
     public function put(Request $request, string $name) {
         //
-        $validated = $request->validate([
-            "content" => "array|required"
-        ]);
-        // $bag = JsonBag::where('name', "=", $validated['name'])->get()->first(); //$request->user()->bags()->where('name', $validated['name'])->first();
+        if (json_last_error() != JSON_ERROR_NONE) {
+            return response(['message' => 'request body could not be parsed as json received'], 422);
+        }
         $bag = $request->user()->bags()->where('name', '=', $name)->get()->first();
         if (!$bag) {
-            $bag = $request->user()->bags()->create([
-                "name" => $name,
-                "content" => $validated['content'],
-                "version" => 1
-            ]);
+            $bag = $request->user()->bags()->create(
+                [
+                    "content" => $request->all(),
+                    'version' => 1,
+                    'name' => $name
+                ],
+
+            );
         } else {
             $bag->update(
-                [
-                    "content" => $validated['content'],
-                ]
+                ['content' => $request->all()]
             );
         }
-
         return response($bag);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\JsonBag  $jsonBag
+     * @return \Illuminate\Http\Response
+     */
+    public function delete(Request $request, string $name) {
+        $bag = $request->user()->bags()->where('name', '=', $name)->get()->first();
+        if ($bag) {
+            $bag->delete();
+            return response(['message' => 'deleted']);
+        }
+        return response(["message" => "user {$request->user()->name} has no bag $name"], 404);
     }
 
     /**
@@ -92,16 +106,6 @@ class JsonBagController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, JsonBag $jsonBag) {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\JsonBag  $jsonBag
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(JsonBag $jsonBag) {
         //
     }
 }
