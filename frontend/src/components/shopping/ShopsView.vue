@@ -12,7 +12,7 @@
       </w-flex>
     </template>
     <w-flex wrap>
-      <div v-if="shoppingStore.getOrphanedShelves" class="xs12 pa2 md6 lg4 xl3">
+      <div v-if="orphanedShelvesExist" class="xs12 pa2 md6 lg4 xl3">
         <orphaned-shelves-display></orphaned-shelves-display>
       </div>
       <div
@@ -36,7 +36,9 @@ const shoppingStore = useShoppingStore();
 
 const showAddShopDialog = ref(false);
 
-const orphaned = computed(() => shoppingStore.getOrphanedShelves);
+const orphanedShelvesExist = computed(
+  () => shoppingStore.getOrphanedShelves.length > 0
+);
 
 const deleteShop = (id: UUID) => {
   shoppingStore.deleteShop(id);
