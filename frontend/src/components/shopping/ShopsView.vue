@@ -12,7 +12,7 @@
       </w-flex>
     </template>
     <w-flex wrap>
-      <div class="xs12 pa2 md6 lg4 xl3">
+      <div v-if="shoppingStore.getOrphanedShelves" class="xs12 pa2 md6 lg4 xl3">
         <orphaned-shelves-display></orphaned-shelves-display>
       </div>
       <div
