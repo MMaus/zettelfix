@@ -23,6 +23,16 @@ export const useShoppingStore = defineStore({
     getItem: (state) => {
       return (id: UUID) => state.items.find((it) => it.id == id);
     },
+    getOrphanedShelves: (state) => {
+      const associatedShelves = new Set(
+        state.shops.flatMap((it) => it.shelves)
+      );
+      const orphanedShelves = state.shelves.filter(
+        (it) => !associatedShelves.has(it.id)
+      );
+      orphanedShelves.sort((s1, s2) => s1.name.localeCompare(s2.name));
+      return orphanedShelves;
+    },
   },
   actions: {
     addItemToWhishlist(id: UUID, qty: number = 1) {
@@ -47,6 +57,12 @@ export const useShoppingStore = defineStore({
           this.shops.splice(idx, 1);
           break;
         }
+      }
+    },
+    deleteShelf(shelfId: UUID) {
+      const index = this.shelves.findIndex((shelf) => shelf.id == shelfId);
+      if (index >= 0) {
+        this.shelves.splice(index, 1);
       }
     },
     addShelf(shopId: UUID, shelfName: string) {

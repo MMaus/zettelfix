@@ -12,6 +12,9 @@
       </w-flex>
     </template>
     <w-flex wrap>
+      <div class="xs12 pa2 md6 lg4 xl3">
+        <orphaned-shelves-display></orphaned-shelves-display>
+      </div>
       <div
         class="xs12 pa2 md6 lg4 xl3"
         v-for="shop in shoppingStore.shops"
@@ -26,11 +29,14 @@
 <script setup lang="ts">
 import ShopDisplay from "./shops/ShopDisplay.vue";
 import AddShopDialog from "./shops/AddShopDialog.vue";
+import OrphanedShelvesDisplay from "./shops/OrphanedShelvesDisplay.vue";
 import { useShoppingStore, UUID } from "./shoppingStore";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 const shoppingStore = useShoppingStore();
 
 const showAddShopDialog = ref(false);
+
+const orphaned = computed(() => shoppingStore.getOrphanedShelves);
 
 const deleteShop = (id: UUID) => {
   shoppingStore.deleteShop(id);
