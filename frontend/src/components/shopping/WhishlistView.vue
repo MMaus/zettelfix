@@ -1,18 +1,25 @@
 <template>
-  <w-card shadow title="Whishlist" title-class="amber-light5--bg">
+  <w-card
+    shadow
+    title="Whishlist"
+    title-class="amber-light5--bg"
+    class="text-left"
+  >
     <template #title>
       <w-flex wrap>
-        <div class="bordered mr5">
+        <div class="xs12 sm3">
           <span class="title2 ma2">Whishlist</span>
         </div>
-        <div class="bordered">
-          <w-input label="add item"></w-input>
-        </div>
-        <div class="bordered">
-          <w-input label="search Item" @focus="showDrawer = true"> </w-input>
+        <div class="xs12 sm9">
+          <w-input
+            label="search item"
+            v-model="searchText"
+            @focus="showDrawer = true"
+          >
+          </w-input>
           <div
             v-show="showDrawer"
-            class="bordered testfloat"
+            class="dropdownlist sh2 bdrs2 bd2"
             style="height: 40vh; width: 60vw; z-index: 200"
           >
             <w-drawer
@@ -23,34 +30,46 @@
               height="40vh"
               @click="showDrawer = false"
             >
+              <!-- <div class="bordered full-width"> -->
               <w-button
-                @click="showDrawer = false"
+                @click.stop="showDrawer = false"
                 icon="wi-cross"
+                absolute
                 sm
                 outline
                 round
-                absolute
-              >
-              </w-button>
-              <w-flex><div class="spacer"></div></w-flex>
-              <w-list
-                class="full-width"
+                z-index="100"
+              ></w-button>
+
+              <w-table
+                :headers="searchTableHeaders"
+                fixed-headers
+                class="full-width h100"
                 :items="testItems"
-                v-model="selectedItem"
+                v-model="selectedSearchRows"
               >
-                <template #item="{ item }">
+                <template #header-label="{ label, index }">
+                  <span class="caption">{{ label }}</span>
+                </template>
+                <template #no-data>
+                  No item (create item <w-button>HERE</w-button>)
+                </template>
+                <!-- <template #item-cell.qty="{ item }">
                   <w-flex>
-                    <div class="bordered">
+                    <div class="text-center">
                       <div class="flex" @click.stop="">
                         <w-button>-</w-button>
                         <w-input class="narrow" v-model="item.qty"></w-input>
                         <w-button>+</w-button>
                       </div>
                     </div>
-                    <div class="ml3">{{ item.label }}</div>
                   </w-flex>
                 </template>
-              </w-list>
+                <template #item-cell.name="{ item, label }">
+                  LABEL: {{ label }} ( {{ item.name }})
+                </template> -->
+              </w-table>
+              <!-- </div> -->
             </w-drawer>
           </div>
         </div>
@@ -92,6 +111,7 @@ const selectedItem = ref(null) as Ref<any>;
 const searchText = ref("");
 const showDrawer = ref(false);
 
+const selectedSearchRows = ref([]);
 const selectedRows = ref([]);
 
 const itemFilter = (item: { item: UUID; name: string }) => {
@@ -101,17 +121,26 @@ const itemFilter = (item: { item: UUID; name: string }) => {
   );
 };
 const whishlistHeaders = [
-  { label: "Quantity", key: "amount", width: "145px" },
-  { label: "Name", key: "name" },
+  { label: "Quantity", key: "qty", width: "145px" },
+  { label: "Name", key: "label" },
 ];
 
 const store = useShoppingStore();
 
-const testItems = ref([
-  { label: "foo", qty: "0" },
-  { label: "bar", qty: "3" },
-  { label: "baz", qty: 4 },
-]);
+const testItems = computed(() => {
+  const searchString = searchText.value.toLocaleLowerCase().trim();
+  return store.items
+    .filter(
+      (it) =>
+        !searchString || it.name.toLocaleLowerCase().includes(searchString)
+    )
+    .map((it) => ({ label: it.name, qty: 2, id: it.id }));
+});
+
+const searchTableHeaders = [
+  { label: "Quantity", key: "qty", width: "95px" },
+  { label: "Item", key: "label" },
+];
 
 // store.addItemToWhishlist(store.items[2].id);
 
@@ -139,7 +168,7 @@ const whishlistItemData = computed(() => {
 });
 </script>
 <style scoped>
-.testfloat {
+.dropdownlist {
   position: absolute;
 }
 
@@ -149,6 +178,10 @@ const whishlistItemData = computed(() => {
 
 .narrow {
   width: 32px;
+}
+
+.h100 {
+  height: 100%;
 }
 
 .flex {
