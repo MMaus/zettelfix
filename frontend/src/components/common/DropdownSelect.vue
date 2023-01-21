@@ -1,13 +1,17 @@
 <template>
   <div class="relWidth">
     <w-input
+      round
+      shadow
       :label="props.label"
       :placeholder="props.placeholder"
       @update:model-value="searchTextChanged"
-      @click:inner-icon-right="toggleDropdown"
-      :inner-icon-right="dropdownIcon"
+      :inner-icon-left="dropdownIcon"
+      @click:inner-icon-left="toggleDropdown"
+      inner-icon-right="mdi mdi-close-circle"
+      @click:inner-icon-right="reset"
     ></w-input>
-    <div v-show="showDropdown" class="dropdown relWidth">
+    <div v-show="showDropdown" class="dropdown-background relWidth">
       <w-drawer
         absolute
         top
@@ -15,7 +19,7 @@
         v-model="showDropdown"
         height="40vh"
         @click="showDropdown = false"
-        class="sh2 bdrs2 bd2"
+        class="sh2"
       >
         <!-- <div class="bordered full-width"> -->
         <w-button
@@ -40,9 +44,11 @@ const props = withDefaults(
     width?: string;
     placeholder?: string;
     searchText?: string;
+    maxWidth?: string;
   }>(),
   {
-    width: "50%",
+    width: "100%",
+    maxWidth: "600px",
     placeholder: undefined,
     searchText: "",
   }
@@ -50,11 +56,16 @@ const props = withDefaults(
 const emit = defineEmits<{
   (eventName: "update:searchText", value: string): void;
 }>();
+
+const reset = () => {
+  showDropdown.value = false;
+  emit("update:searchText", "");
+};
 const overallWidth = props.width;
+const overallMaxWidth = props.maxWidth;
 
 const searchTextChanged = (val: string) => {
   showDropdown.value = true;
-  console.log("Value = ", val);
   emit("update:searchText", val);
 };
 
@@ -65,7 +76,6 @@ const dropdownIcon = computed(() =>
 const showDropdown = ref(false);
 const toggleDropdown = () => {
   showDropdown.value = !showDropdown.value;
-  console.log("DROPDOwn vIS:", showDropdown.value);
 };
 </script>
 <style scoped>
@@ -83,13 +93,13 @@ const toggleDropdown = () => {
 
 .relWidth {
   width: v-bind(overallWidth);
+  max-width: v-bind(overallMaxWidth);
 }
-.w-50 {
-  width: 50%;
-}
-.dropdown {
+.dropdown-background {
   position: absolute;
   min-height: 132px;
+  height: 40vh;
   z-index: 100;
+  box-shadow: none;
 }
 </style>
