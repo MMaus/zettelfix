@@ -11,7 +11,12 @@
         <w-button shadow><w-icon lg>mdi mdi-cart-plus</w-icon></w-button>
       </router-link>
     </div>
-    <div class="mx1"></div>
+    <div class="mx2"></div>
+    <div>
+      <router-link to="whishlist">
+        <w-button shadow><w-icon lg>mdi mdi-cart-arrow-down</w-icon></w-button>
+      </router-link>
+    </div>
     <div>
       <router-link to="whishlist">
         <w-button shadow><w-icon lg>mdi mdi-playlist-edit</w-icon></w-button>

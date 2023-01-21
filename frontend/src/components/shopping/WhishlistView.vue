@@ -11,50 +11,24 @@
           <span class="title2 ma2">Whishlist</span>
         </div>
         <div class="xs12 sm9">
-          <w-input
-            label="search item"
-            v-model="searchText"
-            @focus="showDrawer = true"
+          <dropdown-select
+            label="please select item"
+            v-model:search-text="searchText"
           >
-          </w-input>
-          <div
-            v-show="showDrawer"
-            class="dropdownlist sh2 bdrs2 bd2"
-            style="height: 40vh; width: 60vw; z-index: 200"
-          >
-            <w-drawer
-              absolute
-              top
-              no-overlay
-              v-model="showDrawer"
-              height="40vh"
-              @click="showDrawer = false"
+            <w-table
+              :headers="searchTableHeaders"
+              no-headers
+              class="full-width h100"
+              :items="testItems"
+              v-model="selectedSearchRows"
             >
-              <!-- <div class="bordered full-width"> -->
-              <w-button
-                @click.stop="showDrawer = false"
-                icon="wi-cross"
-                absolute
-                sm
-                outline
-                round
-                z-index="100"
-              ></w-button>
-
-              <w-table
-                :headers="searchTableHeaders"
-                fixed-headers
-                class="full-width h100"
-                :items="testItems"
-                v-model="selectedSearchRows"
-              >
-                <template #header-label="{ label, index }">
-                  <span class="caption">{{ label }}</span>
-                </template>
-                <template #no-data>
-                  No item (create item <w-button>HERE</w-button>)
-                </template>
-                <!-- <template #item-cell.qty="{ item }">
+              <template #header-label="{ label, index }">
+                <span class="caption">{{ label }}</span>
+              </template>
+              <template #no-data>
+                No item (create an item <w-button>HERE</w-button>)
+              </template>
+              <!-- <template #item-cell.qty="{ item }">
                   <w-flex>
                     <div class="text-center">
                       <div class="flex" @click.stop="">
@@ -68,10 +42,8 @@
                 <template #item-cell.name="{ item, label }">
                   LABEL: {{ label }} ( {{ item.name }})
                 </template> -->
-              </w-table>
-              <!-- </div> -->
-            </w-drawer>
-          </div>
+            </w-table>
+          </dropdown-select>
         </div>
       </w-flex>
     </template>
@@ -104,6 +76,7 @@
 <script setup lang="ts">
 import { computed, ref, type Ref } from "vue";
 import { type UUID, useShoppingStore } from "./shoppingStore";
+import DropdownSelect from "../common/DropdownSelect.vue";
 
 const showList = ref(false);
 
