@@ -1,5 +1,5 @@
 <template>
-  <div class="relWidth">
+  <div @keyup.esc="showDropdown = false" ref="anchorElement" class="base">
     <w-input
       round
       shadow
@@ -11,46 +11,28 @@
       inner-icon-right="mdi mdi-close-circle"
       @click:inner-icon-right="reset"
     ></w-input>
-    <div v-show="showDropdown" class="dropdown-background relWidth">
-      <w-drawer
-        absolute
-        top
-        no-overlay
-        v-model="showDropdown"
-        height="40vh"
-        @click="showDropdown = false"
-        class="sh2"
-      >
-        <!-- <div class="bordered full-width"> -->
-        <w-button
-          @click.stop="showDropdown = false"
-          icon="wi-cross"
-          absolute
-          sm
-          outline
-          round
-          z-index="100"
-        ></w-button>
-        <slot></slot>
-      </w-drawer>
+    <div
+      class="dropdown-background sh2 px2"
+      :class="{ expanded: showDropdown }"
+    >
+      <slot></slot>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, onUnmounted, Ref, ref } from "vue";
 const props = withDefaults(
   defineProps<{
-    label: string;
-    width?: string;
+    label?: string;
     placeholder?: string;
     searchText?: string;
-    maxWidth?: string;
+    bg_color?: string;
   }>(),
   {
-    width: "100%",
-    maxWidth: "600px",
+    label: "",
     placeholder: undefined,
     searchText: "",
+    bg_color: "white",
   }
 );
 const emit = defineEmits<{
@@ -61,8 +43,6 @@ const reset = () => {
   showDropdown.value = false;
   emit("update:searchText", "");
 };
-const overallWidth = props.width;
-const overallMaxWidth = props.maxWidth;
 
 const searchTextChanged = (val: string) => {
   showDropdown.value = true;
@@ -77,29 +57,42 @@ const showDropdown = ref(false);
 const toggleDropdown = () => {
   showDropdown.value = !showDropdown.value;
 };
+
+const anchorElement = ref(null) as Ref<HTMLElement | null>;
+const onclick = (evt: Event) => {
+  if (evt.target) {
+    if (!anchorElement.value?.contains(evt.target as HTMLElement)) {
+      if (showDropdown) {
+        showDropdown.value = false;
+      }
+    }
+  }
+};
+
+onMounted(() => window.addEventListener("click", onclick));
+onUnmounted(() => window.removeEventListener("click", onclick));
 </script>
 <style scoped>
-.v-enter-active,
-.v-leave-active {
-  transition: all 0.2s linear;
+.base {
+  position: relative;
 }
 
-.v-enter-from,
-.v-leave-to {
-  opacity: 33%;
-  transform-origin: top;
-  transform: scaleY(0.5);
-}
-
-.relWidth {
-  width: v-bind(overallWidth);
-  max-width: v-bind(overallMaxWidth);
-}
+/* height cannot be animated - maxheight can */
 .dropdown-background {
   position: absolute;
-  min-height: 132px;
-  height: 40vh;
   z-index: 100;
-  box-shadow: none;
+  width: 100%;
+  background-color: v-bind(bg_color);
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.2s;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.expanded {
+  max-height: 40vh;
+  min-height: 30px;
+  overflow-y: scroll;
 }
 </style>

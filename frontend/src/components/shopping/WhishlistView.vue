@@ -7,7 +7,7 @@
   >
     <dropdown-select
       class="w600"
-      label="search items"
+      label="add item"
       v-model:search-text="searchText"
     >
       <item-select-table :search-text="searchText"></item-select-table>
@@ -33,6 +33,7 @@
     <div class="bordered">
       <item-select-table :search-text="searchText"></item-select-table>
     </div>
+    <!-- <dropdown-demo></dropdown-demo> -->
   </w-card>
 </template>
 <script setup lang="ts">
