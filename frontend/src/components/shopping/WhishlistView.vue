@@ -13,6 +13,7 @@
       <item-select-table :search-text="searchText"></item-select-table>
     </dropdown-select>
     <div class="my3"></div>
+    <number-input v-model="testNumber"></number-input>
     <w-table
       :headers="whishlistHeaders"
       fixed-headers
@@ -41,9 +42,10 @@ import { computed, ref, type Ref } from "vue";
 import { type UUID, useShoppingStore } from "./shoppingStore";
 import DropdownSelect from "../common/DropdownSelect.vue";
 import ItemSelectTable from "./whishlist/ItemSelectTable.vue";
+import NumberInput from "../common/NumberInput.vue";
 
 const searchText = ref("");
-
+const testNumber = ref(0);
 const selectedRows = ref([]);
 
 const store = useShoppingStore();
