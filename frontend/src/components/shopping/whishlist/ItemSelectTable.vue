@@ -27,6 +27,10 @@
         </div>
       </template>
     </w-table>
+    <div v-if="!anyItemVisible" class="body pa3">
+      No item matches your search. <br />
+      <w-button>Create</w-button> a new one instead?
+    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -61,6 +65,11 @@ const itemFilter = (item: WhishlistItemPreview) => {
       .includes(props.searchText.trim().toLocaleLowerCase())
   );
 };
+
+const anyItemVisible = computed(() => {
+  return store.whishlistItemCandidates.filter(itemFilter).length > 0;
+});
+
 const store = useShoppingStore();
 
 const selectableItems = computed(() => store.whishlistItemCandidates);
