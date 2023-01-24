@@ -13,28 +13,8 @@
       <item-select-table :search-text="searchText"></item-select-table>
     </dropdown-select>
     <div class="my3"></div>
-    <number-input v-model="testNumber"></number-input>
-    <w-table
-      :headers="whishlistHeaders"
-      fixed-headers
-      selectable-rows
-      resizable-columns
-      v-model:selected-rows="selectedRows"
-      class="h-40"
-      :items="whishlistItemData"
-      :filter="itemFilter"
-    >
-      <template #no-data> There are no items on your whishlist yet </template>
-      <template #item-cell.name="{ item }">
-        {{ item.name
-        }}<span v-if="item.orphaned" class="ml2 caption">(orphaned)</span>
-      </template>
-    </w-table>
 
-    <div class="bordered">
-      <item-select-table :search-text="searchText"></item-select-table>
-    </div>
-    <!-- <dropdown-demo></dropdown-demo> -->
+    <whishlist-item-table :search-text="searchText"></whishlist-item-table>
   </w-card>
 </template>
 <script setup lang="ts">
@@ -42,49 +22,9 @@ import { computed, ref, type Ref } from "vue";
 import { type UUID, useShoppingStore } from "./shoppingStore";
 import DropdownSelect from "../common/DropdownSelect.vue";
 import ItemSelectTable from "./whishlist/ItemSelectTable.vue";
-import NumberInput from "../common/NumberInput.vue";
+import WhishlistItemTable from "./whishlist/WhishlistItemTable.vue";
 
 const searchText = ref("");
-const testNumber = ref(0);
-const selectedRows = ref([]);
-
-const store = useShoppingStore();
-
-const itemFilter = (item: { item: UUID; name: string }) => {
-  return (
-    !searchText.value ||
-    item.name.toLocaleLowerCase().includes(searchText.value.toLocaleLowerCase())
-  );
-};
-const whishlistHeaders = [
-  { label: "Quantity", key: "qty", width: "145px" },
-  { label: "Name", key: "label" },
-];
-
-// store.addItemToWhishlist(store.items[2].id);
-
-// const getWhishlistData = () => {
-//   return store.whishlist.map((it) => {
-//     return {
-//       id: it.item,
-//       name: store.getItem(it.item)?.name || "unknown item",
-//       amount: it.amount,
-//     };
-// }
-
-// const whishlistItemData = [{
-
-// ]
-
-const whishlistItemData = computed(() => {
-  return store.whishlist.map((it) => {
-    return {
-      id: it.item,
-      name: store.getItem(it.item)?.name || "unknown item",
-      amount: it.amount,
-    };
-  });
-});
 </script>
 <style scoped>
 .full-width {

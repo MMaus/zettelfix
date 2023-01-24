@@ -20,10 +20,10 @@ export const useShoppingStore = defineStore({
         }
         return state.shelves.filter((shelf) => shop.shelves.includes(shelf.id));
       },
-    getItem: (state) => {
+    getItem(state) {
       return (id: UUID) => state.items.find((it) => it.id == id);
     },
-    getOrphanedShelves: (state) => {
+    getOrphanedShelves(state) {
       const associatedShelves = new Set(
         state.shops.flatMap((it) => it.shelves)
       );
@@ -33,16 +33,47 @@ export const useShoppingStore = defineStore({
       orphanedShelves.sort((s1, s2) => s1.name.localeCompare(s2.name));
       return orphanedShelves;
     },
+    whishlistItems(state): WhishlistItemView[] {
+      const itemMap = Object.fromEntries(state.items.map((it) => [it.id, it]));
+      return state.whishlist
+        .filter((it) => itemMap.hasOwnProperty(it.item))
+        .map((it) => {
+          return {
+            amount: it.amount,
+            id: it.id,
+            item: itemMap[it.item],
+          };
+        });
+    },
+    whishlistItemCandidates(state): WhishlistItemPreview[] {
+      const whishlistAmount = Object.fromEntries(
+        state.whishlist.map((it) => [it.item, it.amount])
+      );
+      return state.items.map((it) => {
+        const amount = whishlistAmount[it.id] || 0;
+        return {
+          amount,
+          item: it,
+        };
+      });
+    },
   },
   actions: {
-    addItemToWhishlist(id: UUID, qty: number = 1) {
-      const existing = this.whishlist.find((it) => it.item == id);
-      if (!existing) {
-        this.whishlist.push({ item: id, amount: 1 });
+    setWhishlistItem(id: UUID, qty: number) {
+      const indexOfItem = this.whishlist.findIndex((it) => it.item == id);
+      if (qty <= 0 && indexOfItem >= 0) {
+        this.whishlist.splice(indexOfItem, 1);
       } else {
-        existing.amount += 1;
+        let item: WhishlistItem | undefined;
+        if (indexOfItem >= 0) {
+          item = this.whishlist[indexOfItem];
+          this.whishlist[indexOfItem].amount = qty;
+        } else {
+          this.whishlist.push({ id: uuidv4(), item: id, amount: qty });
+        }
       }
     },
+
     createShop(name: string) {
       const newShop: Shop = {
         name,
@@ -119,8 +150,18 @@ export type Shelf = BaseType & {
 };
 
 export type WhishlistItem = {
+  id: UUID;
   item: UUID;
   amount: number;
+};
+
+export type WhishlistItemPreview = {
+  amount: number;
+  item: Item;
+};
+
+export type WhishlistItemView = WhishlistItemPreview & {
+  id: UUID;
 };
 
 export type Item = BaseType & {
