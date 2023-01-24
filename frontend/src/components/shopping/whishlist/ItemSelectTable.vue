@@ -22,7 +22,9 @@
         ></NumberInput>
       </template>
       <template #item-cell.item="{ item, label }">
-        {{ item.item.name }}
+        <div @click="onItemClick(item)">
+          {{ item.item.name }}
+        </div>
       </template>
     </w-table>
   </div>
@@ -30,20 +32,24 @@
 <script setup lang="ts">
 import NumberInput from "@/components/common/NumberInput.vue";
 import { computed, ref } from "vue";
-import {
-  Item,
-  useShoppingStore,
-  UUID,
-  WhishlistItemPreview,
-} from "../shoppingStore";
+import { useShoppingStore, WhishlistItemPreview } from "../shoppingStore";
 
 const props = defineProps<{
   searchText?: string;
 }>();
 
+const emit = defineEmits<{
+  (eventName: "itemClicked", value: WhishlistItemPreview): void;
+}>();
+
 const notifyUpdate = (item: WhishlistItemPreview, value: number) => {
-  console.log(`Received update for ${item} with value UNKNOWN`);
+  console.log(`Received update for ${item} with value ${value}`);
   store.setWhishlistItem(item.item.id, value);
+};
+
+const onItemClick = (item: WhishlistItemPreview) => {
+  notifyUpdate(item, item.amount + 1);
+  emit("itemClicked", item);
 };
 
 const selectedSearchRows = ref([]);
@@ -52,7 +58,7 @@ const itemFilter = (item: WhishlistItemPreview) => {
     !props.searchText ||
     item.item.name
       .toLocaleLowerCase()
-      .includes(props.searchText.toLocaleLowerCase())
+      .includes(props.searchText.trim().toLocaleLowerCase())
   );
 };
 const store = useShoppingStore();

@@ -7,8 +7,14 @@
       height="400"
     >
       <template #title>Enter name of the shop</template>
-      <div @keyup.enter="createShop">
-        <w-input class="ma3" label="Shop name" v-model="newShopName"> </w-input>
+      <div>
+        <w-input
+          @keyup.enter.stop="createShop"
+          class="ma3"
+          label="Shop name"
+          v-model="newShopName"
+        >
+        </w-input>
       </div>
       <w-button @click="emit('update:modelValue', false)">Cancel</w-button>
       <w-button @click="createShop">Create</w-button>
@@ -36,7 +42,6 @@ watch(
 
 const shopStore = useShoppingStore();
 const createShop = () => {
-  console.log("CREATING SHOP ///" + newShopName.value);
   shopStore.createShop(newShopName.value);
   emit("update:modelValue", false);
 };

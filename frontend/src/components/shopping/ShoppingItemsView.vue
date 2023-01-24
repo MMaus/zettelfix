@@ -67,12 +67,12 @@ const itemFilter = (item: { id: UUID; name: string; shops: string[] }) => {
   return (
     item.name
       .toLocaleLowerCase()
-      .indexOf(searchText.value.toLocaleLowerCase()) > -1 ||
+      .indexOf(searchText.value.trim().toLocaleLowerCase()) > -1 ||
     !!item.shops.find(
       (shopName) =>
         shopName
           .toLocaleLowerCase()
-          .indexOf(searchText.value.toLocaleLowerCase()) > -1
+          .indexOf(searchText.value.trim().toLocaleLowerCase()) > -1
     )
   );
 };

@@ -26,13 +26,13 @@
           class="w45 mr3"
         ></NumberInput>
       </template>
-      <template #item-cell.item="{ item, label }">
+      <template #item-cell.item="{ item }">
         {{ item.item.name }}
       </template>
       <template #item-cell.shopNames="{ item }">
         <span class="body">{{ item.shopNames.join(", ") }}</span>
       </template>
-      <template #item-cell.item.id="{ item, label }">
+      <template #item-cell.item.id="{ item }">
         <w-confirm
           @confirm="store.setWhishlistItem(item.item.id, 0)"
           confirm="yes"
@@ -66,11 +66,11 @@ const itemFilter = (item: WhishlistItemView) => {
     !searchFilterText.value ||
     item.item.name
       .toLocaleLowerCase()
-      .includes(searchFilterText.value.toLocaleLowerCase()) ||
+      .includes(searchFilterText.value.trim().toLocaleLowerCase()) ||
     item.shopNames.find((shopName) =>
       shopName
         .toLocaleLowerCase()
-        .includes(searchFilterText.value.toLocaleLowerCase())
+        .includes(searchFilterText.value.trim().toLocaleLowerCase())
     )
   );
 };

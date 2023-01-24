@@ -16,6 +16,7 @@
           <w-input
             class="mb1"
             v-model="newItemName"
+            @keydown.enter="nameSelected"
             label="Enter new Item"
           ></w-input>
           <w-button :disabled="!newItemName" @click="nameSelected">

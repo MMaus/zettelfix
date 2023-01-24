@@ -5,6 +5,7 @@
       shadow
       :label="props.label"
       :placeholder="props.placeholder"
+      :model-value="props.searchText"
       @update:model-value="searchTextChanged"
       :inner-icon-left="dropdownIcon"
       @click:inner-icon-left="toggleDropdown"
@@ -20,7 +21,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, Ref, ref } from "vue";
+import { watch, computed, onMounted, onUnmounted, Ref, ref } from "vue";
 const props = withDefaults(
   defineProps<{
     label?: string;
@@ -38,6 +39,16 @@ const props = withDefaults(
 const emit = defineEmits<{
   (eventName: "update:searchText", value: string): void;
 }>();
+
+watch(
+  () => props.searchText,
+  (newVal, oldVal) => {
+    if (newVal.length == 0 && oldVal.length > 0) {
+      // alert("rest detected!");
+      showDropdown.value = false;
+    }
+  }
+);
 
 const reset = () => {
   showDropdown.value = false;
