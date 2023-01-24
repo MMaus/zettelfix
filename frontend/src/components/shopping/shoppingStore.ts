@@ -2,6 +2,76 @@ import { defineStore } from "pinia";
 import { v4 as uuidv4 } from "uuid";
 import { remove } from "lodash";
 
+export type UUID = string;
+
+type BaseType = {
+  id: UUID;
+  name: string;
+};
+
+export type Shop = BaseType & {
+  shelves: Array<UUID>;
+};
+
+export type Shelf = BaseType & {
+  items: Array<UUID>;
+};
+
+// Note: not exported => ~Preview and ~View are more appropriate for rendering
+type WhishlistItem = {
+  id: UUID;
+  item: UUID;
+  amount: number;
+};
+
+export type WhishlistItemPreview = {
+  amount: number;
+  item: Item;
+};
+
+export type WhishlistItemView = WhishlistItemPreview & {
+  id: UUID;
+  shopNames: string[];
+};
+
+export type Item = BaseType & {
+  // shelves: Array<UUID>;
+};
+
+type ShoppingState = {
+  shops: Shop[];
+  items: Item[];
+  shelves: Shelf[];
+  whishlist: WhishlistItem[];
+};
+
+const getShopMap = (state: ShoppingState): Map<UUID, Shop[]> => {
+  const shelfMap = new Map<UUID, Shop[]>(); // maps shelf to list of shops
+  for (const shop of state.shops) {
+    for (const shelfId of shop.shelves) {
+      if (!shelfMap.has(shelfId)) {
+        shelfMap.set(shelfId, []);
+      }
+      shelfMap.get(shelfId)?.push(shop);
+    }
+  }
+
+  const shopMap = new Map<UUID, Shop[]>();
+  for (const shelf of state.shelves) {
+    const shops = shelfMap.get(shelf.id) || [];
+    for (const itemid of shelf.items) {
+      if (!shopMap.has(itemid)) {
+        shopMap.set(itemid, []);
+      }
+      shops.forEach((shop) => {
+        shopMap.get(itemid)?.push(shop);
+      });
+    }
+  }
+
+  return shopMap;
+};
+
 export const useShoppingStore = defineStore({
   id: "shoppingStore",
   state: () => ({
@@ -35,13 +105,19 @@ export const useShoppingStore = defineStore({
     },
     whishlistItems(state): WhishlistItemView[] {
       const itemMap = Object.fromEntries(state.items.map((it) => [it.id, it]));
+      const shopMap = getShopMap(state);
       return state.whishlist
         .filter((it) => itemMap.hasOwnProperty(it.item))
         .map((it) => {
+          const shops = shopMap.get(it.item);
+          const shopNames = shops?.map((sh) => sh.name) || [];
+          shopNames.sort();
+
           return {
             amount: it.amount,
             id: it.id,
             item: itemMap[it.item],
+            shopNames: shopNames,
           };
         });
     },
@@ -133,37 +209,3 @@ export const useShoppingStore = defineStore({
   },
   persist: true,
 });
-
-export type UUID = string;
-
-type BaseType = {
-  id: UUID;
-  name: string;
-};
-
-export type Shop = BaseType & {
-  shelves: Array<UUID>;
-};
-
-export type Shelf = BaseType & {
-  items: Array<UUID>;
-};
-
-export type WhishlistItem = {
-  id: UUID;
-  item: UUID;
-  amount: number;
-};
-
-export type WhishlistItemPreview = {
-  amount: number;
-  item: Item;
-};
-
-export type WhishlistItemView = WhishlistItemPreview & {
-  id: UUID;
-};
-
-export type Item = BaseType & {
-  // shelves: Array<UUID>;
-};

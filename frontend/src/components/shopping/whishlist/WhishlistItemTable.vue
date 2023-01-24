@@ -4,11 +4,13 @@
       outline
       label="search (filter)"
       v-model="searchFilterText"
+      inner-icon-right="mdi mdi-close-circle"
+      @click:inner-icon-right="searchFilterText = ''"
     ></w-input>
     <w-table
       :headers="searchTableHeaders"
-      no-headers
-      class="full-width"
+      fixed-headers
+      class="full-width h50"
       :items="whishlistItems"
       v-model="selectedSearchRows"
       :filter="itemFilter"
@@ -24,8 +26,11 @@
           class="w45 mr3"
         ></NumberInput>
       </template>
-      <template #item-cell.name="{ item, label }">
-        {{ item.item.name }} TODO: SHOPS
+      <template #item-cell.item.name="{ item, label }">
+        {{ item.item.name }} - {{ label }}
+      </template>
+      <template #item-cell.shopNames="{ item }">
+        <span class="body">{{ item.shopNames.join(", ") }}</span>
       </template>
       <template #item-cell.item.id="{ item, label }">
         <w-confirm
@@ -44,20 +49,8 @@
 </template>
 <script setup lang="ts">
 import NumberInput from "@/components/common/NumberInput.vue";
-import { attempt } from "lodash";
-import { storeToRefs } from "pinia";
-import { computed, ComputedRef, ref } from "vue";
-import {
-  Item,
-  useShoppingStore,
-  UUID,
-  WhishlistItemPreview,
-  WhishlistItemView,
-} from "../shoppingStore";
-
-const props = defineProps<{
-  searchText?: string;
-}>();
+import { computed, ref } from "vue";
+import { useShoppingStore, WhishlistItemView } from "../shoppingStore";
 
 const store = useShoppingStore();
 
@@ -68,12 +61,17 @@ const notifyUpdate = (whishlistItem: WhishlistItemView, value: number) => {
 };
 
 const selectedSearchRows = ref([]);
-const itemFilter = (item: WhishlistItemPreview) => {
+const itemFilter = (item: WhishlistItemView) => {
   return (
     !searchFilterText.value ||
     item.item.name
       .toLocaleLowerCase()
-      .includes(searchFilterText.value.toLocaleLowerCase())
+      .includes(searchFilterText.value.toLocaleLowerCase()) ||
+    item.shopNames.find((shopName) =>
+      shopName
+        .toLocaleLowerCase()
+        .includes(searchFilterText.value.toLocaleLowerCase())
+    )
   );
 };
 
@@ -81,19 +79,10 @@ const whishlistItems = computed(() => {
   return store.whishlistItems;
 });
 
-// const testItems = computed(() => {
-//   const searchString = searchText.value.toLocaleLowerCase().trim();
-//   return store.items
-//     .filter(
-//       (it) =>
-//         !searchString || it.name.toLocaleLowerCase().includes(searchString)
-//     )
-//     .map((it) => ({ label: it.name, qty: 2, id: it.id }));
-// });
-
 const searchTableHeaders = [
   { label: "Quantity", key: "amount", width: "95px" },
-  { label: "Item", key: "name" },
+  { label: "Item", key: "item.name" },
+  { label: "Shops", key: "shopNames" },
   { label: "", key: "item.id", width: "24px" },
 ];
 </script>
@@ -104,5 +93,9 @@ const searchTableHeaders = [
 
 .w100 {
   width: 100%;
+}
+
+.h50 {
+  max-height: 50vh;
 }
 </style>

@@ -24,7 +24,6 @@ const emit = defineEmits<{
 }>();
 
 const increase = () => {
-  console.log("triggering increase from:", props.modelValue);
   if (isNumber(props.modelValue) && props.modelValue >= 0) {
     emit("update:model-value", props.modelValue + 1);
   } else {
@@ -33,7 +32,6 @@ const increase = () => {
 };
 
 const decrease = () => {
-  console.log("triggering decrease from:", props.modelValue);
   if (isNumber(props.modelValue) && props.modelValue > 0) {
     emit("update:model-value", props.modelValue - 1);
   } else {

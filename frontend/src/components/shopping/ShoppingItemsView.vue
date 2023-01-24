@@ -30,6 +30,7 @@
         resizable-columns
         :items="availableItems"
         :filter="itemFilter"
+        class="h40"
       >
         <template #no-data> There are no items registered yet </template>
         <template #item-cell.id="{ item, label, header, index }">
@@ -116,3 +117,8 @@ const createItem = (item: { itemName: string; shelves: UUID[] }) => {
   console.info(`item ${item.itemName} should be created`);
 };
 </script>
+<style scoped>
+.h40 {
+  max-height: 60vh;
+}
+</style>

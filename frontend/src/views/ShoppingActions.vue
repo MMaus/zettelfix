@@ -1,22 +1,40 @@
 <template>
   <w-flex wrap>
     <div class="spacer"></div>
-    <div>
-      <router-link to="shops">
-        <w-button shadow><w-icon lg>mdi mdi-storefront</w-icon></w-button>
-      </router-link>
-    </div>
-    <div>
-      <router-link to="items">
-        <w-button shadow><w-icon lg>mdi mdi-cart-plus</w-icon></w-button>
-      </router-link>
-    </div>
+    <w-menu
+      persistent
+      hide-on-menu-click
+      bg-color="primary"
+      color="white"
+      class="pa0 ma0 p0"
+    >
+      <template #activator="{ on }">
+        <w-button
+          v-on="on"
+          lg
+          shadow
+          icon="mdi mdi-cog-outline"
+          class="settings-opener"
+        ></w-button>
+      </template>
+      <div class="primary ma0 pa0">
+        <router-link to="shops" class="white">
+          <w-button shadow
+            ><w-icon lg>mdi mdi-storefront</w-icon>
+            <span class="ml2">edit shops</span>
+          </w-button>
+        </router-link>
+      </div>
+      <div class="primary--bg">
+        <router-link to="items" class="white">
+          <w-button shadow
+            ><w-icon lg>mdi mdi-cart-plus</w-icon>
+            <span class="ml2">edit items</span>
+          </w-button>
+        </router-link>
+      </div>
+    </w-menu>
     <div class="mx2"></div>
-    <div>
-      <router-link to="whishlist">
-        <w-button shadow><w-icon lg>mdi mdi-cart-arrow-down</w-icon></w-button>
-      </router-link>
-    </div>
     <div>
       <router-link to="whishlist">
         <w-button shadow><w-icon lg>mdi mdi-playlist-edit</w-icon></w-button>
@@ -24,7 +42,7 @@
     </div>
     <div>
       <router-link to="shopping">
-        <w-button shadow><w-icon lg>mdi mdi-cart-outline</w-icon></w-button>
+        <w-button shadow><w-icon lg>mdi mdi-cart-arrow-down</w-icon></w-button>
       </router-link>
     </div>
 

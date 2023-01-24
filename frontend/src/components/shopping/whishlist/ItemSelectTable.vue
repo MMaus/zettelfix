@@ -8,7 +8,7 @@
       v-model="selectedSearchRows"
       :filter="itemFilter"
     >
-      <template #header-label="{ label, index }">
+      <template #header-label="{ label }">
         <span class="caption">{{ label }}</span>
       </template>
       <template #no-data>
@@ -57,19 +57,7 @@ const itemFilter = (item: WhishlistItemPreview) => {
 };
 const store = useShoppingStore();
 
-// FIXME: use whishlist items
-
 const selectableItems = computed(() => store.whishlistItemCandidates);
-
-// const testItems = computed(() => {
-//   const searchString = searchText.value.toLocaleLowerCase().trim();
-//   return store.items
-//     .filter(
-//       (it) =>
-//         !searchString || it.name.toLocaleLowerCase().includes(searchString)
-//     )
-//     .map((it) => ({ label: it.name, qty: 2, id: it.id }));
-// });
 
 const searchTableHeaders = [
   { label: "Quantity", key: "amount", width: "95px" },

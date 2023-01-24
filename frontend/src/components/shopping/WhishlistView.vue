@@ -14,12 +14,11 @@
     </dropdown-select>
     <div class="my3"></div>
 
-    <whishlist-item-table :search-text="searchText"></whishlist-item-table>
+    <whishlist-item-table></whishlist-item-table>
   </w-card>
 </template>
 <script setup lang="ts">
-import { computed, ref, type Ref } from "vue";
-import { type UUID, useShoppingStore } from "./shoppingStore";
+import { ref } from "vue";
 import DropdownSelect from "../common/DropdownSelect.vue";
 import ItemSelectTable from "./whishlist/ItemSelectTable.vue";
 import WhishlistItemTable from "./whishlist/WhishlistItemTable.vue";
@@ -27,14 +26,6 @@ import WhishlistItemTable from "./whishlist/WhishlistItemTable.vue";
 const searchText = ref("");
 </script>
 <style scoped>
-.full-width {
-  width: 100%;
-}
-
-.narrow {
-  width: 32px;
-}
-
 .w600 {
   width: 100%;
   max-width: 600px;
