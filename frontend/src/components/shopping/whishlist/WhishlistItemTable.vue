@@ -26,8 +26,8 @@
           class="w45 mr3"
         ></NumberInput>
       </template>
-      <template #item-cell.item.name="{ item, label }">
-        {{ item.item.name }} - {{ label }}
+      <template #item-cell.item="{ item, label }">
+        {{ item.item.name }}
       </template>
       <template #item-cell.shopNames="{ item }">
         <span class="body">{{ item.shopNames.join(", ") }}</span>
@@ -81,7 +81,7 @@ const whishlistItems = computed(() => {
 
 const searchTableHeaders = [
   { label: "Quantity", key: "amount", width: "95px" },
-  { label: "Item", key: "item.name" },
+  { label: "Item", key: "item" },
   { label: "Shops", key: "shopNames" },
   { label: "", key: "item.id", width: "24px" },
 ];

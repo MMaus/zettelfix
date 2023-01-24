@@ -106,7 +106,7 @@ export const useShoppingStore = defineStore({
     whishlistItems(state): WhishlistItemView[] {
       const itemMap = Object.fromEntries(state.items.map((it) => [it.id, it]));
       const shopMap = getShopMap(state);
-      return state.whishlist
+      const whishlist = state.whishlist
         .filter((it) => itemMap.hasOwnProperty(it.item))
         .map((it) => {
           const shops = shopMap.get(it.item);
@@ -120,6 +120,12 @@ export const useShoppingStore = defineStore({
             shopNames: shopNames,
           };
         });
+      whishlist.sort((w1, w2) =>
+        w1.item.name
+          .toLocaleLowerCase()
+          .localeCompare(w2.item.name.toLocaleLowerCase())
+      );
+      return whishlist;
     },
     whishlistItemCandidates(state): WhishlistItemPreview[] {
       const whishlistAmount = Object.fromEntries(
