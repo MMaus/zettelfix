@@ -1,5 +1,5 @@
 <template>
-  <div class="w100">
+  <div class="w100 purple-light6--bg">
     <w-table
       :headers="searchTableHeaders"
       no-headers

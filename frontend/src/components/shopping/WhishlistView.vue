@@ -12,7 +12,7 @@
     >
       <item-select-table :search-text="searchText"></item-select-table>
     </dropdown-select>
-    <div class="my3"></div>
+    <div class="my2"></div>
 
     <whishlist-item-table></whishlist-item-table>
   </w-card>
