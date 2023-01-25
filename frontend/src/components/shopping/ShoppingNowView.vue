@@ -1,18 +1,30 @@
 <template>
   <w-card shadow title="Shopping" title-class="amber-light5--bg">
-    <w-select
-      :items="shops"
-      round
-      shadow
-      :inner-icon-left="!!selectedShop ? 'mdi mdi-close-circle' : undefined"
-      @click:inner-icon-left="selectedShop = ''"
-      label="Select shop"
-      class="selectbox"
-      v-model="selectedShop"
-    >
-    </w-select>
-    {{ selectedShop }}
-    {{ shelves }}
+    <w-flex>
+      <div class="xs8">
+        <w-select
+          :items="shops"
+          round
+          shadow
+          :inner-icon-left="!!selectedShop ? 'mdi mdi-close-circle' : undefined"
+          @click:inner-icon-left="selectedShop = ''"
+          label="Select shop"
+          class="selectbox"
+          v-model="selectedShop"
+        >
+        </w-select>
+      </div>
+      <w-flex column justify-end class="xs4 grow">
+        <w-button bg-color="green-dark2" class="align-self-start sh2 mb1">
+          <w-icon lg color="green">mdi mdi-menu-right</w-icon>
+          <span class="white">Create list</span>
+        </w-button>
+      </w-flex>
+    </w-flex>
+    <div class="my2"></div>
+    <div class="sh2">
+      {{ shelves }}
+    </div>
   </w-card>
 </template>
 <script setup lang="ts">
@@ -30,9 +42,9 @@ const shelves = computed(() => {
 
 const selectedShop = ref("");
 const shops = computed(() =>
-  store.shops.map((sh) => {
+  store.shopsSummary.map((sh) => {
     return {
-      label: sh.name,
+      label: `${sh.name} (${sh.itemCount} items)`,
       value: sh.id,
     };
   })
@@ -43,8 +55,9 @@ const shops = computed(() =>
   max-width: 600px;
   width: fit-content;
 }
-.demo {
-  background-color: khaki;
+
+.h100 {
+  min-height: 100px;
 }
 
 .growcontainer {

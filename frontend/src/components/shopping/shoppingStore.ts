@@ -139,6 +139,34 @@ export const useShoppingStore = defineStore({
         };
       });
     },
+    shopsSummary(state: ShoppingState) {
+      const shelfData = Object.fromEntries(
+        state.shelves.map((it) => [
+          it.id,
+          isFinite(it.items.length) ? it.items.length : 0,
+        ])
+      );
+      console.log("shelfData:", shelfData);
+      const getItemCount = (shop: Shop) => {
+        return shop.shelves
+          .map((shelfId) => {
+            console.log(
+              `ShelfData for shop ${shop.name} -${shelfId}-`,
+              shelfData[shelfId]
+            );
+
+            return shelfData[shelfId] || 0;
+          })
+          .reduce((a, b) => a + b, 0);
+      };
+      return state.shops.map((shop) => {
+        return {
+          id: shop.id,
+          name: shop.name,
+          itemCount: getItemCount(shop),
+        };
+      });
+    },
   },
   actions: {
     setWhishlistItem(id: UUID, qty: number) {
@@ -180,7 +208,6 @@ export const useShoppingStore = defineStore({
     },
     addShelf(shopId: UUID, shelfName: string) {
       // TODO: make this proper, distinguish between creating new shelf and adding existing shelf!
-      console.log(`PROTOTYPE: creating shelf ${shelfName} for shop ${shopId}`);
       const shop = this.shops.find((s) => s.id === shopId);
       if (!shop) {
         throw new Error(`no shop with id ${shopId} found!`);
