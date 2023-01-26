@@ -17,6 +17,10 @@ export type Shelf = BaseType & {
   items: Array<UUID>;
 };
 
+const asIndexObject = <T extends BaseType>(objectList: T[]) => {
+  return Object.fromEntries(objectList.map((it) => [it.id, it]));
+};
+
 // Note: not exported => ~Preview and ~View are more appropriate for rendering
 type WhishlistItem = {
   id: UUID;
@@ -36,6 +40,16 @@ export type WhishlistItemView = WhishlistItemPreview & {
 
 export type Item = BaseType & {
   // shelves: Array<UUID>;
+};
+
+export type ItemSummary = Item & {
+  shelves: ShelfReference[];
+  shops: Shop[];
+};
+
+// references a single shelf within a single shop
+export type ShelfReference = Shelf & {
+  shop: Shop;
 };
 
 type ShoppingState = {
@@ -70,6 +84,31 @@ const getShopMap = (state: ShoppingState): Map<UUID, Shop[]> => {
   }
 
   return shopMap;
+};
+
+const getShelfReferences = (state: ShoppingState): ShelfReference[] => {
+  const shelfData = asIndexObject(state.shelves);
+  const getShelfReferenceForShelf = (
+    shelf: Shelf,
+    shop: Shop
+  ): ShelfReference => {
+    return {
+      id: shelf.id,
+      items: shelf.items,
+      name: shelf.name,
+      shop: shop,
+    };
+  };
+  const getShelfReferencesForShop = (shop: Shop): ShelfReference[] => {
+    return shop.shelves
+      .map((shelfId) => {
+        return shelfData[shelfId];
+      })
+      .filter((it) => !!it) // orphaned shelf IDs may occur in corrupted data
+      .map((shelf) => getShelfReferenceForShelf(shelf, shop));
+  };
+
+  return state.shops.flatMap(getShelfReferencesForShop);
 };
 
 export const useShoppingStore = defineStore({
@@ -139,6 +178,25 @@ export const useShoppingStore = defineStore({
         };
       });
     },
+
+    itemsSummary(state: ShoppingState): ItemSummary[] {
+      const shelfReferences = getShelfReferences(state);
+      const mapToFullItem = (it: Item) => {
+        const shelves = shelfReferences.filter((shelf) =>
+          shelf.items.includes(it.id)
+        );
+        const shops = shelves.map((shelf) => shelf.shop);
+        return {
+          id: it.id,
+          name: it.name,
+          shelves,
+          shops,
+        };
+      };
+
+      return this.items.map(mapToFullItem);
+    },
+
     shopsSummary(state: ShoppingState) {
       const shelfData = Object.fromEntries(
         state.shelves.map((it) => [

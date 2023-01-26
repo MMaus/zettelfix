@@ -28,6 +28,7 @@
         :headers="itemHeaders"
         fixed-headers
         resizable-columns
+        expandable-rows
         :items="availableItems"
         :filter="itemFilter"
         class="h40"
@@ -35,6 +36,9 @@
         <template #no-data> There are no items registered yet </template>
         <template #item-cell.id="{ item, label, header, index }">
           <w-button shadow icon="mdi mdi-pencil"></w-button>
+        </template>
+        <template #row-expansion="{ item }">
+          Shelves: {{ item.shelves }}
         </template>
       </w-table>
     </w-card>
@@ -47,7 +51,14 @@
 <script setup lang="ts">
 import { identity } from "lodash";
 import { computed, ref } from "vue";
-import { Item, Shelf, Shop, useShoppingStore, UUID } from "./shoppingStore";
+import {
+  Item,
+  Shelf,
+  ShelfReference,
+  Shop,
+  useShoppingStore,
+  UUID,
+} from "./shoppingStore";
 import AddItemDialog from "./shops/CreateItemDialog.vue";
 
 const dialogVisible = ref(false);
@@ -83,23 +94,20 @@ const itemHeaders = [
   { label: "", key: "id", width: "30px" },
 ];
 
+const toShelfInfo = (shelfRef: ShelfReference) => {
+  return `${shelfRef.name} (${shelfRef.shop.name})`;
+};
+
 const availableItems = computed(() => {
-  return store.items
+  return store.itemsSummary
     .map((it) => ({
       id: it.id,
       name: it.name,
-      shops: getShops(it).map((shop) => shop.name),
+      shops: it.shops.map((shop) => shop.name),
+      shelves: it.shelves.map(toShelfInfo),
     }))
     .sort((it1, it2) => it1.name.localeCompare(it2.name));
 });
-
-// const shopById = computed(() => {
-//   return new Map<UUID, Shop>(store.shops.map(shop => [shop.id, shop]))
-// })
-
-// const shelfById = computed(() => {
-//   return new Map<UUID, Shelf>(store.shelves.map(shelf => [shelf.id, shelf]))
-// })
 
 const getShops = (item: Item) => {
   const shelves = store.shelves.filter((shelf) =>
