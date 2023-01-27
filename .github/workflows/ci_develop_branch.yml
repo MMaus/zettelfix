@@ -33,7 +33,7 @@ jobs:
         run: npm run build
         working-directory: frontend
         env:
-          VITE_SHOW_strato_INFO: 1
+          VITE_SHOW_STAGING_INFO: 1
 
       # for now, testing is disabled
       #    - run: npm test
