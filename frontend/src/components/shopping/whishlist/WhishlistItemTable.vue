@@ -14,6 +14,7 @@
       :items="whishlistItems"
       v-model="selectedSearchRows"
       :filter="itemFilter"
+      expandable-rows
     >
       <template #header-label="{ label, index }">
         <span class="caption">{{ label }}</span>
@@ -30,7 +31,9 @@
         {{ item.item.name }}
       </template>
       <template #item-cell.shopNames="{ item }">
-        <span class="body">{{ item.shopNames.join(", ") }}</span>
+        <span class="body">{{
+          item.shelves.map((sh: ShelfReference) => sh.shop.name).join(", ")
+        }}</span>
       </template>
       <template #item-cell.item.id="{ item }">
         <w-confirm
@@ -44,13 +47,23 @@
           <w-icon color="white">mdi mdi-delete-forever-outline</w-icon>
         </w-confirm>
       </template>
+      <template #row-expansion="{ item }">
+        <shop-and-shelf-display
+          :shelves="item.shelves"
+        ></shop-and-shelf-display>
+      </template>
     </w-table>
   </div>
 </template>
 <script setup lang="ts">
 import NumberInput from "@/components/common/NumberInput.vue";
 import { computed, ref } from "vue";
-import { useShoppingStore, WhishlistItemView } from "../shoppingStore";
+import {
+  ShelfReference,
+  useShoppingStore,
+  WhishlistItemView,
+} from "../shoppingStore";
+import ShopAndShelfDisplay from "./ShopAndShelfDisplay.vue";
 
 const store = useShoppingStore();
 
@@ -67,8 +80,8 @@ const itemFilter = (item: WhishlistItemView) => {
     item.item.name
       .toLocaleLowerCase()
       .includes(searchFilterText.value.trim().toLocaleLowerCase()) ||
-    item.shopNames.find((shopName) =>
-      shopName
+    item.shelves.find((shelf) =>
+      shelf.shop.name
         .toLocaleLowerCase()
         .includes(searchFilterText.value.trim().toLocaleLowerCase())
     )

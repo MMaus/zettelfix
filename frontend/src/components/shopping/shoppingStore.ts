@@ -35,7 +35,7 @@ export type WhishlistItemPreview = {
 
 export type WhishlistItemView = WhishlistItemPreview & {
   id: UUID;
-  shopNames: string[];
+  shelves: ShelfReference[];
 };
 
 export type Item = BaseType & {
@@ -59,31 +59,22 @@ type ShoppingState = {
   whishlist: WhishlistItem[];
 };
 
-const getShopMap = (state: ShoppingState): Map<UUID, Shop[]> => {
-  const shelfMap = new Map<UUID, Shop[]>(); // maps shelf to list of shops
-  for (const shop of state.shops) {
-    for (const shelfId of shop.shelves) {
-      if (!shelfMap.has(shelfId)) {
-        shelfMap.set(shelfId, []);
+// having a unilateral relation e.g. from shelf to item sometimes require the
+// reverse loop-up: given an item, find all shelves
+const getLookupMap = <K>(
+  parents: K[],
+  childIdExtractor: (parent: K) => UUID[]
+): Map<UUID, K[]> => {
+  const childToParentMap = new Map<UUID, K[]>();
+  for (const parent of parents) {
+    for (const childId of childIdExtractor(parent)) {
+      if (!childToParentMap.has(childId)) {
+        childToParentMap.set(childId, []);
       }
-      shelfMap.get(shelfId)?.push(shop);
+      childToParentMap.get(childId)?.push(parent);
     }
   }
-
-  const shopMap = new Map<UUID, Shop[]>();
-  for (const shelf of state.shelves) {
-    const shops = shelfMap.get(shelf.id) || [];
-    for (const itemid of shelf.items) {
-      if (!shopMap.has(itemid)) {
-        shopMap.set(itemid, []);
-      }
-      shops.forEach((shop) => {
-        shopMap.get(itemid)?.push(shop);
-      });
-    }
-  }
-
-  return shopMap;
+  return childToParentMap;
 };
 
 const getShelfReferences = (state: ShoppingState): ShelfReference[] => {
@@ -142,21 +133,36 @@ export const useShoppingStore = defineStore({
       orphanedShelves.sort((s1, s2) => s1.name.localeCompare(s2.name));
       return orphanedShelves;
     },
+
     whishlistItems(state): WhishlistItemView[] {
-      const itemMap = Object.fromEntries(state.items.map((it) => [it.id, it]));
-      const shopMap = getShopMap(state);
+      // const itemMap = Object.fromEntries(state.items.map((it) => [it.id, it]));
+      const itemMap = asIndexObject(state.items);
+
+      const shelfReferences = getShelfReferences(state);
+      const shelvesMap = asIndexObject(shelfReferences);
+
+      const itemsToShelf = getLookupMap(state.shelves, (shelf) => shelf.items);
+
       const whishlist = state.whishlist
         .filter((it) => itemMap.hasOwnProperty(it.item))
         .map((it) => {
-          const shops = shopMap.get(it.item);
-          const shopNames = shops?.map((sh) => sh.name) || [];
-          shopNames.sort();
+          const shelves = (itemsToShelf.get(it.item) || []).map(
+            (shelf) => shelvesMap[shelf.id] || []
+          );
+          shelves.sort((s1, s2) =>
+            s1.shop.name
+              .toLocaleLowerCase()
+              .localeCompare(s2.shop.name.toLocaleLowerCase())
+          );
+          // const shops = shopMap.get(it.item);
+          // const shopNames = shops?.map((sh) => sh.name) || [];
+          // shopNames.sort();
 
           return {
             amount: it.amount,
             id: it.id,
             item: itemMap[it.item],
-            shopNames: shopNames,
+            shelves,
           };
         });
       whishlist.sort((w1, w2) =>

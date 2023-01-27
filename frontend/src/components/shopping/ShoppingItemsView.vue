@@ -38,7 +38,9 @@
           <w-button shadow icon="mdi mdi-pencil"></w-button>
         </template>
         <template #row-expansion="{ item }">
-          Shelves: {{ item.shelves }}
+          <shop-and-shelf-display
+            :shelves="item.shelves"
+          ></shop-and-shelf-display>
         </template>
       </w-table>
     </w-card>
@@ -49,17 +51,10 @@
   </div>
 </template>
 <script setup lang="ts">
-import { identity } from "lodash";
 import { computed, ref } from "vue";
-import {
-  Item,
-  Shelf,
-  ShelfReference,
-  Shop,
-  useShoppingStore,
-  UUID,
-} from "./shoppingStore";
+import { Item, ShelfReference, useShoppingStore, UUID } from "./shoppingStore";
 import AddItemDialog from "./shops/CreateItemDialog.vue";
+import ShopAndShelfDisplay from "./whishlist/ShopAndShelfDisplay.vue";
 
 const dialogVisible = ref(false);
 
@@ -104,21 +99,10 @@ const availableItems = computed(() => {
       id: it.id,
       name: it.name,
       shops: it.shops.map((shop) => shop.name),
-      shelves: it.shelves.map(toShelfInfo),
+      shelves: it.shelves,
     }))
     .sort((it1, it2) => it1.name.localeCompare(it2.name));
 });
-
-const getShops = (item: Item) => {
-  const shelves = store.shelves.filter((shelf) =>
-    shelf.items.find((it) => it == item.id)
-  );
-  const shelfIDs = new Set(shelves.map((it) => it.id));
-  const shops = store.shops.filter((shop) =>
-    shop.shelves.find((shelfId) => shelfIDs.has(shelfId))
-  );
-  return shops;
-};
 
 const createItem = (item: { itemName: string; shelves: UUID[] }) => {
   store.createItem(item.itemName, item.shelves);
