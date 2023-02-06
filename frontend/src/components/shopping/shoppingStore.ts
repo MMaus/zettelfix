@@ -4,8 +4,11 @@ import { remove } from "lodash";
 
 export type UUID = string;
 
-type BaseType = {
+type Identifyable = {
   id: UUID;
+};
+
+type BaseType = Identifyable & {
   name: string;
 };
 
@@ -17,7 +20,11 @@ export type Shelf = BaseType & {
   items: Array<UUID>;
 };
 
-const asIndexObject = <T extends BaseType>(objectList: T[]) => {
+export type ShoppingShelfPreview = BaseType & {
+  items: WhishlistItemPreview[];
+};
+
+const asIndexObject = <T extends Identifyable>(objectList: T[]) => {
   return Object.fromEntries(objectList.map((it) => [it.id, it]));
 };
 
@@ -102,6 +109,26 @@ const getShelfReferences = (state: ShoppingState): ShelfReference[] => {
   return state.shops.flatMap(getShelfReferencesForShop);
 };
 
+const getFilteredItems = (
+  state: ShoppingState,
+  it: Shelf
+): WhishlistItemPreview[] => {
+  const itemData = asIndexObject(state.items);
+  return state.whishlist
+    .filter((wi) => it.items.includes(wi.item))
+    .map((wi) => {
+      const item = itemData[wi.item];
+      const itemName = item?.name || "NOT FOUND";
+      console.log(`Processing ${wi.id} -> ${wi.item} : ${itemName}`);
+
+      return {
+        id: wi.id,
+        item: itemData[wi.item],
+        amount: wi.amount,
+      } as WhishlistItemPreview;
+    });
+};
+
 export const useShoppingStore = defineStore({
   id: "shoppingStore",
   state: () => ({
@@ -120,6 +147,21 @@ export const useShoppingStore = defineStore({
         }
         return state.shelves.filter((shelf) => shop.shelves.includes(shelf.id));
       },
+    shoppingShelvesPreview(state) {
+      return (shopId: UUID): ShoppingShelfPreview[] => {
+        // const whishlistItemData = asIndexObject(state.whishlist);
+        const shelves = this.getShelves(shopId)
+          .map((shelf) => {
+            return {
+              id: shelf.id,
+              name: shelf.name,
+              items: getFilteredItems(state, shelf),
+            } as ShoppingShelfPreview;
+          })
+          .filter((it) => it.items.length > 0);
+        return shelves;
+      };
+    },
     getItem(state) {
       return (id: UUID) => state.items.find((it) => it.id == id);
     },

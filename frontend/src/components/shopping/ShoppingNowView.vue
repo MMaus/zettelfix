@@ -23,13 +23,22 @@
     </w-flex>
     <div class="my2"></div>
     <div class="sh2">
-      {{ shelves }}
+      <w-flex wrap>
+        <shelf-preview
+          v-for="shelf in shelves"
+          :key="shelf.id"
+          :shelfpreview="shelf"
+          class="xs12 sm6 md4"
+        >
+        </shelf-preview>
+      </w-flex>
     </div>
   </w-card>
 </template>
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useShoppingStore } from "./shoppingStore";
+import ShelfPreview from "./shoppinglist/ShelfPreview.vue";
 
 const store = useShoppingStore();
 
@@ -37,7 +46,9 @@ const shelves = computed(() => {
   if (!selectedShop) {
     return [];
   }
-  return store.getShelves(selectedShop.value);
+  const previewShelves = store.shoppingShelvesPreview(selectedShop.value);
+  console.log("----> OBTAINED SHELVES:", previewShelves);
+  return previewShelves;
 });
 
 const selectedShop = ref("");
