@@ -59,6 +59,13 @@ export type ShelfReference = Shelf & {
   shop: Shop;
 };
 
+export type ShopSummary = {
+  id: UUID;
+  name: string;
+  shoppingItemCount: number;
+  whishlistItemCount: number;
+};
+
 type ShoppingState = {
   shops: Shop[];
   items: Item[];
@@ -245,7 +252,7 @@ export const useShoppingStore = defineStore({
       return this.items.map(mapToFullItem);
     },
 
-    shopsSummary(state: ShoppingState) {
+    shopsSummary(state: ShoppingState): ShopSummary[] {
       const shelfData = Object.fromEntries(
         state.shelves.map((it) => [
           it.id,
@@ -265,11 +272,20 @@ export const useShoppingStore = defineStore({
           })
           .reduce((a, b) => a + b, 0);
       };
+      const shelfReferences = getShelfReferences(state);
+      // ShoppingItem-IDs of item in the whishlist
+      const whishlistItemIds = state.whishlist.map((it) => it.item);
+      const getShoppingItemIdsOnWhishlist = (shop: Shop) =>
+        shelfReferences
+          .filter((it) => it.shop.id == shop.id)
+          .flatMap((it) => it.items)
+          .filter((it) => whishlistItemIds.includes(it));
       return state.shops.map((shop) => {
         return {
           id: shop.id,
           name: shop.name,
-          itemCount: getItemCount(shop),
+          shoppingItemCount: getItemCount(shop),
+          whishlistItemCount: getShoppingItemIdsOnWhishlist(shop).length,
         };
       });
     },

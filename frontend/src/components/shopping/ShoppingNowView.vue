@@ -51,15 +51,21 @@ const shelves = computed(() => {
   return previewShelves;
 });
 
+type ShopInfo = { label: String; value: String; itemCount: number };
 const selectedShop = ref("");
-const shops = computed(() =>
-  store.shopsSummary.map((sh) => {
+const shops = computed(() => {
+  const shopInfo = store.shopsSummary.map((sh) => {
     return {
-      label: `${sh.name} (${sh.itemCount} items)`,
+      label: `${sh.name} (${sh.whishlistItemCount} items)`,
       value: sh.id,
+      itemCount: sh.whishlistItemCount,
     };
-  })
-);
+  });
+  shopInfo.sort((s1: ShopInfo, s2: ShopInfo) => {
+    return s2.itemCount - s1.itemCount;
+  });
+  return shopInfo;
+});
 </script>
 <style scoped>
 .selectbox {
