@@ -101,7 +101,7 @@ const routes: Array<RouteRecordRaw> = [
       {
         // default with redirect
         path: "",
-        redirect: "/shoppinglist2/items",
+        redirect: "/shoppinglist2/whishlist",
       },
     ],
   },
