@@ -3,3 +3,4 @@ node_modules
 deploy_public.sh
 vapid.json
 vapid.strato.json
+.idea

@@ -2,7 +2,8 @@
   <div>
     <w-dialog
       :modelValue="props.modelValue"
-      @update:modelValue="(value: boolean) => emit('update:modelValue', value)"
+      @close="emit('update:model-value', false)"
+      @update:modelValue="submitNewVisibilityState($event)"
       width="600"
       height="400"
     >
@@ -46,10 +47,11 @@
 import { computed, ref, watch } from "vue";
 import type { UUID } from "../shoppingStore";
 import SelectShelvesComponent from "./SelectShelvesComponent.vue";
+import { p } from "vitest/dist/index-761e769b";
 
-const props = defineProps<{ modelValue: boolean }>();
+const props = defineProps<{ modelValue: boolean; itemName?: string }>();
 const emit = defineEmits<{
-  (eventName: "update:modelValue", modelValue: boolean): void;
+  (eventName: "update:model-value", modelValue: boolean): void;
   (
     eventName: "createItem",
     newItem: { itemName: string; shelves: UUID[] }
@@ -71,8 +73,13 @@ watch(
       newItemName.value = "";
       selectedShelves.value = [];
       activeTab.value = 0;
+    } else {
+      if (props.itemName) {
+        newItemName.value = props.itemName;
+      }
     }
-  }
+  },
+  { immediate: true }
 );
 
 const createItem = () => {
@@ -80,7 +87,11 @@ const createItem = () => {
     itemName: newItemName.value,
     shelves: selectedShelves.value,
   });
-  emit("update:modelValue", false);
+  emit("update:model-value", false);
+};
+
+const submitNewVisibilityState = (newValue: boolean) => {
+  emit("update:model-value", newValue);
 };
 
 const tabData = computed(() => [

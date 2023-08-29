@@ -29,18 +29,28 @@
     </w-table>
     <div v-if="!anyItemVisible" class="body pa3">
       No item matches your search. <br />
-      <w-button>Create</w-button> a new one instead?
+      <w-button @click="showCreateNewItemDialog()">Create</w-button> a new one
+      instead?
     </div>
+    <create-item-dialog
+      :model-value="createItemDialogVisible"
+      @update:model-value="onVisibilityChange"
+      :item-name="searchText"
+      @create-item="onCreateNewItem"
+    ></create-item-dialog>
   </div>
 </template>
 <script setup lang="ts">
 import NumberInput from "@/components/common/NumberInput.vue";
-import { computed, ref } from "vue";
-import { useShoppingStore, WhishlistItemPreview } from "../shoppingStore";
+import { computed, ref, watch } from "vue";
+import { useShoppingStore, UUID, WhishlistItemPreview } from "../shoppingStore";
+import CreateItemDialog from "@/components/shopping/shops/CreateItemDialog.vue";
 
 const props = defineProps<{
   searchText?: string;
 }>();
+
+const createItemDialogVisible = ref(false);
 
 const emit = defineEmits<{
   (eventName: "itemClicked", value: WhishlistItemPreview): void;
@@ -54,6 +64,20 @@ const notifyUpdate = (item: WhishlistItemPreview, value: number) => {
 const onItemClick = (item: WhishlistItemPreview) => {
   notifyUpdate(item, item.amount + 1);
   emit("itemClicked", item);
+};
+
+const showCreateNewItemDialog = () => {
+  createItemDialogVisible.value = true;
+};
+
+const onVisibilityChange = (val: boolean) => {
+  createItemDialogVisible.value = val;
+};
+
+const onCreateNewItem = (newItem: { itemName: string; shelves: UUID[] }) => {
+  createItemDialogVisible.value = false;
+  // TODO: create item in store
+  console.log("TODO: create new item in store:", newItem);
 };
 
 const selectedSearchRows = ref([]);
