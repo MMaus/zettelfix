@@ -14,6 +14,7 @@ type BaseType = Identifyable & {
 
 export type Shop = BaseType & {
   shelves: Array<UUID>;
+  includeOrphanedItems: boolean;
 };
 
 export type Shelf = BaseType & {
@@ -291,6 +292,13 @@ export const useShoppingStore = defineStore({
     },
   },
   actions: {
+    setIncludeOrphanedItems(shop: Shop, include: boolean) {
+      const reactiveShop = this.shops.find((s) => s.id === shop.id);
+      if (!reactiveShop) {
+        return; // should never happen, just make Typescript compiler happy
+      }
+      reactiveShop.includeOrphanedItems = include;
+    },
     setWhishlistItem(id: UUID, qty: number) {
       const indexOfItem = this.whishlist.findIndex((it) => it.item == id);
       if (qty <= 0 && indexOfItem >= 0) {
@@ -311,6 +319,7 @@ export const useShoppingStore = defineStore({
         name,
         id: uuidv4(),
         shelves: [],
+        includeOrphanedItems: true,
       };
       this.shops.push(newShop);
     },

@@ -23,6 +23,11 @@
       v-model="dialogVisible"
       @add-shelf="addShelf"
     ></add-shelf-dialog>
+    <w-checkbox
+      :model-value="shop.includeOrphanedItems"
+      @update:model-value="setIncludeOrphans($event)"
+      >Include orphaned items
+    </w-checkbox>
     <w-table
       :headers="shelfTableHeaders"
       fixed-headers
@@ -59,6 +64,11 @@ const store = useShoppingStore();
 const shelves = computed(() => store.getShelves(props.shop.id));
 const addShelf = (shelfName: string) => {
   store.addShelf(props.shop.id, shelfName);
+};
+
+const setIncludeOrphans = (value: boolean) => {
+  store.setIncludeOrphanedItems(props.shop, value);
+  console.log("settning include orphans to", value);
 };
 
 const shelfTableHeaders = [

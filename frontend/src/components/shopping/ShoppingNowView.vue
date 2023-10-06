@@ -2,18 +2,24 @@
   <w-card shadow title="Shopping" title-class="amber-light5--bg">
     <w-flex>
       <div class="xs8">
-        <w-select
-          :items="shops"
-          round
-          shadow
-          :inner-icon-left="!!selectedShop ? 'mdi mdi-close-circle' : undefined"
-          @click:inner-icon-left="selectedShop = ''"
-          label="Select shop"
-          class="selectbox"
-          v-model="selectedShop"
-        >
-        </w-select>
+        <w-flex>
+          <w-select
+            :items="shops"
+            round
+            shadow
+            :inner-icon-left="
+              !!selectedShop ? 'mdi mdi-close-circle' : undefined
+            "
+            @click:inner-icon-left="selectedShop = ''"
+            label="Select shop"
+            class="selectbox"
+            v-model="selectedShop"
+          >
+          </w-select>
+          <w-button icon="mdi mdi-plus" @click="showAddShopDialog()"></w-button>
+        </w-flex>
       </div>
+
       <w-flex column justify-end class="xs4 grow">
         <w-button bg-color="green-dark2" class="align-self-start sh2 mb1">
           <w-icon lg color="green">mdi mdi-menu-right</w-icon>
@@ -33,14 +39,22 @@
         </shelf-preview>
       </w-flex>
     </div>
+    <add-shop-dialog v-model="addShopDialogVisible"></add-shop-dialog>
   </w-card>
 </template>
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useShoppingStore } from "./shoppingStore";
 import ShelfPreview from "./shoppinglist/ShelfPreview.vue";
+import AddShopDialog from "@/components/shopping/shops/AddShopDialog.vue";
 
 const store = useShoppingStore();
+
+const addShopDialogVisible = ref(false);
+const showAddShopDialog = () => {
+  console.log("Showing 'add shop' dialog");
+  addShopDialogVisible.value = true;
+};
 
 const shelves = computed(() => {
   if (!selectedShop) {
