@@ -12,7 +12,8 @@
         <span class="caption">{{ label }}</span>
       </template>
       <template #no-data>
-        No item (create an item <w-button>HERE</w-button>)
+        No item (create an item
+        <w-button @click="showCreateNewItemDialog()">HERE</w-button>)
       </template>
       <template #item-cell.amount="{ item }">
         <NumberInput
@@ -76,8 +77,7 @@ const onVisibilityChange = (val: boolean) => {
 
 const onCreateNewItem = (newItem: { itemName: string; shelves: UUID[] }) => {
   createItemDialogVisible.value = false;
-  // TODO: create item in store
-  console.log("TODO: create new item in store:", newItem);
+  store.createItem(newItem.itemName, newItem.shelves);
 };
 
 const selectedSearchRows = ref([]);
